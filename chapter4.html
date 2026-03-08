@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chapter 4：無線網路拓撲與部署規劃｜AP 與無線網路應用</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --paper: #F5F0E8;
+      --paper-dark: #EDE7D9;
+      --paper-rule: #DDD5C4;
+      --ink: #1A1610;
+      --ink-mid: #4A4035;
+      --ink-light: #8A7D6A;
+      --red: #C0392B;
+      --red-muted: #D9584A;
+    }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body { background: var(--paper); color: var(--ink); font-family: 'Noto Serif TC', serif; line-height: 1.85; }
+
+    header { border-bottom: 2px solid var(--ink); padding: 0 4rem; position: sticky; top: 0; background: var(--paper); z-index: 100; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .site-title { font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-mid); text-decoration: none; }
+    .site-title span { color: var(--red); }
+    .header-nav { display: flex; gap: 1.5rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; letter-spacing: 0.08em; }
+    .header-nav a { color: var(--ink-light); text-decoration: none; transition: color 0.2s; }
+    .header-nav a:hover { color: var(--red); }
+
+    .chapter-banner { background: var(--ink); color: var(--paper); padding: 4rem 4rem 3.5rem; border-bottom: 2px solid var(--ink); }
+    .chapter-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--red-muted); margin-bottom: 1.2rem; }
+    .chapter-banner h1 { font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; margin-bottom: 1.2rem; }
+    .chapter-banner .subtitle { font-size: 1rem; color: #B8AC9E; max-width: 640px; line-height: 1.8; }
+    .chapter-meta-row { display: flex; gap: 3rem; margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid #3A342C; flex-wrap: wrap; }
+    .chapter-meta-row .m-item .m-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: #6A5E52; margin-bottom: 0.3rem; }
+    .chapter-meta-row .m-item .m-value { font-size: 0.9rem; color: #D4CCBF; }
+
+    .page-layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 64px); align-items: start; }
+
+    .sidebar { position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto; border-right: 1px solid var(--paper-rule); padding: 2.5rem 1.5rem; }
+    .toc-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 1.2rem; }
+    .toc-list { list-style: none; display: flex; flex-direction: column; gap: 0.15rem; }
+    .toc-list a { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; color: var(--ink-mid); text-decoration: none; padding: 0.35rem 0.6rem; border-left: 2px solid transparent; transition: all 0.15s; line-height: 1.5; }
+    .toc-list a:hover, .toc-list a.active { color: var(--red); border-left-color: var(--red); background: var(--paper-dark); }
+    .toc-section { margin-top: 1.2rem; margin-bottom: 0.3rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--paper-rule); }
+    .sidebar-nav { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--paper-rule); display: flex; flex-direction: column; gap: 0.5rem; }
+    .sidebar-nav a { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--ink-light); text-decoration: none; transition: color 0.15s; }
+    .sidebar-nav a:hover { color: var(--red); }
+
+    main { padding: 3.5rem 4rem 6rem 3.5rem; max-width: 860px; }
+    .content-section { margin-bottom: 4.5rem; }
+    .section-anchor { display: block; height: 64px; margin-top: -64px; visibility: hidden; }
+
+    h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.01em; margin-bottom: 1.5rem; padding-bottom: 0.7rem; border-bottom: 2px solid var(--ink); display: flex; align-items: baseline; gap: 1rem; }
+    h2 .h2-num { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; font-weight: 400; letter-spacing: 0.1em; color: var(--red); }
+    h3 { font-size: 1.1rem; font-weight: 600; margin-top: 2rem; margin-bottom: 0.8rem; color: var(--ink); }
+    h4 { font-size: 0.95rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--ink-mid); font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.03em; }
+    p { font-size: 0.97rem; color: var(--ink-mid); margin-bottom: 1rem; line-height: 1.9; }
+    strong { color: var(--ink); font-weight: 600; }
+    em.term { font-style: normal; color: var(--red); font-weight: 500; }
+
+    code { font-family: 'IBM Plex Mono', monospace; font-size: 0.82em; background: var(--paper-dark); border: 1px solid var(--paper-rule); padding: 0.1em 0.4em; color: var(--ink); }
+    pre { background: var(--ink); color: #D4CCBF; font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; line-height: 1.7; padding: 1.5rem 2rem; margin: 1.5rem 0; overflow-x: auto; border-left: 3px solid var(--red); }
+
+    .callout { border-left: 3px solid var(--ink); background: var(--paper-dark); padding: 1.2rem 1.5rem; margin: 1.5rem 0; }
+    .callout.important { border-left-color: var(--red); }
+    .callout .callout-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 0.5rem; color: var(--ink-light); }
+    .callout.important .callout-label { color: var(--red); }
+    .callout p { margin-bottom: 0.5rem; font-size: 0.9rem; }
+    .callout p:last-child { margin-bottom: 0; }
+
+    .table-wrap { overflow-x: auto; margin: 1.5rem 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+    thead tr { background: var(--ink); color: var(--paper); }
+    thead th { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.75rem 1rem; text-align: left; font-weight: 500; }
+    tbody tr { border-bottom: 1px solid var(--paper-rule); }
+    tbody tr:hover { background: var(--paper-dark); }
+    tbody td { padding: 0.7rem 1rem; color: var(--ink-mid); line-height: 1.7; vertical-align: top; }
+    tbody td:first-child { font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; color: var(--ink); font-weight: 500; }
+    tbody tr.highlight td { background: rgba(192,57,43,0.05); }
+    tbody tr.highlight td:first-child { color: var(--red); }
+
+    .def-list { display: grid; grid-template-columns: auto 1fr; gap: 0; border-top: 1px solid var(--paper-rule); margin: 1.5rem 0; }
+    .def-list dt { font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; font-weight: 500; padding: 0.75rem 1.5rem 0.75rem 0; border-bottom: 1px solid var(--paper-rule); color: var(--ink); white-space: nowrap; }
+    .def-list dd { font-size: 0.88rem; color: var(--ink-mid); padding: 0.75rem 0; border-bottom: 1px solid var(--paper-rule); line-height: 1.75; }
+
+    .diagram { background: var(--paper-dark); border: 1px solid var(--paper-rule); padding: 2rem; margin: 2rem 0; }
+    .diagram-ascii { font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; line-height: 1.65; color: var(--ink); display: block; white-space: pre; overflow-x: auto; }
+    .diagram-caption { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: var(--ink-light); margin-top: 1rem; letter-spacing: 0.06em; text-transform: uppercase; }
+
+    /* Step flow */
+    .step-flow { display: flex; flex-direction: column; gap: 0; margin: 1.5rem 0; border: 1px solid var(--paper-rule); }
+    .step-item { display: grid; grid-template-columns: 64px 1fr; border-bottom: 1px solid var(--paper-rule); }
+    .step-item:last-child { border-bottom: none; }
+    .step-num { background: var(--ink); color: var(--paper); display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', monospace; font-size: 1.1rem; font-weight: 300; }
+    .step-content { padding: 1.2rem 1.5rem; }
+    .step-content .s-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.35rem; color: var(--ink); }
+    .step-content .s-desc { font-size: 0.85rem; color: var(--ink-mid); line-height: 1.7; }
+
+    /* Coverage map legend */
+    .legend-row { display: flex; gap: 2rem; flex-wrap: wrap; margin: 1rem 0 1.5rem; }
+    .legend-item { display: flex; align-items: center; gap: 0.5rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; color: var(--ink-mid); }
+    .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .legend-dot.ink { background: var(--ink); }
+    .legend-dot.red { background: var(--red); }
+    .legend-dot.light { background: var(--paper-rule); border: 1px solid var(--ink-light); }
+
+    /* Channel plan visual */
+    .ch-plan { display: grid; gap: 3px; margin: 1.2rem 0; }
+    .ch-row { display: flex; align-items: center; gap: 0.5rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; }
+    .ch-label { width: 60px; color: var(--ink-light); text-align: right; }
+    .ch-block { height: 26px; display: flex; align-items: center; justify-content: center; font-size: 0.68rem; color: var(--paper); font-weight: 500; }
+    .ch-block.c1 { background: var(--ink); }
+    .ch-block.c6 { background: var(--ink-mid); }
+    .ch-block.c11 { background: var(--red); }
+    .ch-block.c36 { background: var(--ink); }
+    .ch-block.c40 { background: var(--ink-mid); }
+    .ch-block.c44 { background: var(--red); }
+    .ch-block.c48 { background: #5A4A3A; }
+
+    /* Site survey checklist */
+    .checklist { border: 1px solid var(--paper-rule); margin: 1.5rem 0; }
+    .checklist-group { border-bottom: 1px solid var(--paper-rule); }
+    .checklist-group:last-child { border-bottom: none; }
+    .checklist-header { background: var(--ink); color: var(--paper); padding: 0.6rem 1.2rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; }
+    .checklist-items { padding: 0.8rem 1.2rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .check-item { display: grid; grid-template-columns: 20px 1fr; gap: 0.6rem; font-size: 0.87rem; color: var(--ink-mid); line-height: 1.5; align-items: start; }
+    .check-box { width: 14px; height: 14px; border: 1.5px solid var(--paper-rule); margin-top: 3px; flex-shrink: 0; }
+
+    /* Coverage overlap visual */
+    .overlap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.5rem 0; }
+    .overlap-card { border: 1px solid var(--paper-rule); padding: 1.3rem; }
+    .overlap-card .oc-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.8rem; }
+    .overlap-card.bad .oc-label { color: var(--red); }
+    .overlap-card.good .oc-label { color: var(--ink-light); }
+    .overlap-card .oc-desc { font-size: 0.85rem; color: var(--ink-mid); line-height: 1.7; }
+
+    /* RRM visual */
+    .rrm-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0; }
+    .rrm-card { border: 1px solid var(--paper-rule); padding: 1.2rem; text-align: center; }
+    .rrm-card .rc-title { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--red); margin-bottom: 0.5rem; }
+    .rrm-card .rc-desc { font-size: 0.82rem; color: var(--ink-mid); line-height: 1.65; }
+
+    .summary-box { background: var(--ink); color: var(--paper); padding: 2rem 2.5rem; margin: 3rem 0 0; }
+    .summary-box .sum-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--red-muted); margin-bottom: 1rem; }
+    .summary-box ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+    .summary-box ul li { font-size: 0.9rem; color: #D4CCBF; padding-left: 1.2rem; position: relative; line-height: 1.7; }
+    .summary-box ul li::before { content: '—'; position: absolute; left: 0; color: var(--red-muted); font-family: 'IBM Plex Mono', monospace; }
+
+    .chapter-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 5rem; padding-top: 2rem; border-top: 2px solid var(--ink); }
+    .chapter-nav a { font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; letter-spacing: 0.08em; color: var(--ink-mid); text-decoration: none; padding: 0.75rem 1.5rem; border: 1px solid var(--paper-rule); transition: all 0.2s; }
+    .chapter-nav a:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .chapter-nav .next { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .chapter-nav .next:hover { background: var(--red); border-color: var(--red); }
+
+    footer { padding: 2rem 4rem; border-top: 2px solid var(--ink); display: flex; justify-content: space-between; align-items: center; }
+    footer .foot-left { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; letter-spacing: 0.08em; color: var(--ink-light); }
+    footer .foot-right { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--red); }
+
+    @media (max-width: 900px) {
+      header { padding: 0 1.5rem; }
+      .chapter-banner { padding: 3rem 1.5rem 2.5rem; }
+      .page-layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      main { padding: 2rem 1.5rem 4rem; }
+      .overlap-grid, .rrm-grid { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 0.5rem; padding: 1.5rem; }
+    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .chapter-banner { animation: fadeUp 0.5s ease both; }
+    main { animation: fadeUp 0.5s ease 0.1s both; }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="site-title" href="index.html">AP & Wireless — <span>初學者完整課程</span></a>
+  <nav class="header-nav">
+    <a href="chapter3.html">← 上一章</a>
+    <a href="index.html">課程首頁</a>
+    <a href="chapter5.html">下一章 →</a>
+  </nav>
+</header>
+
+<div class="chapter-banner">
+  <div class="chapter-label">Chapter 04 / 08</div>
+  <h1>無線網路拓撲與部署規劃</h1>
+  <p class="subtitle">從 BSS、ESS 等基礎拓撲概念出發，學習 Site Survey 現場勘查方法、頻道規劃原則、覆蓋重疊設計，以及干擾管理與 RRM 自動化調整技術，建立完整的無線部署能力。</p>
+  <div class="chapter-meta-row">
+    <div class="m-item"><div class="m-label">建議閱讀時間</div><div class="m-value">約 3～4 小時</div></div>
+    <div class="m-item"><div class="m-label">難度</div><div class="m-value">中階</div></div>
+    <div class="m-item"><div class="m-label">先備章節</div><div class="m-value">Chapter 01、02、03</div></div>
+    <div class="m-item"><div class="m-label">本章重點</div><div class="m-value">Site Survey、頻道規劃、覆蓋設計、干擾管理</div></div>
+  </div>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <div class="toc-label">本章目錄</div>
+    <ul class="toc-list">
+      <li><div class="toc-section">拓撲基礎</div></li>
+      <li><a href="#s1">4.1 無線網路拓撲類型</a></li>
+      <li><a href="#s2">4.2 BSS、ESS、IBSS 詳解</a></li>
+      <li><a href="#s3">4.3 SSID 與 BSSID 的關係</a></li>
+      <li><div class="toc-section">現場勘查</div></li>
+      <li><a href="#s4">4.4 Site Survey 概論</a></li>
+      <li><a href="#s5">4.5 被動式 vs 主動式勘查</a></li>
+      <li><a href="#s6">4.6 Site Survey 執行流程</a></li>
+      <li><a href="#s7">4.7 勘查工具與軟體</a></li>
+      <li><div class="toc-section">覆蓋規劃</div></li>
+      <li><a href="#s8">4.8 AP 擺放原則</a></li>
+      <li><a href="#s9">4.9 覆蓋重疊設計</a></li>
+      <li><a href="#s10">4.10 AP 數量估算方法</a></li>
+      <li><div class="toc-section">頻道與干擾</div></li>
+      <li><a href="#s11">4.11 頻道規劃策略</a></li>
+      <li><a href="#s12">4.12 干擾識別與排除</a></li>
+      <li><a href="#s13">4.13 RRM 無線資源管理</a></li>
+      <li><div class="toc-section">進階規劃</div></li>
+      <li><a href="#s14">4.14 高密度環境設計</a></li>
+      <li><a href="#s15">4.15 部署規劃文件</a></li>
+      <li><div class="toc-section">本章總結</div></li>
+      <li><a href="#summary">重點整理</a></li>
+    </ul>
+    <div class="sidebar-nav">
+      <a href="chapter3.html">← Chapter 03</a>
+      <a href="index.html">課程首頁</a>
+      <a href="chapter5.html">Chapter 05 →</a>
+    </div>
+  </aside>
+
+  <main>
+
+    <!-- 4.1 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s1"></span>
+      <h2><span class="h2-num">4.1</span>無線網路拓撲類型</h2>
+
+      <p>
+        <em class="term">網路拓撲（Topology）</em>描述網路中各節點之間的連接方式與結構。無線網路的拓撲不像有線網路那樣由實體線路決定，而是由 AP 的配置、裝置的關聯關係，以及訊號的覆蓋範圍共同定義。
+      </p>
+
+      <p>IEEE 802.11 標準定義了三種基本的無線網路拓撲模式：</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>拓撲模式</th><th>全名</th><th>核心特點</th><th>典型應用</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Infrastructure（基礎架構）</td>
+              <td>以 AP 為中心的有序架構</td>
+              <td>所有裝置透過 AP 通訊，AP 連有線網路。最常見的模式。</td>
+              <td>所有企業、家庭 Wi-Fi</td>
+            </tr>
+            <tr>
+              <td>IBSS（Ad-hoc）</td>
+              <td>Independent Basic Service Set</td>
+              <td>裝置間直接點對點通訊，不需要 AP。</td>
+              <td>臨時設備互連、緊急情況</td>
+            </tr>
+            <tr>
+              <td>Mesh</td>
+              <td>多跳無線網狀網路</td>
+              <td>AP 間透過無線互連，形成自我修復的網狀路徑。</td>
+              <td>大型戶外場域、難以佈線環境</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        <div class="callout-label">Wi-Fi Direct 補充說明</div>
+        <p>現代裝置常用的 <strong>Wi-Fi Direct</strong>（如手機投影、印表機無線連線）本質上也是一種點對點連線，但不同於傳統 IBSS，它使用一台裝置扮演「軟 AP（Soft-AP）」角色，其他裝置連到這個軟 AP，仍屬於 Infrastructure 模式的變體，而非真正的 Ad-hoc 架構。</p>
+      </div>
+    </div>
+
+    <!-- 4.2 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s2"></span>
+      <h2><span class="h2-num">4.2</span>BSS、ESS、IBSS 詳解</h2>
+
+      <h3>BSS（Basic Service Set，基本服務集）</h3>
+      <p>
+        <em class="term">BSS</em> 是無線網路最基本的單元，由<strong>一台 AP</strong> 及所有與其關聯的客戶端裝置（STA）共同組成。每個 BSS 有唯一的識別碼 <em class="term">BSSID</em>，等同於該 AP 無線介面的 MAC 位址。
+      </p>
+
+      <div class="diagram">
+        <div class="diagram-ascii">BSS（單一 AP 覆蓋區域）：
+
+              [AP]  ← BSSID = AA:BB:CC:DD:EE:FF
+             /  |  \
+           /    |    \
+        [手機] [筆電] [平板]
+        
+  所有裝置都在 AP 的 BSS 範圍內
+  裝置間通訊必須經過 AP 轉發（即使兩台裝置彼此近在咫尺）
+  BSS 覆蓋的實體區域稱為 BSA（Basic Service Area）</div>
+        <div class="diagram-caption">Fig 4.1 — BSS（基本服務集）結構</div>
+      </div>
+
+      <h3>ESS（Extended Service Set，延伸服務集）</h3>
+      <p>
+        <em class="term">ESS</em> 由多個 BSS 組成，所有 BSS 共用相同的 <em class="term">SSID</em>（網路名稱），並透過有線<em class="term">分散系統（DS, Distribution System）</em>互相連接。對客戶端裝置而言，ESS 看起來就像一個大型的無縫無線網路——裝置在 AP 之間漫遊時，SSID 保持不變，只有底層的 BSSID 會改變。
+      </p>
+
+      <div class="diagram">
+        <div class="diagram-ascii">ESS（多 AP 延伸覆蓋，共用同一 SSID）：
+
+  SSID = "OfficeWiFi"
+
+  [AP1]─────有線DS─────[AP2]─────有線DS─────[AP3]
+  BSSID:AA:BB         BSSID:CC:DD         BSSID:EE:FF
+   )))                  )))                  )))
+  覆蓋區A              覆蓋區B              覆蓋區C
+    |                    |                    |
+  [裝置在A區]  →  漫遊  →  [裝置在B區]  →  漫遊  →  [裝置在C區]
+                    SSID 不變，BSSID 改變
+
+  有線 DS 通常是乙太網路交換器基礎架構</div>
+        <div class="diagram-caption">Fig 4.2 — ESS（延伸服務集）多 AP 漫遊架構</div>
+      </div>
+
+      <h3>IBSS（Independent BSS，獨立基本服務集）</h3>
+      <p>
+        <em class="term">IBSS</em> 又稱 <strong>Ad-hoc 模式</strong>，不需要 AP，裝置之間直接以點對點方式建立無線連線。每台裝置既是資料的發送者也是接收者，共同組成一個無中心控制的暫時性網路。
+      </p>
+
+      <dl class="def-list">
+        <dt>IBSS 優點</dt>
+        <dd>不需要 AP，部署門檻最低。適合兩台設備臨時互連（如工程師現場設定設備）、戶外緊急通訊、展場臨時資料交換。</dd>
+        <dt>IBSS 缺點</dt>
+        <dd>沒有中心管理節點，功率管理、認證機制、QoS 功能均受限。覆蓋範圍受限於裝置間距，無法擴展。現代作業系統對 IBSS 的支援越來越少（Windows 10/11 已大幅限制）。</dd>
+        <dt>IBSS vs Mesh</dt>
+        <dd>Mesh 網路也是無中心 AP 的模式，但 Mesh 有<strong>專屬的路由協定</strong>（如 802.11s）和固定的閘道節點，整體架構比 IBSS 完善許多，是現代無線延伸部署的主流選擇。</dd>
+      </dl>
+    </div>
+
+    <!-- 4.3 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s3"></span>
+      <h2><span class="h2-num">4.3</span>SSID 與 BSSID 的關係</h2>
+
+      <p>初學者常混淆 SSID 和 BSSID，理解兩者的差異是掌握多 AP 環境的基礎。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>識別碼</th><th>全名</th><th>格式</th><th>用途</th><th>誰能看到</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>SSID</td>
+              <td>Service Set Identifier</td>
+              <td>最長 32 字元的字串（如 "OfficeWiFi"）</td>
+              <td>人類可讀的網路名稱，代表整個 ESS</td>
+              <td>使用者在 Wi-Fi 清單中看到的名稱</td>
+            </tr>
+            <tr>
+              <td>BSSID</td>
+              <td>Basic Service Set Identifier</td>
+              <td>6 bytes MAC 位址（如 AA:BB:CC:DD:EE:FF）</td>
+              <td>唯一識別單一 AP 的無線介面</td>
+              <td>作業系統底層、Wi-Fi 分析工具</td>
+            </tr>
+            <tr>
+              <td>ESSID</td>
+              <td>Extended Service Set Identifier</td>
+              <td>與 SSID 格式相同</td>
+              <td>特指 ESS 層級的 SSID，強調多 AP 概念</td>
+              <td>同 SSID</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>一台 AP 可以有多個 SSID / BSSID</h3>
+      <p>
+        現代 AP 支援同時廣播多個 SSID（通常每個無線電最多 8～16 個），每個 SSID 對應一個獨立的 <em class="term">虛擬 BSS（BSSID）</em>，AP 的硬體會為每個虛擬 BSS 產生一個獨立的 MAC 位址（通常在實體 MAC 上遞增）。
+      </p>
+
+      <pre>範例：一台 AP（實體 MAC = AA:BB:CC:DD:EE:00）同時廣播 3 個 SSID
+
+SSID "CorpWiFi"  → BSSID AA:BB:CC:DD:EE:00  （員工網路 / VLAN 10）
+SSID "GuestWiFi" → BSSID AA:BB:CC:DD:EE:01  （訪客網路 / VLAN 20）
+SSID "IoTNet"    → BSSID AA:BB:CC:DD:EE:02  （IoT 設備 / VLAN 30）
+
+每個 SSID 可設定不同的安全政策、VLAN 標記、頻寬限制、
+存取控制清單（ACL），實現流量隔離。</pre>
+
+      <div class="callout important">
+        <div class="callout-label">SSID 過多的代價</div>
+        <p>每個額外的 SSID 都需要廣播自己的 <strong>Beacon 訊框</strong>（每 100ms 一次）。若一台 AP 廣播 8 個 SSID，每秒就有 80 個 Beacon 訊框佔用無線頻道。在高密度環境中，過多的 SSID 會增加<strong>管理幀開銷（Management Frame Overhead）</strong>，降低整體頻道效率。企業部署建議每個頻段的 SSID 數量控制在 <strong>3 個以內</strong>。</p>
+      </div>
+    </div>
+
+    <!-- 4.4 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s4"></span>
+      <h2><span class="h2-num">4.4</span>Site Survey 概論</h2>
+
+      <p>
+        <em class="term">Site Survey（現場勘查）</em>是在正式部署 AP 之前，對目標環境進行系統性評估的過程。其目的是收集足夠的環境資訊，以制定最佳的 AP 擺放位置、數量、頻道規劃和功率設定，確保最終部署能達到預期的覆蓋品質和容量目標。
+      </p>
+
+      <p>跳過 Site Survey 直接「憑感覺」放 AP 是最常見的部署錯誤，往往導致：覆蓋死角、頻道干擾嚴重、漫遊體驗差、容量不足，以及後期大量返工成本。</p>
+
+      <h3>Site Survey 的三個目標</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>目標</th><th>內容</th><th>輸出成果</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>覆蓋規劃</td>
+              <td>確定 AP 的位置和數量，確保所有需要覆蓋的區域訊號強度達到要求（如 -65 dBm 以上）</td>
+              <td>AP 位置圖、覆蓋熱圖（Heatmap）</td>
+            </tr>
+            <tr>
+              <td>容量規劃</td>
+              <td>根據預期用戶數和流量需求，規劃足夠的 AP 數量和頻道資源</td>
+              <td>AP 數量建議、頻道規劃圖</td>
+            </tr>
+            <tr>
+              <td>干擾排查</td>
+              <td>識別現有的無線干擾源（鄰居 AP、非 Wi-Fi 干擾），為頻道選擇提供依據</td>
+              <td>頻譜分析報告、現有 AP 清單</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Site Survey 的時機</h3>
+      <dl class="def-list">
+        <dt>預安裝勘查（Pre-Deployment）</dt>
+        <dd>在安裝 AP 之前進行，使用預測工具（Predictive Survey）或在場域內行走量測，決定最佳 AP 位置。這是最重要的 Survey 類型，可以在花費安裝成本前發現問題。</dd>
+        <dt>驗收勘查（Post-Deployment）</dt>
+        <dd>AP 安裝完成後進行，驗證實際覆蓋、訊號強度、頻道分配是否符合設計目標，確認漫遊切換是否正常。</dd>
+        <dt>定期健診（Periodic Survey）</dt>
+        <dd>環境改變後（如新增牆壁、家具重新配置、新增鄰居 AP）重新評估無線網路是否需要調整。</dd>
+      </dl>
+    </div>
+
+    <!-- 4.5 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s5"></span>
+      <h2><span class="h2-num">4.5</span>被動式 vs 主動式 Site Survey</h2>
+
+      <p>Site Survey 依量測方式分為兩大類，各有適用場景：</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>類型</th><th>運作方式</th><th>量測內容</th><th>優點</th><th>缺點</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>被動式（Passive）</td>
+              <td>Survey 裝置不連線至 AP，只掃描接收所有頻道的無線訊框（監聽模式）</td>
+              <td>RSSI、SSID / BSSID 清單、頻道使用情況、Beacon 間隔</td>
+              <td>不干擾現有網路；可同時掃描所有頻道；適合初始環境評估</td>
+              <td>無法量測實際吞吐量和延遲；不能評估真實傳輸效能</td>
+            </tr>
+            <tr>
+              <td>主動式（Active）</td>
+              <td>Survey 裝置連線至 AP，進行實際資料傳輸並量測效能</td>
+              <td>RSSI、SNR、實際吞吐量、重傳率、延遲（RTT）、封包遺失率</td>
+              <td>反映真實使用效能；可驗證 AP 設定是否正確；適合驗收測試</td>
+              <td>需要連線至 AP（需要認證資訊）；每次只能測一台 AP</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>預測式 Survey（Predictive Survey）</h3>
+      <p>
+        <em class="term">預測式 Survey</em> 是在專業軟體中匯入建築平面圖（CAD 或 PDF），標示牆壁材質、障礙物位置，讓軟體以電磁波傳播模型<strong>模擬計算</strong>各 AP 位置方案的覆蓋效果，輸出預測熱圖。
+      </p>
+      <p>優點是不需要實地走動量測，可在辦公室遠端完成初步規劃。缺點是模型有誤差，特別是複雜材質（隔熱玻璃、金屬結構）的預測不夠精準，建議用預測式 Survey 確定初步方案，再用實地量測驗證。</p>
+
+      <p>代表軟體：<strong>Ekahau AI Pro</strong>、<strong>iBwave Wi-Fi</strong>、<strong>NetSpot（免費版可用）</strong>。</p>
+    </div>
+
+    <!-- 4.6 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s6"></span>
+      <h2><span class="h2-num">4.6</span>Site Survey 執行流程</h2>
+
+      <p>一個完整的 Site Survey 專案通常包含以下步驟：</p>
+
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-num">01</div>
+          <div class="step-content">
+            <div class="s-title">收集需求與文件</div>
+            <div class="s-desc">取得建築平面圖（最好是 CAD 格式）、確認覆蓋區域範圍、訂定訊號品質目標（如 -65 dBm 以上）、了解用戶數量與應用類型（語音、視訊、一般上網），確認 PoE 交換器位置與線路路徑限制。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">02</div>
+          <div class="step-content">
+            <div class="s-title">環境掃描（現場）</div>
+            <div class="s-desc">帶著 Wi-Fi 分析工具（筆電 + Ekahau Sidekick 或手機 App）在現場行走，記錄各區域的現有訊號強度、識別鄰居 AP 的頻道使用情況、找出干擾源（微波爐、藍牙設備、舊型無線電話），標記訊號弱點和障礙物位置。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">03</div>
+          <div class="step-content">
+            <div class="s-title">AP 位置初步規劃</div>
+            <div class="s-desc">在平面圖上標示候選 AP 位置，考量：覆蓋範圍是否充足、頻道是否能正確規劃、是否靠近 PoE 交換器（線路長度 ≤ 100m）、天花板結構是否允許安裝、是否有盲點（電梯間、樓梯間、廁所）。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">04</div>
+          <div class="step-content">
+            <div class="s-title">預測式模擬驗證</div>
+            <div class="s-desc">將候選位置輸入 Ekahau 等工具，套用牆壁材質和 AP 規格，生成覆蓋熱圖。確認所有區域訊號強度、SNR、頻道規劃是否符合目標。若有不符，調整 AP 位置或增加 AP 數量後重新模擬。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">05</div>
+          <div class="step-content">
+            <div class="s-title">臨時 AP 實地驗證（Optional）</div>
+            <div class="s-desc">對關鍵區域（如大型會議室、大廳、生產線）可攜帶真實 AP 和腳架到現場，臨時放在候選位置進行主動式 Survey，量測實際訊號品質和吞吐量，確認模擬結果的準確性。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">06</div>
+          <div class="step-content">
+            <div class="s-title">輸出規劃報告</div>
+            <div class="s-desc">整理成正式報告：AP 位置圖（標示在平面圖上）、頻道分配表、預測覆蓋熱圖、PoE 交換器需求、估算線材長度和工程費用。這份報告同時作為安裝施工的依據文件。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">07</div>
+          <div class="step-content">
+            <div class="s-title">安裝後驗收勘查</div>
+            <div class="s-desc">AP 安裝完成後再次進行 Survey，與安裝前的預測熱圖比對，確認覆蓋是否達標。若有差距，微調 AP 的位置、天線方向、發射功率。測試漫遊切換、驗證頻道分配是否如規劃，完成驗收。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="checklist">
+        <div class="checklist-group">
+          <div class="checklist-header">現場勘查攜帶清單</div>
+          <div class="checklist-items">
+            <div class="check-item"><div class="check-box"></div><span>筆記型電腦（已安裝 Survey 軟體，如 Ekahau / NetSpot）</span></div>
+            <div class="check-item"><div class="check-box"></div><span>外接 Wi-Fi 網卡（支援監聽模式，如 Alfa AWUS036AXM）</span></div>
+            <div class="check-item"><div class="check-box"></div><span>建築平面圖（紙本 + 電子檔）</span></div>
+            <div class="check-item"><div class="check-box"></div><span>雷射測距儀（確認走廊、房間尺寸）</span></div>
+            <div class="check-item"><div class="check-box"></div><span>手機（輔助 Wi-Fi 分析 App，如 WiFi Analyzer）</span></div>
+            <div class="check-item"><div class="check-box"></div><span>記錄用紙和筆（標記特殊障礙物位置）</span></div>
+          </div>
+        </div>
+        <div class="checklist-group">
+          <div class="checklist-header">勘查資訊收集清單</div>
+          <div class="checklist-items">
+            <div class="check-item"><div class="check-box"></div><span>各區域 2.4 GHz 和 5 GHz 的 RSSI 值記錄</span></div>
+            <div class="check-item"><div class="check-box"></div><span>周遭鄰居 AP 的 SSID / BSSID / 頻道 / 訊號強度</span></div>
+            <div class="check-item"><div class="check-box"></div><span>非 Wi-Fi 干擾源位置（微波爐、藍牙裝置、無線電話）</span></div>
+            <div class="check-item"><div class="check-box"></div><span>牆壁和天花板材質（石膏板 / 磚牆 / 鋼筋混凝土）</span></div>
+            <div class="check-item"><div class="check-box"></div><span>現有網路線路位置和可用 PoE 交換器埠數</span></div>
+            <div class="check-item"><div class="check-box"></div><span>天花板高度和可安裝位置（電線管道、障礙物）</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4.7 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s7"></span>
+      <h2><span class="h2-num">4.7</span>勘查工具與軟體</h2>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>工具 / 軟體</th><th>類型</th><th>主要功能</th><th>費用</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Ekahau AI Pro</td>
+              <td>專業 Survey 軟體</td>
+              <td>預測式 Survey、主動式 / 被動式 Survey、熱圖生成、頻道規劃、報告輸出。業界標準工具。</td>
+              <td>訂閱制（需配合 Sidekick 硬體）</td>
+            </tr>
+            <tr>
+              <td>iBwave Wi-Fi</td>
+              <td>專業 Survey 軟體</td>
+              <td>電信級部署規劃，支援複雜多層建築，預測精度高。</td>
+              <td>訂閱制</td>
+            </tr>
+            <tr>
+              <td>NetSpot</td>
+              <td>一般 Survey 軟體</td>
+              <td>主動式 / 被動式 Survey、熱圖生成。免費版可用，適合學習入門。</td>
+              <td>免費（基本）/ 付費（進階）</td>
+            </tr>
+            <tr>
+              <td>WiFi Analyzer（Android）</td>
+              <td>手機 App</td>
+              <td>掃描周圍 AP、顯示頻道使用情況和 RSSI，適合快速現場評估。</td>
+              <td>免費</td>
+            </tr>
+            <tr>
+              <td>inSSIDer（Windows）</td>
+              <td>桌面軟體</td>
+              <td>顯示所有可見 AP 的 SSID、頻道、訊號強度歷史圖。</td>
+              <td>免費</td>
+            </tr>
+            <tr>
+              <td>Wireshark（+ Monitor Mode）</td>
+              <td>封包分析器</td>
+              <td>擷取原始 802.11 訊框，分析認證流程、效能問題、干擾來源。需要支援監聽模式的 Wi-Fi 網卡。</td>
+              <td>免費（開源）</td>
+            </tr>
+            <tr>
+              <td>Ekahau Sidekick 2</td>
+              <td>專用 Survey 硬體</td>
+              <td>可同時掃描 2.4 / 5 / 6 GHz 三個頻段，搭配 Ekahau AI Pro 使用，是目前最專業的 Survey 硬體。</td>
+              <td>硬體購買（約 USD 2,000+）</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 4.8 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s8"></span>
+      <h2><span class="h2-num">4.8</span>AP 擺放原則</h2>
+
+      <p>AP 的物理位置是覆蓋品質的最大決定因素，以下是實務中反覆驗證的擺放原則：</p>
+
+      <h3>一般辦公室環境</h3>
+
+      <dl class="def-list">
+        <dt>居中原則</dt>
+        <dd>AP 應盡量放置在服務區域的<strong>幾何中心</strong>，讓覆蓋範圍均勻地向四周延伸，避免放在牆角或靠牆的位置導致訊號大量「浪費」在牆外。</dd>
+        <dt>高處安裝</dt>
+        <dd>AP 應安裝在<strong>天花板或高牆</strong>上，讓訊號能夠向下覆蓋整個空間。避免安裝在桌面或低於 1.5 公尺的位置，人體和家具的遮擋會嚴重影響訊號傳播。</dd>
+        <dt>避開金屬障礙</dt>
+        <dd>AP 應遠離大型金屬物體：金屬天花板格柵、鋼製檔案櫃、金屬管道。這些物體會反射和吸收訊號，在 AP 背面製造訊號死角。</dd>
+        <dt>避開干擾源</dt>
+        <dd>AP 應遠離可能產生 2.4 GHz 干擾的設備：微波爐（至少 3 公尺）、藍牙基地台、嬰兒監視器、2.4 GHz 無線電話。</dd>
+        <dt>考慮多樓層穿透</dt>
+        <dd>5 GHz 訊號的樓板穿透損耗約 15～25 dB，2.4 GHz 約 10～15 dB。若需要同時覆蓋上下兩層樓，需在每層各放 AP，不能依賴單一 AP 的訊號穿透樓板。</dd>
+      </dl>
+
+      <h3>特殊環境的 AP 擺放</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>環境</th><th>建議方案</th><th>說明</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>長走廊</td>
+              <td>每隔 20～30m 一台，採用「端射型」（Patch 天線朝走廊方向）</td>
+              <td>全向天線的訊號會大量洩漏到走廊兩側的牆壁外，效率低。指向天線集中在走廊方向效果更好。</td>
+            </tr>
+            <tr>
+              <td>大型開放空間（倉庫）</td>
+              <td>高掛（6m 以上），全向天線，可考慮低增益天線（2-3 dBi）</td>
+              <td>高度太高（> 10m）會讓 AP 訊號在垂直方向過度擴散，反而不易被地面裝置接收。低增益天線覆蓋角度更廣。</td>
+            </tr>
+            <tr>
+              <td>會議室（大型）</td>
+              <td>房間內單獨配置 1 台 AP</td>
+              <td>大型會議室（> 30人）的高密度用戶需求，依賴走廊 AP 的訊號穿牆效果往往不足。</td>
+            </tr>
+            <tr>
+              <td>戶外停車場</td>
+              <td>指向天線，安裝在建築外牆或燈柱，IP67 防護</td>
+              <td>戶外無障礙物，訊號傳播距離遠，合理規劃可每 AP 覆蓋半徑 50～100m。</td>
+            </tr>
+            <tr>
+              <td>電梯內</td>
+              <td>電梯頂部安裝 AP（若電梯廂有天線導波孔），或走廊 AP 搭配電梯門感應</td>
+              <td>電梯金屬廂體是訊號屏蔽罩，幾乎完全阻絕外部訊號，需特殊方案處理。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 4.9 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s9"></span>
+      <h2><span class="h2-num">4.9</span>覆蓋重疊設計</h2>
+
+      <p>
+        在 ESS 環境中，相鄰 AP 的覆蓋範圍必須有適當的<em class="term">重疊區域（Overlap Zone）</em>，讓裝置在兩個 AP 之間移動時能夠<strong>無縫漫遊</strong>，不出現訊號斷層。
+      </p>
+
+      <h3>重疊比例的黃金標準</h3>
+      <p>
+        業界標準建議相鄰 AP 的覆蓋重疊比例為 <strong>15%～20%</strong>（以覆蓋面積計算）。在重疊區域的邊緣，來自兩台 AP 的訊號強度應相近，讓裝置可以順暢切換。
+      </p>
+
+      <div class="overlap-grid">
+        <div class="overlap-card bad">
+          <div class="oc-label">問題：覆蓋不足（&lt; 10% 重疊）</div>
+          <div class="diagram-ascii" style="font-size:0.75rem; line-height:1.5; margin-bottom:0.8rem;">
+  [AP1]       [AP2]
+  (((         (((
+     )    空白    (
+  死角區域，裝置斷線</div>
+          <div class="oc-desc">兩 AP 間有訊號死角，裝置行走至此區域時斷線。漫遊體驗極差，VoIP 通話中斷。</div>
+        </div>
+        <div class="overlap-card good">
+          <div class="oc-label">正確：適當重疊（15%～20%）</div>
+          <div class="diagram-ascii" style="font-size:0.75rem; line-height:1.5; margin-bottom:0.8rem;">
+  [AP1]    [AP2]
+  (((((  )(((((
+     )重疊(
+  連續訊號覆蓋</div>
+          <div class="oc-desc">重疊區域兩台 AP 訊號皆可到達，裝置能夠提前與新 AP 建立連線後再斷開舊連線，漫遊平順。</div>
+        </div>
+      </div>
+
+      <h3>重疊過多的問題（&gt; 30%）</h3>
+      <p>
+        如果相鄰 AP 的覆蓋重疊比例過高（超過 30%），表示 AP 距離太近或發射功率過高，會導致：
+      </p>
+      <ul style="margin: 0.5rem 0 1.2rem 1.2rem; display:flex; flex-direction:column; gap:0.4rem;">
+        <li style="font-size:0.9rem; color:var(--ink-mid);"><strong>同頻干擾加劇：</strong>若兩台相鄰 AP 使用相同頻道，重疊區越大，干擾越嚴重</li>
+        <li style="font-size:0.9rem; color:var(--ink-mid);"><strong>漫遊黏著問題（Sticky Client）：</strong>裝置因為所有 AP 的訊號都很強，沒有漫遊的明確觸發點，可能長期連接遠端 AP 而非最近的 AP</li>
+        <li style="font-size:0.9rem; color:var(--ink-mid);"><strong>資源浪費：</strong>可以用更少 AP 達到同樣覆蓋，浪費部署成本</li>
+      </ul>
+
+      <h3>漫遊切換點（Roaming Threshold）</h3>
+      <p>
+        裝置決定是否漫遊到另一台 AP 的觸發門檻稱為<em class="term">漫遊門檻（Roaming Threshold）</em>，通常設定在 <strong>-70 dBm 至 -75 dBm</strong> 之間。當裝置偵測到目前連線 AP 的 RSSI 低於此值，且有其他 AP 的 RSSI 更高，就會觸發漫遊。
+      </p>
+
+      <div class="callout important">
+        <div class="callout-label">Sticky Client 問題</div>
+        <p>「黏性客戶端（Sticky Client）」是最常見的漫遊問題：裝置明明已經遠離 AP1 進入 AP2 的覆蓋範圍，卻依然堅持連接訊號微弱的 AP1。原因是 Wi-Fi 標準將漫遊決策<strong>完全交給客戶端</strong>，AP 無法強制切換（除非使用 802.11v BSS Transition Management 送出建議）。解決方案包含：啟用 802.11v、降低 AP 的最低接受 RSSI（Client RSSI Threshold）、啟用 Band Steering。</p>
+      </div>
+    </div>
+
+    <!-- 4.10 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s10"></span>
+      <h2><span class="h2-num">4.10</span>AP 數量估算方法</h2>
+
+      <p>AP 數量的估算需要同時考慮<strong>覆蓋</strong>和<strong>容量</strong>兩個維度，取兩者中需求較高者。</p>
+
+      <h3>方法一：以覆蓋面積估算</h3>
+
+      <pre>AP 覆蓋面積參考（辦公室環境，-65 dBm 門檻）：
+
+  Wi-Fi 6 AP（室內，開放環境）：
+    2.4 GHz：約 600～800 m²
+    5 GHz  ：約 200～400 m²（受牆壁影響較大）
+
+  辦公室有隔間（混凝土牆 + 玻璃）：
+    實際有效覆蓋面積約縮減 40%～60%
+    → 5 GHz 有效覆蓋面積約 100～200 m²
+
+計算範例：
+  辦公室總面積 = 1,200 m²
+  材質：輕隔間（石膏板），5 GHz 有效覆蓋約 200 m²/AP
+  
+  所需 AP 數 = 1,200 ÷ 200 = 6 台
+  加上 20% 備援餘裕 → 實際部署 7～8 台</pre>
+
+      <h3>方法二：以用戶容量估算</h3>
+
+      <pre>用戶數量估算（每台 AP 的建議並發裝置數）：
+
+  一般辦公（郵件、網頁、Teams 會議）：
+    Wi-Fi 5 AP → ≤ 25 台並發裝置
+    Wi-Fi 6 AP → ≤ 50 台並發裝置
+
+  高密度使用（教室、展場、體育館）：
+    Wi-Fi 6 AP（大容量型）→ ≤ 80～100 台
+
+計算範例：
+  辦公室 150 位員工，平均每人 2 台裝置 = 300 台裝置
+  尖峰時間 80% 在線 = 240 台並發
+  使用 Wi-Fi 6 AP（每台建議 50 台）
+  
+  所需 AP 數 = 240 ÷ 50 = 4.8 → 5 台
+
+最終決策：取覆蓋估算（8 台）和容量估算（5 台）中較大值
+  → 部署 8 台 AP（同時滿足覆蓋和容量需求）</pre>
+
+      <div class="callout">
+        <div class="callout-label">實務建議</div>
+        <p>AP 數量寧可多一台也不要少一台。多一台的代價是採購成本，少一台的代價是反覆投訴、多次施工、和使用者體驗損失。預算緊張時，可以先以較少 AP 完成佈線工程（留好天花板配管和網路線），之後視需求再增加 AP 即可，避免二次動工的高額費用。</p>
+      </div>
+    </div>
+
+    <!-- 4.11 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s11"></span>
+      <h2><span class="h2-num">4.11</span>頻道規劃策略</h2>
+
+      <p>
+        頻道規劃的核心原則是：<strong>相鄰 AP 之間使用不重疊的頻道</strong>，避免同頻干擾（Co-Channel Interference, CCI）和鄰頻干擾（Adjacent-Channel Interference, ACI）。
+      </p>
+
+      <h3>2.4 GHz 頻道規劃</h3>
+      <p>2.4 GHz 只有 3 個不重疊頻道（1、6、11），規劃策略是在鄰近 AP 間交替輪用這三個頻道：</p>
+
+      <div class="ch-plan">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:0.68rem; color:var(--ink-light); margin-bottom:0.5rem;">平面佈局（俯視）</div>
+        <div class="ch-row">
+          <span class="ch-label">AP1</span>
+          <div class="ch-block c1" style="width:80px">CH 1</div>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--ink-light); margin-left:0.5rem;">← 左列</span>
+        </div>
+        <div class="ch-row">
+          <span class="ch-label">AP2</span>
+          <div class="ch-block c6" style="width:80px">CH 6</div>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--ink-light); margin-left:0.5rem;">← 中列</span>
+        </div>
+        <div class="ch-row">
+          <span class="ch-label">AP3</span>
+          <div class="ch-block c11" style="width:80px">CH 11</div>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--ink-light); margin-left:0.5rem;">← 右列</span>
+        </div>
+        <div class="ch-row" style="margin-top:4px">
+          <span class="ch-label">AP4</span>
+          <div class="ch-block c1" style="width:80px">CH 1</div>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--ink-light); margin-left:0.5rem;">← 重複循環</span>
+        </div>
+      </div>
+
+      <div class="diagram">
+        <div class="diagram-ascii">2.4 GHz 四 AP 辦公室頻道規劃（俯視圖）：
+
+  ┌─────────────────────────────────────────┐
+  │  [AP1-CH1]          [AP2-CH6]           │
+  │    )))                 )))              │
+  │         ← 重疊區 →                      │
+  │                                         │
+  │  [AP3-CH11]         [AP4-CH1]           │
+  │    )))                 )))              │
+  └─────────────────────────────────────────┘
+
+規則：
+  - 對角相鄰的 AP 可以使用相同頻道（距離較遠，干擾可接受）
+  - 水平 / 垂直緊鄰的 AP 必須使用不同頻道
+  - AP4 與 AP1 使用相同頻道（CH 1），但位置不直接相鄰</div>
+        <div class="diagram-caption">Fig 4.3 — 2.4 GHz 四 AP 頻道規劃示意</div>
+      </div>
+
+      <h3>5 GHz 頻道規劃</h3>
+      <p>
+        5 GHz 有更多不重疊頻道可用，規劃彈性大得多。台灣常用的 5 GHz 不需 DFS 頻道（UNII-1 和 UNII-3）：
+      </p>
+
+      <div class="ch-plan">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:0.68rem; color:var(--ink-light); margin-bottom:0.5rem;">5 GHz 常用頻道（20 MHz 模式，不需 DFS）</div>
+        <div class="ch-row">
+          <span class="ch-label">UNII-1</span>
+          <div class="ch-block c36" style="width:40px">36</div>
+          <div class="ch-block c40" style="width:40px; margin-left:3px">40</div>
+          <div class="ch-block c44" style="width:40px; margin-left:3px">44</div>
+          <div class="ch-block c48" style="width:40px; margin-left:3px">48</div>
+        </div>
+        <div class="ch-row" style="margin-top:3px">
+          <span class="ch-label">UNII-3</span>
+          <div class="ch-block c36" style="width:40px">149</div>
+          <div class="ch-block c40" style="width:40px; margin-left:3px">153</div>
+          <div class="ch-block c44" style="width:40px; margin-left:3px">157</div>
+          <div class="ch-block c48" style="width:40px; margin-left:3px">161</div>
+        </div>
+      </div>
+
+      <p style="margin-top:1rem;">8 個不重疊 20 MHz 頻道意味著即使 8 台相鄰 AP 也可以各自使用獨立頻道，5 GHz 的頻道干擾問題遠小於 2.4 GHz。若使用 40 MHz 頻道，則有 4 個不重疊組合；80 MHz 只有 2 個。</p>
+
+      <div class="callout important">
+        <div class="callout-label">40 MHz 在 2.4 GHz 的警告</div>
+        <p>有些家用路由器預設使用 <strong>40 MHz 頻道在 2.4 GHz</strong>，這幾乎佔滿了整個 2.4 GHz 可用頻段，讓鄰近的其他 AP 幾乎無法找到不重疊的頻道。在企業環境中，2.4 GHz 應<strong>強制使用 20 MHz 頻道</strong>；40 MHz 僅保留給 5 GHz 和 6 GHz 使用。</p>
+      </div>
+    </div>
+
+    <!-- 4.12 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s12"></span>
+      <h2><span class="h2-num">4.12</span>干擾識別與排除</h2>
+
+      <p>無線干擾是影響網路效能最難以預測的因素。干擾分為兩大類：<em class="term">Wi-Fi 干擾</em>（802.11 裝置互相競爭）和<em class="term">非 Wi-Fi 干擾</em>（其他使用相同頻段的設備）。</p>
+
+      <h3>常見干擾源與對策</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>干擾源</th><th>頻段</th><th>症狀</th><th>識別方式</th><th>解決方案</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>鄰居 AP（同頻道）</td>
+              <td>2.4 / 5 GHz</td>
+              <td>高重傳率，速率下降，高用戶環境特別明顯</td>
+              <td>Wi-Fi 掃描工具，查看相同頻道的外部 AP</td>
+              <td>換用較少競爭的頻道；降低發射功率減少干擾範圍</td>
+            </tr>
+            <tr>
+              <td>微波爐</td>
+              <td>2.4 GHz</td>
+              <td>廚房附近的 Wi-Fi 在微波爐運作時訊號品質驟降</td>
+              <td>頻譜分析儀顯示 2.4 GHz 全頻段短暫噪音爆</td>
+              <td>AP 改用 5 GHz 或 6 GHz；換用 2.4 GHz 干擾少的 CH 1 或 CH 11</td>
+            </tr>
+            <tr>
+              <td>藍牙裝置</td>
+              <td>2.4 GHz</td>
+              <td>藍牙耳機、鍵盤使用時 2.4 GHz Wi-Fi 輕微退化</td>
+              <td>頻譜分析儀顯示 2.4 GHz 跳頻特徵</td>
+              <td>影響通常輕微；鼓勵使用 5 GHz；藍牙 5.0 較舊版干擾少</td>
+            </tr>
+            <tr>
+              <td>2.4 GHz 無線電話</td>
+              <td>2.4 GHz</td>
+              <td>通話時 2.4 GHz Wi-Fi 嚴重退化</td>
+              <td>頻譜分析儀顯示持續佔用特定頻道</td>
+              <td>更換為 DECT 6.0（1.9 GHz）或 5.8 GHz 無線電話</td>
+            </tr>
+            <tr>
+              <td>雷達（DFS 觸發）</td>
+              <td>5 GHz（DFS 頻道）</td>
+              <td>AP 突然切換頻道，客戶端短暫斷線</td>
+              <td>AP 日誌顯示 DFS 事件；頻道切換記錄</td>
+              <td>考慮改用非 DFS 頻道（36/40/44/48 或 149+）</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>頻譜分析儀的使用</h3>
+      <p>
+        <em class="term">頻譜分析儀（Spectrum Analyzer）</em>能夠顯示特定頻段內各頻率的功率強度，不只看 Wi-Fi 訊號，而是所有電磁波活動。這是識別非 Wi-Fi 干擾（如微波爐、藍牙、DECT 電話）的唯一可靠方式，因為 Wi-Fi 分析工具只能看到 802.11 訊框，無法看到非 802.11 的干擾。
+      </p>
+      <p>常用頻譜分析工具：<strong>Ekahau Sidekick</strong>（搭配 Ekahau AI Pro）、<strong>MetaGeek Wi-Spy</strong>（搭配 Chanalyzer 軟體）、<strong>Cisco CleanAir</strong>（AP 內建功能）。</p>
+    </div>
+
+    <!-- 4.13 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s13"></span>
+      <h2><span class="h2-num">4.13</span>RRM 無線資源管理</h2>
+
+      <p>
+        <em class="term">RRM（Radio Resource Management，無線資源管理）</em>是控制器式 AP 系統提供的自動化功能，讓 WLC 或雲端管理系統根據即時的無線環境狀況，<strong>自動調整</strong>每台 AP 的頻道和發射功率，取代繁瑣的手動規劃。
+      </p>
+
+      <div class="rrm-grid">
+        <div class="rrm-card">
+          <div class="rc-title">Dynamic Channel Assignment（DCA）</div>
+          <div class="rc-desc">系統持續監控各頻道的干擾程度，當偵測到同頻干擾或 DFS 雷達事件時，自動為受影響的 AP 指派最佳頻道，無需人工介入。</div>
+        </div>
+        <div class="rrm-card">
+          <div class="rc-title">Transmit Power Control（TPC）</div>
+          <div class="rc-desc">根據相鄰 AP 的訊號強度動態調整每台 AP 的發射功率。若某台 AP 故障，周圍 AP 自動提高功率填補覆蓋空缺（Coverage Hole Detection）。</div>
+        </div>
+        <div class="rrm-card">
+          <div class="rc-title">Coverage Hole Detection</div>
+          <div class="rc-desc">分析客戶端回報的 RSSI 統計資料，識別訊號低於門檻的區域（Coverage Hole），觸發相鄰 AP 提升功率，或告警通知管理員手動處理。</div>
+        </div>
+      </div>
+
+      <h3>RRM 的運作週期</h3>
+
+      <pre>RRM 週期（以 Cisco RRM 為例）：
+
+1. 資料收集（Background Scanning）
+   AP 在非服務時段短暫切換頻道，掃描鄰居 AP 和干擾源
+   每台 AP 定期上報環境資料至 WLC
+
+2. 演算法分析（RRM Algorithm）
+   WLC 彙整所有 AP 的環境報告
+   計算最佳頻道分配和功率設定
+   比對當前設定，判斷是否需要調整
+
+3. 指令推送（Configuration Push）
+   若需要調整，WLC 發送新的頻道或功率設定至 AP
+   AP 在下一個服務週期前完成切換
+
+預設週期：每 10 分鐘執行一次完整 RRM 評估
+可設定為「僅在初始化時執行一次」(Startup RRM)
+或「持續自動優化」(Continuous RRM)</pre>
+
+      <div class="callout">
+        <div class="callout-label">RRM 的限制</div>
+        <p>RRM 雖然強大，但並非萬能。自動演算法可能做出不符合人工判斷的決策（例如在深夜無人時期選定的頻道，白天環境大不相同）。建議在<strong>初次部署</strong>時讓 RRM 跑幾天後觀察結果，確認符合預期再固定設定；或對關鍵 AP（如大廳、主要會議室）手動鎖定頻道，讓 RRM 只管理其餘 AP。</p>
+      </div>
+    </div>
+
+    <!-- 4.14 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s14"></span>
+      <h2><span class="h2-num">4.14</span>高密度環境設計</h2>
+
+      <p>
+        高密度環境（如大學講堂、體育館、展覽中心、大型會議廳）是無線網路設計中最具挑戰性的場景。在這類環境中，傳統「覆蓋優先」的思維必須讓位給「<strong>容量優先</strong>」的設計邏輯。
+      </p>
+
+      <h3>高密度設計的核心策略</h3>
+
+      <dl class="def-list">
+        <dt>使用較小頻道寬度</dt>
+        <dd>在 5 GHz 使用 <strong>20 MHz 或 40 MHz</strong> 而非 80 MHz / 160 MHz，讓更多不重疊頻道可用。雖然單一裝置速率下降，但整體系統容量（更多 AP 可以同時服務不同頻道）大幅提升。</dd>
+        <dt>降低 AP 發射功率</dt>
+        <dd>在高密度場景中，AP 的發射功率應設定得比一般環境<strong>低</strong>（如 10～15 dBm），縮小每台 AP 的覆蓋範圍，讓裝置連接距離最近的 AP，減少同頻干擾。</dd>
+        <dt>增加 AP 數量但縮小間距</dt>
+        <dd>與其讓少量高功率 AP 服務大量用戶，不如部署<strong>更多低功率 AP</strong>，每台 AP 服務更少用戶。一個 2,000 人的體育館可能需要 30～50 台 AP。</dd>
+        <dt>停用 2.4 GHz 或降低優先級</dt>
+        <dd>在高密度場景中，2.4 GHz 的 3 個頻道遠不敷用，可考慮在 AP 設定中<strong>降低 2.4 GHz 的廣播速率</strong>（提高最低速率要求），讓裝置優先選用 5 GHz 或 6 GHz 連線。</dd>
+        <dt>善用 OFDMA（Wi-Fi 6）</dt>
+        <dd>Wi-Fi 6 的 OFDMA 在高密度環境效益最大：多台裝置可同時共享同一 AP 的頻道資源，大幅提升頻道使用率，降低各裝置的等待時間。</dd>
+        <dt>AP 擺放朝向用戶</dt>
+        <dd>在體育館、講堂等場景，AP 應安裝在<strong>觀眾席上方或背後</strong>，天線朝向觀眾，而非安裝在場地中央向上輻射。訊號越集中在有用戶的區域，頻道效率越高。</dd>
+      </dl>
+
+      <div class="callout important">
+        <div class="callout-label">高密度場景的測試</div>
+        <p>高密度場景的實際表現<strong>必須在滿載狀況下測試</strong>，而非在空場時測試（訊號完美但毫無意義）。模擬工具可以協助估算，但真正的壓力測試需要在接近真實用戶數量的情況下進行，使用 iPerf3 等工具量測實際吞吐量和延遲。</p>
+      </div>
+    </div>
+
+    <!-- 4.15 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s15"></span>
+      <h2><span class="h2-num">4.15</span>部署規劃文件</h2>
+
+      <p>
+        完整的無線網路部署不只是硬體安裝，還需要維護一套完整的<strong>規劃文件</strong>，作為施工依據、驗收標準和日後維護的參考。
+      </p>
+
+      <h3>必備文件清單</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>文件名稱</th><th>內容</th><th>用途</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>AP 位置圖</td>
+              <td>建築平面圖上標示每台 AP 的精確位置、AP 型號、BSSID、分配的頻道和功率</td>
+              <td>施工指引、日後維護定位</td>
+            </tr>
+            <tr>
+              <td>頻道規劃表</td>
+              <td>每台 AP 的 SSID 設定、2.4G / 5G / 6G 頻道分配、頻道寬度</td>
+              <td>確保頻道規劃無衝突</td>
+            </tr>
+            <tr>
+              <td>VLAN 對應表</td>
+              <td>每個 SSID 對應的 VLAN ID、IP 段、存取政策</td>
+              <td>網路分割設定依據</td>
+            </tr>
+            <tr>
+              <td>PoE 負載計算表</td>
+              <td>每台 PoE 交換器的已用功率、剩餘功率預算、AP 型號和 PoE 標準</td>
+              <td>避免過載、日後擴充規劃</td>
+            </tr>
+            <tr>
+              <td>覆蓋熱圖（Pre / Post）</td>
+              <td>安裝前的預測熱圖和安裝後的實測熱圖，標示 RSSI、SNR 分布</td>
+              <td>驗收依據、效能基準記錄</td>
+            </tr>
+            <tr>
+              <td>線材清單</td>
+              <td>每台 AP 的上行線材長度、走線路徑、端接位置</td>
+              <td>故障排除、線路管理</td>
+            </tr>
+            <tr>
+              <td>設計目標與驗收標準</td>
+              <td>訊號強度目標（如 -65 dBm 以上覆蓋 95% 面積）、漫遊延遲目標（如 &lt; 50ms）</td>
+              <td>驗收評判標準、SLA 依據</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>常見的設計目標（KPI）</h3>
+
+      <pre>一般辦公室無線網路設計目標（參考值）：
+
+覆蓋指標：
+  最低 RSSI     ：-65 dBm（95% 覆蓋面積）
+  最低 SNR      ：> 25 dB
+  頻道重疊比例  ：15%～20%
+
+效能指標：
+  最低下行速率 ：≥ 25 Mbps（每裝置，正常負載下）
+  封包遺失率   ：< 1%
+  重傳率       ：< 10%
+
+漫遊指標：
+  漫遊觸發門檻  ：-70 dBm
+  漫遊切換時間  ：< 50 ms（使用 802.11r）
+  VoIP 漫遊品質 ：MOS Score ≥ 3.5
+
+高密度場館（修正目標）：
+  最低 RSSI    ：-67 dBm（可放寬，容量優先）
+  最大同時用戶  ：依 AP 數量和型號規格</pre>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="content-section">
+      <span class="section-anchor" id="summary"></span>
+      <h2><span class="h2-num">—</span>本章重點整理</h2>
+
+      <div class="summary-box">
+        <div class="sum-label">Chapter 04 Summary</div>
+        <ul>
+          <li>無線網路拓撲分為 Infrastructure（有 AP）、IBSS（Ad-hoc，無 AP）和 Mesh（多跳網狀）三種基本模式。</li>
+          <li>BSS 是單一 AP 及其客戶端的基本單元；ESS 是多個 BSS 共用 SSID、透過有線 DS 連接的延伸架構，支援裝置漫遊。</li>
+          <li>SSID 是人類可讀的網路名稱（代表整個 ESS）；BSSID 是每台 AP 無線介面的唯一 MAC 位址。一台 AP 可同時廣播多個 SSID（虛擬 BSS），但過多 SSID 會增加管理幀開銷。</li>
+          <li>Site Survey 是部署前必做的評估流程，分為被動式（環境掃描）、主動式（效能量測）和預測式（軟體模擬）三種方式。</li>
+          <li>AP 應安裝在服務區域的幾何中心和高處（天花板），遠離金屬障礙物和干擾源；走廊使用指向天線、大型倉庫使用低增益全向天線。</li>
+          <li>相鄰 AP 的覆蓋重疊應在 15%～20% 之間。不足導致斷線死角，過多導致同頻干擾和 Sticky Client 問題。</li>
+          <li>2.4 GHz 只有 3 個不重疊頻道（1、6、11），規劃時相鄰 AP 必須輪用；5 GHz 最多 8 個不重疊 20 MHz 頻道，規劃彈性大得多。</li>
+          <li>高密度環境應使用較窄頻道寬度（20/40 MHz）、降低 AP 發射功率、增加 AP 數量，並善用 Wi-Fi 6 的 OFDMA 提升容量。</li>
+          <li>RRM（無線資源管理）透過 DCA（自動頻道調整）和 TPC（自動功率控制）自動優化無線環境，但關鍵 AP 建議手動鎖定設定。</li>
+        </ul>
+      </div>
+
+      <div class="chapter-nav">
+        <a href="chapter3.html">← Chapter 03：AP 架構與類型</a>
+        <a href="chapter5.html" class="next">Chapter 05：AP 安裝、設定與管理 →</a>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer>
+  <div class="foot-left">AP & Wireless Network Application — Chapter 04</div>
+  <div class="foot-right">無線網路拓撲與部署規劃</div>
+</footer>
+
+<script>
+  const sections = document.querySelectorAll('.section-anchor');
+  const tocLinks = document.querySelectorAll('.toc-list a');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        tocLinks.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-64px 0px -60% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

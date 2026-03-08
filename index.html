@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AP 與無線網路應用｜初學者完整課程</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --paper: #F5F0E8;
+      --paper-dark: #EDE7D9;
+      --paper-rule: #DDD5C4;
+      --ink: #1A1610;
+      --ink-mid: #4A4035;
+      --ink-light: #8A7D6A;
+      --red: #C0392B;
+      --red-muted: #D9584A;
+    }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--paper);
+      color: var(--ink);
+      font-family: 'Noto Serif TC', serif;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      border-bottom: 2px solid var(--ink);
+      padding: 0 4rem;
+      position: sticky;
+      top: 0;
+      background: var(--paper);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .site-title {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+    }
+
+    .site-title span {
+      color: var(--red);
+    }
+
+    nav {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      color: var(--ink-light);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 7rem 4rem 5rem;
+      border-bottom: 1px solid var(--paper-rule);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: end;
+    }
+
+    .hero-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--red);
+    }
+
+    .hero-desc {
+      font-size: 1.05rem;
+      color: var(--ink-mid);
+      line-height: 1.9;
+      margin-top: 2rem;
+      max-width: 480px;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      padding-bottom: 0.5rem;
+    }
+
+    .meta-block {
+      border-left: 2px solid var(--ink);
+      padding-left: 1.2rem;
+    }
+
+    .meta-block .label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 0.3rem;
+    }
+
+    .meta-block .value {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .hero-cta {
+      margin-top: 2.5rem;
+      display: inline-block;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.85rem 2.2rem;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .hero-cta:hover {
+      background: var(--red);
+      color: var(--paper);
+    }
+
+    /* ── INTRO STRIP ── */
+    .intro-strip {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 3rem 4rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3rem;
+      border-bottom: 2px solid var(--ink);
+    }
+
+    .intro-item .num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 2.4rem;
+      font-weight: 300;
+      color: var(--red-muted);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .intro-item .title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.02em;
+    }
+
+    .intro-item .desc {
+      font-size: 0.82rem;
+      color: #B8AC9E;
+      line-height: 1.7;
+    }
+
+    /* ── CHAPTER GRID ── */
+    .chapters-section {
+      padding: 5rem 4rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+      border-bottom: 1px solid var(--paper-rule);
+      padding-bottom: 1rem;
+    }
+
+    .section-header h2 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .section-header .sub {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      color: var(--ink-light);
+      text-transform: uppercase;
+    }
+
+    .chapter-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0;
+      border-top: 1px solid var(--paper-rule);
+      border-left: 1px solid var(--paper-rule);
+    }
+
+    .chapter-card {
+      border-right: 1px solid var(--paper-rule);
+      border-bottom: 1px solid var(--paper-rule);
+      padding: 2.2rem 2.5rem;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      transition: background 0.18s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chapter-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--red);
+      transform: scaleY(0);
+      transition: transform 0.2s;
+      transform-origin: bottom;
+    }
+
+    .chapter-card:hover {
+      background: var(--paper-dark);
+    }
+
+    .chapter-card:hover::before {
+      transform: scaleY(1);
+    }
+
+    .chapter-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      color: var(--red);
+      text-transform: uppercase;
+    }
+
+    .chapter-title {
+      font-size: 1.08rem;
+      font-weight: 600;
+      line-height: 1.4;
+      color: var(--ink);
+    }
+
+    .chapter-topics {
+      font-size: 0.82rem;
+      color: var(--ink-light);
+      line-height: 1.7;
+    }
+
+    .chapter-arrow {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--ink-light);
+      margin-top: auto;
+      padding-top: 1rem;
+      letter-spacing: 0.05em;
+      transition: color 0.2s;
+    }
+
+    .chapter-card:hover .chapter-arrow {
+      color: var(--red);
+    }
+
+    /* ── HOW TO USE ── */
+    .how-section {
+      padding: 4rem 4rem 5rem;
+      background: var(--paper-dark);
+      border-top: 1px solid var(--paper-rule);
+      border-bottom: 1px solid var(--paper-rule);
+    }
+
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      margin-top: 2.5rem;
+    }
+
+    .how-step {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .how-step .step-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 1.6rem;
+      font-weight: 300;
+      color: var(--paper-rule);
+      line-height: 1;
+    }
+
+    .how-step .step-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .how-step .step-desc {
+      font-size: 0.82rem;
+      color: var(--ink-mid);
+      line-height: 1.7;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 2rem 4rem;
+      border-top: 2px solid var(--ink);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer .foot-left {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      color: var(--ink-light);
+    }
+
+    footer .foot-right {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--red);
+      letter-spacing: 0.06em;
+    }
+
+    /* ── FADE-IN ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero, .intro-strip, .chapters-section, .how-section {
+      animation: fadeUp 0.6s ease both;
+    }
+    .intro-strip { animation-delay: 0.1s; }
+    .chapters-section { animation-delay: 0.15s; }
+    .how-section { animation-delay: 0.2s; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 860px) {
+      header { padding: 0 1.5rem; }
+      .hero { grid-template-columns: 1fr; padding: 4rem 1.5rem 3rem; gap: 2.5rem; }
+      .intro-strip { grid-template-columns: 1fr; padding: 2.5rem 1.5rem; }
+      .chapters-section, .how-section { padding: 3rem 1.5rem; }
+      .chapter-grid { grid-template-columns: 1fr; }
+      .how-grid { grid-template-columns: repeat(2, 1fr); }
+      footer { flex-direction: column; gap: 0.5rem; padding: 1.5rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="site-title">AP & Wireless — <span>初學者完整課程</span></div>
+    <nav>8 個章節 / 繁體中文</nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-left">
+      <div class="hero-label">Course — Wireless Networking</div>
+      <h1>AP 與<br>無線網路<em>應用</em></h1>
+      <p class="hero-desc">
+        從零開始，系統性學習無線網路的核心觀念、AP 架構、安全設定與實務操作。
+        完全為初學者設計，每一章節皆包含完整說明、技術細節與實作重點。
+      </p>
+      <a href="chapter1.html" class="hero-cta">開始第一章</a>
+    </div>
+    <div class="hero-meta">
+      <div class="meta-block">
+        <div class="label">適合對象</div>
+        <div class="value">網路技術初學者、IT 入門人員</div>
+      </div>
+      <div class="meta-block">
+        <div class="label">課程總章節</div>
+        <div class="value">8 章，涵蓋基礎至進階應用</div>
+      </div>
+      <div class="meta-block">
+        <div class="label">建議學習時數</div>
+        <div class="value">每章約 2～4 小時，共 16～32 小時</div>
+      </div>
+      <div class="meta-block">
+        <div class="label">先備知識</div>
+        <div class="value">無，從頭開始均可學習</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS STRIP -->
+  <div class="intro-strip">
+    <div class="intro-item">
+      <div class="num">8</div>
+      <div class="title">系統性章節</div>
+      <div class="desc">從基礎概念到進階應用，循序漸進完整覆蓋</div>
+    </div>
+    <div class="intro-item">
+      <div class="num">802.11</div>
+      <div class="title">Wi-Fi 標準深度解析</div>
+      <div class="desc">從 a/b/g/n 到 Wi-Fi 6E，完整比較各代規格</div>
+    </div>
+    <div class="intro-item">
+      <div class="num">實務</div>
+      <div class="title">每章包含實作重點</div>
+      <div class="desc">設定步驟、排障方法、真實情境案例說明</div>
+    </div>
+  </div>
+
+  <!-- CHAPTERS -->
+  <section class="chapters-section">
+    <div class="section-header">
+      <h2>課程章節總覽</h2>
+      <span class="sub">Chapter Index</span>
+    </div>
+
+    <div class="chapter-grid">
+
+      <a class="chapter-card" href="chapter1.html">
+        <div class="chapter-num">Chapter 01</div>
+        <div class="chapter-title">無線網路基礎概念</div>
+        <div class="chapter-topics">無線通訊原理、電磁波與頻率、IEEE 802.11 標準演進、無線網路術語入門</div>
+        <div class="chapter-arrow">前往閱讀 —&gt;</div>
+      </a>
+
+      <a class="chapter-card" href="chapter2.html">
+        <div class="chapter-num">Chapter 02</div>
+        <div class="chapter-title">Wi-Fi 標準與技術規格</div>
+        <div class="chapter-topics">802.11a/b/g/n/ac/ax 完整比較、2.4 GHz vs 5 GHz vs 6 GHz、OFDM、MIMO、MU-MIMO 技術解析</div>
+        <div class="chapter-arrow">前往閱讀 —&gt;</div>
+      </a>
+
+      <a class="chapter-card" href="chapter3.html">
+        <div class="chapter-num">Chapter 03</div>
+        <div class="chapter-title">存取點（AP）架構與類型</div>
+        <div class="chapter-topics">AP 功能與角色、獨立式 vs 控制器式 vs 雲端管理 AP、硬體元件深入介紹</div>
+        <div class="chapter-arrow">前往閱讀 —&gt;</div>
+      </a>
+
+      <a class="chapter-card" href="chapter4.html">
+        <div class="chapter-num">Chapter 04</div>
+        <div class="chapter-title">無線網路拓撲與部署規劃</div>
+        <div class="chapter-topics">BSS、ESS、IBSS 拓撲、Site Survey 實務、頻道規劃、干擾管理與覆蓋設計</div>
+        <div class="chapter-arrow">前往閱讀 —&gt;</div>
+      </a>
+
+      <a class="chapter-card" href="chapter5.html">
+        <div class="chapter-num">Chapter 05</div>
+        <div class="chapter-title">AP 安裝、設定與管理</div>
+        <div class="chapter-topics">基本設定操作（SSID、頻道、功率）、WLC 控制器設定、雲端平台管理（UniFi / Meraki）</div>
+        <div class="chapter-arrow">前往閱讀 —&gt;</div>
+      </a>
+
+      <a class="chapter-card" href="chapter6.html">
+        <div class="chapter-num">Chapter 06</div>
+        <div class="chapter-title">無線網路安全</div>
+        <div class="chapter-topics">常見攻擊類型、WEP / WPA / WPA2 / WPA3 加密機制、802.1X 與 RADIUS 認證架構實作</div>
+        <div class="chapter-arrow">前往閱讀 —&gt;</div>
+      </a>
+
+      <a class="chapter-card" href="chapter7.html">
+        <div class="chapter-num">Chapter 07</div>
+        <div class="chapter-title">QoS 與無線網路優化</div>
+        <div class="chapter-topics">無線 QoS 原理（WMM/802.11e）、漫遊技術（802.11r/k/v）、效能調校與故障排除方法</div>
+        <div class="chapter-arrow">前往閱讀 —&gt;</div>
+      </a>
+
+      <a class="chapter-card" href="chapter8.html">
+        <div class="chapter-num">Chapter 08</div>
+        <div class="chapter-title">進階無線應用</div>
+        <div class="chapter-topics">IoT 整合、無線定位與 RTLS、Wi-Fi 6E 新技術展望、Wi-Fi 7 預覽</div>
+        <div class="chapter-arrow">前往閱讀 —&gt;</div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- HOW TO USE -->
+  <section class="how-section">
+    <div class="section-header">
+      <h2>如何使用本課程</h2>
+      <span class="sub">Learning Guide</span>
+    </div>
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="step-num">01</div>
+        <div class="step-title">按章節順序學習</div>
+        <div class="step-desc">每章建立在前章知識之上，建議從第一章開始依序閱讀，不要跳章。</div>
+      </div>
+      <div class="how-step">
+        <div class="step-num">02</div>
+        <div class="step-title">閱讀概念與定義</div>
+        <div class="step-desc">每章先說明核心觀念，確保術語與原理完全理解後再繼續往下。</div>
+      </div>
+      <div class="how-step">
+        <div class="step-num">03</div>
+        <div class="step-title">跟著實作步驟操作</div>
+        <div class="step-desc">每章末附有設定步驟與實務說明，建議搭配實際設備或模擬器操作。</div>
+      </div>
+      <div class="how-step">
+        <div class="step-num">04</div>
+        <div class="step-title">複習與整理筆記</div>
+        <div class="step-desc">完成各章後整理重點筆記，為後續章節的進階內容打好紮實基礎。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="foot-left">AP & Wireless Network Application — 初學者完整課程</div>
+    <div class="foot-right">Chapter 01 ~ 08</div>
+  </footer>
+
+</body>
+</html>

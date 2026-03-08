@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chapter 1：無線網路基礎概念｜AP 與無線網路應用</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --paper: #F5F0E8;
+      --paper-dark: #EDE7D9;
+      --paper-rule: #DDD5C4;
+      --ink: #1A1610;
+      --ink-mid: #4A4035;
+      --ink-light: #8A7D6A;
+      --red: #C0392B;
+      --red-muted: #D9584A;
+    }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Noto Serif TC', serif;
+      line-height: 1.85;
+    }
+
+    /* ── HEADER ── */
+    header {
+      border-bottom: 2px solid var(--ink);
+      padding: 0 4rem;
+      position: sticky;
+      top: 0;
+      background: var(--paper);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .site-title {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+    }
+    .site-title span { color: var(--red); }
+
+    .header-nav {
+      display: flex;
+      gap: 1.5rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+    }
+    .header-nav a {
+      color: var(--ink-light);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .header-nav a:hover { color: var(--red); }
+
+    /* ── CHAPTER BANNER ── */
+    .chapter-banner {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 4rem 4rem 3.5rem;
+      border-bottom: 2px solid var(--ink);
+    }
+
+    .chapter-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--red-muted);
+      margin-bottom: 1.2rem;
+    }
+
+    .chapter-banner h1 {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      margin-bottom: 1.2rem;
+    }
+
+    .chapter-banner .subtitle {
+      font-size: 1rem;
+      color: #B8AC9E;
+      max-width: 600px;
+      line-height: 1.8;
+    }
+
+    .chapter-meta-row {
+      display: flex;
+      gap: 3rem;
+      margin-top: 2.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid #3A342C;
+    }
+
+    .chapter-meta-row .m-item .m-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #6A5E52;
+      margin-bottom: 0.3rem;
+    }
+    .chapter-meta-row .m-item .m-value {
+      font-size: 0.9rem;
+      color: #D4CCBF;
+    }
+
+    /* ── LAYOUT ── */
+    .page-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: calc(100vh - 64px);
+      align-items: start;
+    }
+
+    /* ── SIDEBAR TOC ── */
+    .sidebar {
+      position: sticky;
+      top: 64px;
+      height: calc(100vh - 64px);
+      overflow-y: auto;
+      border-right: 1px solid var(--paper-rule);
+      padding: 2.5rem 1.5rem;
+    }
+
+    .toc-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 1.2rem;
+    }
+
+    .toc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .toc-list a {
+      display: block;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--ink-mid);
+      text-decoration: none;
+      padding: 0.35rem 0.6rem;
+      border-left: 2px solid transparent;
+      transition: all 0.15s;
+      line-height: 1.5;
+    }
+
+    .toc-list a:hover {
+      color: var(--red);
+      border-left-color: var(--red);
+      background: var(--paper-dark);
+    }
+
+    .toc-list a.active {
+      color: var(--red);
+      border-left-color: var(--red);
+    }
+
+    .toc-section {
+      margin-top: 1.2rem;
+      margin-bottom: 0.3rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--paper-rule);
+    }
+
+    .sidebar-nav {
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--paper-rule);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .sidebar-nav a {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--ink-light);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .sidebar-nav a:hover { color: var(--red); }
+
+    /* ── MAIN CONTENT ── */
+    main {
+      padding: 3.5rem 4rem 6rem 3.5rem;
+      max-width: 860px;
+    }
+
+    /* Section */
+    .content-section {
+      margin-bottom: 4.5rem;
+    }
+
+    .section-anchor { 
+      display: block; 
+      height: 64px; 
+      margin-top: -64px; 
+      visibility: hidden; 
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.7rem;
+      border-bottom: 2px solid var(--ink);
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+    }
+
+    h2 .h2-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      color: var(--red);
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 2rem;
+      margin-bottom: 0.8rem;
+      color: var(--ink);
+    }
+
+    h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--ink-mid);
+      font-family: 'IBM Plex Mono', monospace;
+      letter-spacing: 0.03em;
+    }
+
+    p {
+      font-size: 0.97rem;
+      color: var(--ink-mid);
+      margin-bottom: 1rem;
+      line-height: 1.9;
+    }
+
+    strong { color: var(--ink); font-weight: 600; }
+
+    em.term {
+      font-style: normal;
+      color: var(--red);
+      font-weight: 500;
+    }
+
+    /* ── CODE / MONO ── */
+    code {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.82em;
+      background: var(--paper-dark);
+      border: 1px solid var(--paper-rule);
+      padding: 0.1em 0.4em;
+      color: var(--ink);
+    }
+
+    pre {
+      background: var(--ink);
+      color: #D4CCBF;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.7;
+      padding: 1.5rem 2rem;
+      margin: 1.5rem 0;
+      overflow-x: auto;
+      border-left: 3px solid var(--red);
+    }
+
+    pre .comment { color: #6A5E52; }
+    pre .key { color: var(--red-muted); }
+    pre .val { color: #B8AC9E; }
+
+    /* ── CALLOUT BOXES ── */
+    .callout {
+      border-left: 3px solid var(--ink);
+      background: var(--paper-dark);
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .callout.important {
+      border-left-color: var(--red);
+    }
+
+    .callout .callout-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+      color: var(--ink-light);
+    }
+
+    .callout.important .callout-label { color: var(--red); }
+
+    .callout p { margin-bottom: 0; font-size: 0.9rem; }
+
+    /* ── TABLES ── */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 1.5rem 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.87rem;
+    }
+
+    thead tr {
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    thead th {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-weight: 500;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--paper-rule);
+    }
+
+    tbody tr:hover { background: var(--paper-dark); }
+
+    tbody td {
+      padding: 0.7rem 1rem;
+      color: var(--ink-mid);
+      line-height: 1.6;
+    }
+
+    tbody td:first-child {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.82rem;
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .tag-red {
+      display: inline-block;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem;
+      background: var(--red);
+      color: var(--paper);
+      padding: 0.1em 0.5em;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── DEFINITION LIST ── */
+    .def-list {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0;
+      border-top: 1px solid var(--paper-rule);
+      margin: 1.5rem 0;
+    }
+
+    .def-list dt {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 0.75rem 1.5rem 0.75rem 0;
+      border-bottom: 1px solid var(--paper-rule);
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    .def-list dd {
+      font-size: 0.88rem;
+      color: var(--ink-mid);
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--paper-rule);
+      line-height: 1.7;
+    }
+
+    /* ── FIGURE / DIAGRAM ── */
+    .diagram {
+      background: var(--paper-dark);
+      border: 1px solid var(--paper-rule);
+      padding: 2rem;
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .diagram-ascii {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      color: var(--ink);
+      text-align: left;
+      display: inline-block;
+    }
+
+    .diagram-caption {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--ink-light);
+      margin-top: 1rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    /* ── FREQ VISUAL ── */
+    .freq-bar-wrap {
+      margin: 1.5rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .freq-row {
+      display: grid;
+      grid-template-columns: 120px 1fr 80px;
+      align-items: center;
+      gap: 1rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.78rem;
+    }
+
+    .freq-row .freq-label { color: var(--ink-mid); }
+
+    .freq-bar {
+      height: 24px;
+      background: var(--paper-rule);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .freq-bar-fill {
+      height: 100%;
+      background: var(--ink);
+      transition: width 1s ease;
+    }
+
+    .freq-bar-fill.red { background: var(--red); }
+
+    .freq-row .freq-val { color: var(--ink-light); text-align: right; }
+
+    /* ── SUMMARY BOX ── */
+    .summary-box {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 2rem 2.5rem;
+      margin: 3rem 0 0;
+    }
+
+    .summary-box .sum-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--red-muted);
+      margin-bottom: 1rem;
+    }
+
+    .summary-box ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .summary-box ul li {
+      font-size: 0.9rem;
+      color: #D4CCBF;
+      padding-left: 1.2rem;
+      position: relative;
+      line-height: 1.7;
+    }
+
+    .summary-box ul li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--red-muted);
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    /* ── CHAPTER NAV ── */
+    .chapter-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 5rem;
+      padding-top: 2rem;
+      border-top: 2px solid var(--ink);
+    }
+
+    .chapter-nav a {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      color: var(--ink-mid);
+      text-decoration: none;
+      padding: 0.75rem 1.5rem;
+      border: 1px solid var(--paper-rule);
+      transition: all 0.2s;
+    }
+
+    .chapter-nav a:hover {
+      background: var(--ink);
+      color: var(--paper);
+      border-color: var(--ink);
+    }
+
+    .chapter-nav .next {
+      background: var(--ink);
+      color: var(--paper);
+      border-color: var(--ink);
+    }
+
+    .chapter-nav .next:hover {
+      background: var(--red);
+      border-color: var(--red);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 2rem 4rem;
+      border-top: 2px solid var(--ink);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer .foot-left {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      color: var(--ink-light);
+    }
+
+    footer .foot-right {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--red);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 860px) {
+      header { padding: 0 1.5rem; }
+      .chapter-banner { padding: 3rem 1.5rem 2.5rem; }
+      .chapter-meta-row { flex-wrap: wrap; gap: 1.5rem; }
+      .page-layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      main { padding: 2rem 1.5rem 4rem; }
+      footer { flex-direction: column; gap: 0.5rem; padding: 1.5rem; }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .chapter-banner { animation: fadeUp 0.5s ease both; }
+    main { animation: fadeUp 0.5s ease 0.1s both; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <a class="site-title" href="index.html">AP & Wireless — <span>初學者完整課程</span></a>
+    <nav class="header-nav">
+      <a href="index.html">課程首頁</a>
+      <a href="chapter2.html">下一章</a>
+    </nav>
+  </header>
+
+  <!-- CHAPTER BANNER -->
+  <div class="chapter-banner">
+    <div class="chapter-label">Chapter 01 / 08</div>
+    <h1>無線網路基礎概念</h1>
+    <p class="subtitle">從電磁波的物理原理出發，認識無線通訊的運作方式，理解 IEEE 802.11 標準體系，建立學習無線網路的完整基礎框架。</p>
+    <div class="chapter-meta-row">
+      <div class="m-item"><div class="m-label">建議閱讀時間</div><div class="m-value">約 2～3 小時</div></div>
+      <div class="m-item"><div class="m-label">難度</div><div class="m-value">入門</div></div>
+      <div class="m-item"><div class="m-label">先備知識</div><div class="m-value">無</div></div>
+      <div class="m-item"><div class="m-label">本章重點</div><div class="m-value">電磁波、頻率、調變、802.11 演進</div></div>
+    </div>
+  </div>
+
+  <!-- BODY LAYOUT -->
+  <div class="page-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="toc-label">本章目錄</div>
+      <ul class="toc-list">
+        <li><div class="toc-section">基礎原理</div></li>
+        <li><a href="#s1">1.1 什麼是無線網路</a></li>
+        <li><a href="#s2">1.2 電磁波與頻率</a></li>
+        <li><a href="#s3">1.3 無線訊號的特性</a></li>
+        <li><div class="toc-section">技術概念</div></li>
+        <li><a href="#s4">1.4 調變技術入門</a></li>
+        <li><a href="#s5">1.5 頻道與頻寬</a></li>
+        <li><a href="#s6">1.6 訊號強度與 dBm</a></li>
+        <li><div class="toc-section">標準體系</div></li>
+        <li><a href="#s7">1.7 IEEE 與 802.11 標準</a></li>
+        <li><a href="#s8">1.8 Wi-Fi 聯盟與認證</a></li>
+        <li><a href="#s9">1.9 無線網路術語表</a></li>
+        <li><div class="toc-section">本章總結</div></li>
+        <li><a href="#summary">重點整理</a></li>
+      </ul>
+      <div class="sidebar-nav">
+        <a href="index.html">← 回課程首頁</a>
+        <a href="chapter2.html">Chapter 02 →</a>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main>
+
+      <!-- 1.1 -->
+      <div class="content-section">
+        <span class="section-anchor" id="s1"></span>
+        <h2><span class="h2-num">1.1</span>什麼是無線網路</h2>
+
+        <p>
+          <strong>無線網路（Wireless Network）</strong>是指不需要實體線路（如網路線）連接，而是透過空氣中傳播的<em class="term">電磁波</em>來交換資料的網路系統。相較於有線網路，無線網路讓裝置能在特定範圍內自由移動，同時保持網路連線。
+        </p>
+
+        <p>
+          在日常生活中，我們使用智慧型手機連接家裡的 Wi-Fi、在咖啡廳用筆電上網、或是在辦公室透過無線網路存取公司伺服器，這些都是無線網路的應用場景。
+        </p>
+
+        <h3>無線網路 vs 有線網路</h3>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>比較項目</th>
+                <th>有線網路</th>
+                <th>無線網路</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>傳輸介質</td><td>銅纜（Cat5e/6）、光纖</td><td>電磁波（2.4 GHz / 5 GHz / 6 GHz）</td></tr>
+              <tr><td>傳輸速率</td><td>高，且穩定（1Gbps～100Gbps）</td><td>受環境影響，理論速率持續提升</td></tr>
+              <tr><td>延遲</td><td>非常低（< 1 ms）</td><td>相對較高（1～10 ms）</td></tr>
+              <tr><td>安全性</td><td>較高，竊聽難度大</td><td>訊號在空中傳播，需加密保護</td></tr>
+              <tr><td>移動性</td><td>無，裝置需固定</td><td>高，可在覆蓋範圍內自由移動</td></tr>
+              <tr><td>佈線成本</td><td>需要拉線、鑽牆，施工成本高</td><td>部署彈性大，初期佈建成本較低</td></tr>
+              <tr><td>干擾</td><td>幾乎不受環境干擾</td><td>易受牆壁、電器、其他無線訊號干擾</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout important">
+          <div class="callout-label">重要觀念</div>
+          <p>無線網路並非「完全取代」有線網路，在需要極低延遲或高穩定性的場景（如伺服器機房、電競比賽），有線網路仍是首選。無線與有線通常<strong>互補共存</strong>，AP 本身就需要透過有線網路（乙太網路）連回核心交換器。</p>
+        </div>
+
+        <h3>無線網路的應用場景</h3>
+        <p>無線網路的應用非常廣泛，主要可分為以下幾類：</p>
+
+        <dl class="def-list">
+          <dt>家庭網路</dt><dd>最常見的場景，透過無線路由器（Wi-Fi Router）讓家中所有裝置連網，通常覆蓋範圍為 50～100 公尺室內空間。</dd>
+          <dt>企業辦公室</dt><dd>部署多台 AP 提供全棟覆蓋，搭配控制器（WLC）集中管理，支援員工漫遊（Roaming）與訪客網路隔離。</dd>
+          <dt>公共熱點</dt><dd>機場、飯店、咖啡廳等公共場所提供的 Wi-Fi 服務，需特別考慮安全性與大量用戶連線的容量設計。</dd>
+          <dt>工業 / IoT</dt><dd>工廠生產線、倉庫管理、智慧家電等場景，對連線穩定性與低延遲有特殊要求。</dd>
+          <dt>醫療機構</dt><dd>醫院需要穩定的無線網路支援移動式醫療裝置、病歷系統、語音通話，對干擾容忍度低。</dd>
+        </dl>
+      </div>
+
+      <!-- 1.2 -->
+      <div class="content-section">
+        <span class="section-anchor" id="s2"></span>
+        <h2><span class="h2-num">1.2</span>電磁波與頻率</h2>
+
+        <p>
+          無線網路的本質是利用<em class="term">電磁波</em>傳輸資料。電磁波是一種能量波，不需要介質即可在真空中傳播，光、X 光、微波、無線電波都屬於電磁波的範疇。Wi-Fi 使用的是<strong>微波（Microwave）</strong>頻段。
+        </p>
+
+        <h3>頻率（Frequency）是什麼</h3>
+        <p>
+          頻率代表電磁波每秒振盪的次數，單位是<em class="term">赫茲（Hz）</em>。頻率越高，每秒可攜帶的資料量（頻寬）越大，但穿透障礙物的能力越弱、傳播距離越短。
+        </p>
+
+        <div class="diagram">
+          <div class="diagram-ascii">
+低頻（Low Frequency）                        高頻（High Frequency）
+←——————————————————————————————————————————————→
+  AM廣播    FM廣播   2.4GHz    5GHz    6GHz    毫米波
+  535kHz   88-108MHz  Wi-Fi    Wi-Fi   Wi-Fi   5G NR
+          
+  長波長                                      短波長
+  強穿透                                      弱穿透
+  低速率                                      高速率
+          </div>
+          <div class="diagram-caption">Fig 1.1 — 電磁波頻率與無線網路頻段對照</div>
+        </div>
+
+        <h3>Wi-Fi 使用的頻段</h3>
+        <p>Wi-Fi 主要使用三個頻段，每個頻段都有其優缺點，了解差異是選擇和部署 AP 的基礎：</p>
+
+        <div class="freq-bar-wrap">
+          <div class="freq-row">
+            <span class="freq-label">2.4 GHz</span>
+            <div class="freq-bar"><div class="freq-bar-fill" style="width:55%"></div></div>
+            <span class="freq-val">傳播遠</span>
+          </div>
+          <div class="freq-row">
+            <span class="freq-label">5 GHz</span>
+            <div class="freq-bar"><div class="freq-bar-fill red" style="width:75%"></div></div>
+            <span class="freq-val">速率高</span>
+          </div>
+          <div class="freq-row">
+            <span class="freq-label">6 GHz</span>
+            <div class="freq-bar"><div class="freq-bar-fill" style="width:95%"></div></div>
+            <span class="freq-val">最大頻寬</span>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>頻段</th><th>頻率範圍</th><th>優點</th><th>缺點</th><th>適用場景</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>2.4 GHz</td>
+                <td>2400～2483.5 MHz</td>
+                <td>傳播距離遠、穿牆能力強</td>
+                <td>頻道數少（僅 3 個不重疊頻道）、干擾多（藍牙、微波爐）</td>
+                <td>大範圍覆蓋、IoT 裝置</td>
+              </tr>
+              <tr>
+                <td>5 GHz</td>
+                <td>5150～5850 MHz</td>
+                <td>頻道多（最多 25 個不重疊）、干擾少、速率高</td>
+                <td>傳播距離較短、穿牆能力較弱</td>
+                <td>辦公室、高密度使用環境</td>
+              </tr>
+              <tr>
+                <td>6 GHz</td>
+                <td>5925～7125 MHz</td>
+                <td>頻寬極大（1200 MHz 可用頻寬）、幾乎無干擾</td>
+                <td>穿透力最弱、需支援 Wi-Fi 6E 的裝置</td>
+                <td>高效能場景、未來主流</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>波長（Wavelength）與傳播距離的關係</h3>
+        <p>
+          波長與頻率成反比，頻率越高波長越短。2.4 GHz 的波長約為 <code>12.5 cm</code>，5 GHz 約為 <code>6 cm</code>。較長的波長更容易繞過障礙物（如牆壁、家具），這就是為什麼 2.4 GHz 的覆蓋範圍比 5 GHz 更廣。
+        </p>
+
+        <div class="callout">
+          <div class="callout-label">小知識</div>
+          <p>家用微波爐也使用 2.4 GHz 頻段加熱食物，這正是 2.4 GHz Wi-Fi 容易受到微波爐干擾的原因。微波爐在運作時會洩漏少量電磁波，對附近的 Wi-Fi 訊號品質造成影響。</p>
+        </div>
+      </div>
+
+      <!-- 1.3 -->
+      <div class="content-section">
+        <span class="section-anchor" id="s3"></span>
+        <h2><span class="h2-num">1.3</span>無線訊號的特性</h2>
+
+        <p>無線訊號在傳播過程中會受到多種物理現象的影響，理解這些特性有助於在實務中正確部署 AP、排查訊號問題。</p>
+
+        <h3>路徑損耗（Path Loss）</h3>
+        <p>
+          訊號強度隨距離增加而衰減，這是最基本的傳播現象。在自由空間中，距離加倍時訊號強度下降約 <strong>6 dB</strong>（即功率降為原本的 1/4）。這種現象稱為<em class="term">自由空間路徑損耗（Free Space Path Loss, FSPL）</em>。
+        </p>
+
+        <h3>多重路徑效應（Multipath）</h3>
+        <p>
+          無線訊號在傳播過程中會被牆壁、地板、天花板等物體<em class="term">反射（Reflection）</em>、<em class="term">繞射（Diffraction）</em>和<em class="term">散射（Scattering）</em>，導致接收端同時收到多個經由不同路徑傳來的訊號副本。這些訊號到達的時間不同，可能造成<strong>干擾（Interference）</strong>或<strong>符元間干擾（ISI, Inter-Symbol Interference）</strong>。
+        </p>
+        <p>現代 Wi-Fi 技術（如 OFDM）設計了<strong>保護間隔（Guard Interval）</strong>來對抗多重路徑效應。</p>
+
+        <div class="diagram">
+          <div class="diagram-ascii">
+  AP
+   |  訊號直射路徑（Direct Path）
+   |————————————————————————→  [裝置]
+   |                              ↑
+   |___牆壁反射路徑_______________/
+   
+   直射訊號先到達，反射訊號稍後到達
+   → 接收端需處理時間差造成的干擾
+          </div>
+          <div class="diagram-caption">Fig 1.2 — 多重路徑效應示意</div>
+        </div>
+
+        <h3>吸收（Absorption）</h3>
+        <p>不同材質對 Wi-Fi 訊號的吸收程度不同，了解這些會幫助你評估 AP 的擺放位置：</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>障礙物材質</th><th>對訊號的影響</th><th>大約衰減量</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>木材 / 石膏牆</td><td>輕微衰減</td><td>3～5 dB</td></tr>
+              <tr><td>磚牆 / 混凝土</td><td>顯著衰減</td><td>10～15 dB</td></tr>
+              <tr><td>鋼筋混凝土</td><td>嚴重衰減</td><td>15～30 dB</td></tr>
+              <tr><td>金屬（鐵門、金屬牆面）</td><td>幾乎完全阻隔</td><td>20～40 dB</td></tr>
+              <tr><td>玻璃（普通）</td><td>輕微衰減</td><td>2～3 dB</td></tr>
+              <tr><td>隔熱玻璃（Low-E）</td><td>顯著衰減（含金屬鍍膜）</td><td>10～30 dB</td></tr>
+              <tr><td>人體 / 水</td><td>輕微至中度衰減</td><td>3～5 dB</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout important">
+          <div class="callout-label">實務重點</div>
+          <p>部署 AP 時，要特別注意<strong>隔熱玻璃</strong>（現代大樓常用）和<strong>鋼筋混凝土牆</strong>，這兩種材料對訊號的衰減遠超一般預期。現場勘查（Site Survey）是解決這類問題最有效的方法，詳見第四章。</p>
+        </div>
+
+        <h3>干擾（Interference）</h3>
+        <p>干擾分為兩種主要類型：</p>
+        <dl class="def-list">
+          <dt>同頻干擾（Co-Channel）</dt><dd>兩個或多個 AP 使用相同頻道，互相爭用傳輸時間，導致整體效能下降。這是在高密度部署中最常見的問題。</dd>
+          <dt>鄰頻干擾（Adjacent-Channel）</dt><dd>使用相近但不完全重疊的頻道，兩個頻道的訊號頻譜會部分重疊，造成訊號品質劣化。在 2.4 GHz 頻段尤其嚴重（詳見第二章）。</dd>
+        </dl>
+      </div>
+
+      <!-- 1.4 -->
+      <div class="content-section">
+        <span class="section-anchor" id="s4"></span>
+        <h2><span class="h2-num">1.4</span>調變技術入門</h2>
+
+        <p>
+          資料在電腦中是以數位的 <code>0</code> 和 <code>1</code> 表示，但無線傳輸需要將這些數位資料「<em class="term">調變（Modulation）</em>」成電磁波訊號才能傳送。接收端再將訊號「<em class="term">解調（Demodulation）</em>」還原成數位資料。
+        </p>
+
+        <h3>基本調變方式</h3>
+        <p>調變技術決定了如何將資料編碼到無線訊號上，主要有三種基本方式：</p>
+
+        <dl class="def-list">
+          <dt>ASK（調幅）</dt><dd>Amplitude Shift Keying，透過改變訊號<strong>振幅（強度）</strong>來表示 0 或 1。簡單但易受雜訊影響。</dd>
+          <dt>FSK（調頻）</dt><dd>Frequency Shift Keying，透過改變訊號<strong>頻率</strong>來表示 0 或 1。抗雜訊能力優於 ASK。</dd>
+          <dt>PSK（調相）</dt><dd>Phase Shift Keying，透過改變訊號<strong>相位</strong>來表示資料。Wi-Fi 廣泛使用此方式的進階版本。</dd>
+        </dl>
+
+        <h3>QAM（正交振幅調變）</h3>
+        <p>
+          現代 Wi-Fi 使用<em class="term">QAM（Quadrature Amplitude Modulation）</em>，同時改變訊號的振幅與相位，讓每個訊號狀態可以攜帶更多位元，大幅提升傳輸效率。
+        </p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>調變方式</th><th>每個符元的位元數</th><th>相對速率</th><th>Wi-Fi 標準</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>BPSK</td><td>1 bit</td><td>最低</td><td>802.11a/b/g 低速率模式</td></tr>
+              <tr><td>QPSK</td><td>2 bits</td><td>低</td><td>802.11a/b/g</td></tr>
+              <tr><td>16-QAM</td><td>4 bits</td><td>中</td><td>802.11a/g/n</td></tr>
+              <tr><td>64-QAM</td><td>6 bits</td><td>高</td><td>802.11n/ac</td></tr>
+              <tr><td>256-QAM</td><td>8 bits</td><td>很高</td><td>802.11ac（Wi-Fi 5）</td></tr>
+              <tr><td>1024-QAM</td><td>10 bits</td><td>極高</td><td>802.11ax（Wi-Fi 6）</td></tr>
+              <tr><td>4096-QAM</td><td>12 bits</td><td>最高</td><td>802.11be（Wi-Fi 7）</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout">
+          <div class="callout-label">觀念說明</div>
+          <p>QAM 的數字越高（如 1024-QAM），每次傳輸可攜帶的資料量越多，理論速率越高。但代價是訊號狀態間的差距更小，對訊號品質（SNR）要求更高。這就是為什麼 5 GHz 和 6 GHz 環境通常比 2.4 GHz 能支援更高階的 QAM。</p>
+        </div>
+
+        <h3>OFDM（正交分頻多工）</h3>
+        <p>
+          <em class="term">OFDM（Orthogonal Frequency Division Multiplexing）</em>是 Wi-Fi（802.11a 起）的核心傳輸技術。它將一個寬頻道分割成數十至數百個狹窄的「<strong>子載波（Subcarrier）</strong>」，每個子載波各自傳輸一小部分資料。
+        </p>
+
+        <p>OFDM 的優點：</p>
+        <ul style="margin: 0.8rem 0 1rem 1.5rem; display:flex; flex-direction:column; gap:0.4rem;">
+          <li style="font-size:0.9rem; color:var(--ink-mid);">有效對抗多重路徑效應（子載波較窄，時間延散影響小）</li>
+          <li style="font-size:0.9rem; color:var(--ink-mid);">頻譜使用效率高</li>
+          <li style="font-size:0.9rem; color:var(--ink-mid);">支援多天線 MIMO 技術</li>
+        </ul>
+        <p>Wi-Fi 6 更進一步採用 <em class="term">OFDMA（Orthogonal Frequency Division Multiple Access）</em>，允許多個裝置同時共享子載波，大幅提升高密度環境下的整體效能（詳見第二章）。</p>
+      </div>
+
+      <!-- 1.5 -->
+      <div class="content-section">
+        <span class="section-anchor" id="s5"></span>
+        <h2><span class="h2-num">1.5</span>頻道與頻寬</h2>
+
+        <h3>頻道（Channel）</h3>
+        <p>
+          在允許使用的頻段範圍內，被劃分成多個<em class="term">頻道（Channel）</em>，每個頻道佔用一段連續的頻率。AP 和客戶端裝置必須使用相同的頻道才能通訊。
+        </p>
+
+        <h4>2.4 GHz 頻道分配（台灣適用）</h4>
+        <p>2.4 GHz 頻段共有 13 個頻道（頻道 1 至 13），每個頻道寬度為 22 MHz，相鄰頻道間隔僅 5 MHz，因此頻道之間大量重疊。真正不互相重疊的頻道只有三組：</p>
+
+        <pre><code>頻道  1：2412 MHz  ←—— 不重疊頻道組合
+頻道  6：2437 MHz  ←——   建議使用
+頻道 11：2462 MHz  ←——
+
+頻道示意（每格代表 5 MHz）：
+Ch 1  [============================]
+Ch 2    [============================]
+Ch 3      [============================]
+...
+Ch 6                    [============================]
+...
+Ch 11                             [============================]</code></pre>
+
+        <div class="callout important">
+          <div class="callout-label">部署原則</div>
+          <p>在 2.4 GHz 環境中，所有 AP 應交替使用頻道 <strong>1、6、11</strong> 這三個不重疊頻道，避免鄰頻干擾。如果兩台相鄰的 AP 都使用頻道 1，會造成同頻干擾；如果一台用頻道 1、另一台用頻道 2，則會造成更嚴重的鄰頻干擾（因為訊號互相重疊）。</p>
+        </div>
+
+        <h4>5 GHz 頻道分配</h4>
+        <p>5 GHz 頻段可用頻道多（台灣約 13～25 個不重疊 20 MHz 頻道），干擾問題遠小於 2.4 GHz，是現代無線網路的主力頻段。</p>
+
+        <h3>頻道寬度（Channel Width / Bandwidth）</h3>
+        <p>
+          頻道寬度決定每個頻道可攜帶的資料量。頻道越寬，理論速率越高，但需要佔用更多頻段資源，且在相同範圍內可用的不重疊頻道數會減少。
+        </p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>頻道寬度</th><th>子載波數（OFDM）</th><th>相對速率</th><th>適用場景</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>20 MHz</td><td>52 個</td><td>基準</td><td>高密度環境、IoT</td></tr>
+              <tr><td>40 MHz</td><td>108 個</td><td>約 2x</td><td>一般辦公、家庭</td></tr>
+              <tr><td>80 MHz</td><td>234 個</td><td>約 4x</td><td>5 GHz 主流設定</td></tr>
+              <tr><td>160 MHz</td><td>468 個</td><td>約 8x</td><td>高效能、低密度環境</td></tr>
+              <tr><td>320 MHz</td><td>—</td><td>約 16x</td><td>Wi-Fi 7（6 GHz 專用）</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 1.6 -->
+      <div class="content-section">
+        <span class="section-anchor" id="s6"></span>
+        <h2><span class="h2-num">1.6</span>訊號強度與 dBm</h2>
+
+        <h3>dBm 是什麼</h3>
+        <p>
+          Wi-Fi 訊號強度以<em class="term">dBm（分貝毫瓦，decibel-milliwatt）</em>為單位表示，這是一個相對於 1 毫瓦（mW）的對數單位。由於無線訊號功率數值非常小，使用對數單位可以更方便表達。
+        </p>
+
+        <p>dBm 的特性：數值越接近 0（即負數越小），訊號越強；數值越負（如 -90 dBm），訊號越弱。</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>dBm 值</th><th>訊號品質</th><th>說明與適用情境</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>-30 dBm</td><td><span class="tag-red">極強</span></td><td>非常靠近 AP，幾乎最大訊號</td></tr>
+              <tr><td>-50 dBm</td><td>優秀</td><td>理想值，適合視訊通話、高速傳輸</td></tr>
+              <tr><td>-60 dBm</td><td>良好</td><td>一般使用無問題</td></tr>
+              <tr><td>-70 dBm</td><td>尚可</td><td>基本瀏覽可用，不適合高頻寬需求</td></tr>
+              <tr><td>-75 dBm</td><td>弱</td><td>連線不穩定，漫遊門檻附近</td></tr>
+              <tr><td>-80 dBm</td><td>很弱</td><td>難以維持穩定連線</td></tr>
+              <tr><td>-90 dBm</td><td>極弱</td><td>接近雜訊底限，幾乎無法使用</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>SNR（訊雜比）</h3>
+        <p>
+          <em class="term">SNR（Signal-to-Noise Ratio，訊雜比）</em>是訊號強度與背景雜訊的比值，以 dB 表示。SNR 比 RSSI 更能反映實際連線品質：
+        </p>
+
+        <pre>SNR (dB) = 訊號強度 (dBm) - 雜訊底限 (dBm)
+
+範例：
+  訊號強度  = -65 dBm
+  雜訊底限  = -95 dBm
+  SNR       = -65 - (-95) = 30 dB  ← 良好
+
+SNR 參考：
+  > 40 dB  極佳，支援最高 QAM
+  25-40 dB 良好，一般使用無問題
+  15-25 dB 尚可，速率受限
+  < 15 dB  差，連線不穩</pre>
+
+        <h3>EIRP（有效等向輻射功率）</h3>
+        <p>
+          <em class="term">EIRP（Effective Isotropic Radiated Power）</em>是衡量 AP 實際輻射功率的指標，包含了發射功率和天線增益：
+        </p>
+        <pre>EIRP (dBm) = 發射功率 (dBm) + 天線增益 (dBi) - 線路損耗 (dB)</pre>
+        <p>各國對 EIRP 有法規限制。台灣 NCC 規定 2.4 GHz 最大 EIRP 為 <strong>30 dBm</strong>（1W）。</p>
+      </div>
+
+      <!-- 1.7 -->
+      <div class="content-section">
+        <span class="section-anchor" id="s7"></span>
+        <h2><span class="h2-num">1.7</span>IEEE 與 802.11 標準</h2>
+
+        <h3>IEEE 是什麼</h3>
+        <p>
+          <em class="term">IEEE（Institute of Electrical and Electronics Engineers，電機電子工程師學會）</em>是制定電子與通訊技術標準的國際組織。無線區域網路（WLAN）的標準由 IEEE 802 工作小組下的<strong>802.11 委員會</strong>負責制定。
+        </p>
+
+        <h3>802.11 標準家族演進</h3>
+        <p>自 1997 年首個 802.11 標準發布以來，Wi-Fi 技術已歷經多代演進，每一代都大幅提升了速率與功能：</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>標準</th><th>Wi-Fi 世代</th><th>發布年</th><th>頻段</th><th>最大理論速率</th><th>關鍵技術</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>802.11</td><td>—</td><td>1997</td><td>2.4 GHz</td><td>2 Mbps</td><td>DSSS / FHSS</td></tr>
+              <tr><td>802.11b</td><td>Wi-Fi 1</td><td>1999</td><td>2.4 GHz</td><td>11 Mbps</td><td>DSSS, HR-DSSS</td></tr>
+              <tr><td>802.11a</td><td>Wi-Fi 2</td><td>1999</td><td>5 GHz</td><td>54 Mbps</td><td>OFDM（首次）</td></tr>
+              <tr><td>802.11g</td><td>Wi-Fi 3</td><td>2003</td><td>2.4 GHz</td><td>54 Mbps</td><td>OFDM, 向下相容 b</td></tr>
+              <tr><td>802.11n</td><td>Wi-Fi 4</td><td>2009</td><td>2.4 / 5 GHz</td><td>600 Mbps</td><td>MIMO（最多 4 串流）、40 MHz 頻道</td></tr>
+              <tr><td>802.11ac</td><td>Wi-Fi 5</td><td>2013</td><td>5 GHz</td><td>6.9 Gbps</td><td>MU-MIMO（下行 4 串流）、80/160 MHz、256-QAM</td></tr>
+              <tr><td>802.11ax</td><td>Wi-Fi 6/6E</td><td>2019/2021</td><td>2.4/5/6 GHz</td><td>9.6 Gbps</td><td>OFDMA、MU-MIMO（上下行 8 串流）、BSS Color、TWT、1024-QAM</td></tr>
+              <tr><td>802.11be</td><td>Wi-Fi 7</td><td>2024</td><td>2.4/5/6 GHz</td><td>46 Gbps</td><td>320 MHz 頻道、4096-QAM、Multi-Link Operation（MLO）</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>重要補充標準</h3>
+        <p>除了主要版本外，IEEE 還發布了許多補充標準（Amendment），解決特定功能需求：</p>
+
+        <dl class="def-list">
+          <dt>802.11e</dt><dd>定義無線網路的 QoS（服務品質）機制，包含 WMM（Wi-Fi Multimedia）的基礎，讓語音和視訊等時間敏感的流量優先傳輸。</dd>
+          <dt>802.11i</dt><dd>定義無線網路安全標準，包含 WPA2 所採用的 RSN（Robust Security Network）架構，使用 AES-CCMP 加密。</dd>
+          <dt>802.11r</dt><dd>Fast BSS Transition（快速漫遊），減少裝置在 AP 間切換時的延遲，對 VoIP 和即時應用至關重要。</dd>
+          <dt>802.11k</dt><dd>Radio Resource Management（無線資源管理），允許 AP 蒐集鄰近 AP 的資訊，協助客戶端做出更好的漫遊決策。</dd>
+          <dt>802.11v</dt><dd>BSS Transition Management，AP 可主動建議（或要求）客戶端換到更適合的 AP，改善整體網路負載均衡。</dd>
+          <dt>802.11w</dt><dd>Protected Management Frames（PMF），保護管理框架不被偽冒，防禦 Deauthentication 攻擊。</dd>
+        </dl>
+      </div>
+
+      <!-- 1.8 -->
+      <div class="content-section">
+        <span class="section-anchor" id="s8"></span>
+        <h2><span class="h2-num">1.8</span>Wi-Fi 聯盟與認證</h2>
+
+        <h3>Wi-Fi Alliance</h3>
+        <p>
+          <em class="term">Wi-Fi Alliance</em>（Wi-Fi 聯盟）是一個非營利業界組織，負責推廣無線網路技術並進行<strong>互通性認證</strong>。當一台設備通過 Wi-Fi Alliance 的認證測試後，才能使用「Wi-Fi」商標和標誌。
+        </p>
+        <p>Wi-Fi Alliance 制定的規格通常基於 IEEE 802.11 標準，但會進一步定義細節以確保不同廠商設備能互相運作。Wi-Fi 世代的命名（Wi-Fi 4、Wi-Fi 5、Wi-Fi 6）就是由 Wi-Fi Alliance 推廣的，讓消費者更容易理解。</p>
+
+        <h3>重要 Wi-Fi 認證項目</h3>
+
+        <dl class="def-list">
+          <dt>Wi-Fi CERTIFIED 6</dt><dd>802.11ax 認證，確保支援 OFDMA、TWT 等關鍵功能，以及與舊裝置的向下相容性。</dd>
+          <dt>Wi-Fi CERTIFIED 6E</dt><dd>802.11ax 的 6 GHz 頻段擴充認證，設備須支援 6 GHz 操作。</dd>
+          <dt>WPA3-Personal</dt><dd>消費者市場的安全認證，使用 SAE（Simultaneous Authentication of Equals）取代 WPA2 的 PSK，更能抵抗字典攻擊。</dd>
+          <dt>WPA3-Enterprise</dt><dd>企業安全認證，192-bit 安全模式，適用於高安全需求環境。</dd>
+          <dt>Wi-Fi EasyConnect</dt><dd>前身為 DPP（Device Provisioning Protocol），透過 QR Code 或 NFC 簡化 IoT 裝置的網路設定流程。</dd>
+          <dt>Wi-Fi CERTIFIED Passpoint</dt><dd>基於 802.11u，讓裝置能自動連接並在 Wi-Fi 熱點之間無縫漫遊，類似手機的自動漫遊機制。</dd>
+        </dl>
+      </div>
+
+      <!-- 1.9 -->
+      <div class="content-section">
+        <span class="section-anchor" id="s9"></span>
+        <h2><span class="h2-num">1.9</span>無線網路術語表</h2>
+        <p>以下整理本章及後續章節常見的核心術語，建議熟記：</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>術語（縮寫）</th><th>全名</th><th>說明</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>AP</td><td>Access Point 存取點</td><td>無線網路的核心硬體，負責將有線網路橋接至無線環境</td></tr>
+              <tr><td>SSID</td><td>Service Set Identifier</td><td>無線網路名稱，客戶端看到的 Wi-Fi 名稱</td></tr>
+              <tr><td>BSSID</td><td>Basic Service Set Identifier</td><td>AP 的無線 MAC 位址，用於識別特定 AP</td></tr>
+              <tr><td>BSS</td><td>Basic Service Set</td><td>一個 AP 與其連線的所有客戶端所組成的基本單元</td></tr>
+              <tr><td>ESS</td><td>Extended Service Set</td><td>多個 BSS 共用同一 SSID，形成更大的無線網路</td></tr>
+              <tr><td>DS</td><td>Distribution System</td><td>連接多個 AP 的有線骨幹網路</td></tr>
+              <tr><td>STA</td><td>Station 站台</td><td>連接無線網路的客戶端裝置（筆電、手機等）</td></tr>
+              <tr><td>RSSI</td><td>Received Signal Strength Indicator</td><td>接收訊號強度指標，通常以 dBm 表示</td></tr>
+              <tr><td>SNR</td><td>Signal-to-Noise Ratio</td><td>訊雜比，訊號品質的重要指標</td></tr>
+              <tr><td>MCS</td><td>Modulation and Coding Scheme</td><td>調變與編碼方案，決定資料傳輸速率</td></tr>
+              <tr><td>MIMO</td><td>Multiple Input Multiple Output</td><td>多天線技術，同時收發多條資料流</td></tr>
+              <tr><td>OFDM</td><td>Orthogonal Frequency Division Multiplexing</td><td>正交分頻多工，現代 Wi-Fi 的核心傳輸技術</td></tr>
+              <tr><td>OFDMA</td><td>Orthogonal Frequency Division Multiple Access</td><td>Wi-Fi 6 引入，允許多裝置同時傳輸</td></tr>
+              <tr><td>WLC</td><td>Wireless LAN Controller</td><td>無線區域網路控制器，集中管理多台 AP</td></tr>
+              <tr><td>PoE</td><td>Power over Ethernet</td><td>透過網路線為 AP 供電，免去額外電源線</td></tr>
+              <tr><td>CAPWAP</td><td>Control And Provisioning of Wireless APs</td><td>AP 與 WLC 之間的通訊協定（RFC 5415）</td></tr>
+              <tr><td>TWT</td><td>Target Wake Time</td><td>Wi-Fi 6 節能機制，讓裝置在約定時間才喚醒收發資料</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SUMMARY -->
+      <div class="content-section">
+        <span class="section-anchor" id="summary"></span>
+        <h2><span class="h2-num">—</span>本章重點整理</h2>
+
+        <div class="summary-box">
+          <div class="sum-label">Chapter 01 Summary</div>
+          <ul>
+            <li>無線網路透過電磁波傳輸資料，不需實體線路，但訊號受環境（牆壁、距離、干擾）影響。</li>
+            <li>Wi-Fi 使用 2.4 GHz、5 GHz、6 GHz 三個主要頻段：頻率越高速率越快，但覆蓋範圍越小。</li>
+            <li>訊號在傳播中會遭受路徑損耗、多重路徑效應、吸收和干擾，影響實際使用效能。</li>
+            <li>調變技術（QAM）決定每個訊號狀態可攜帶的位元數；OFDM 是現代 Wi-Fi 的核心傳輸技術。</li>
+            <li>2.4 GHz 只有 3 個不重疊頻道（1、6、11）；5 GHz 和 6 GHz 可用頻道遠多於 2.4 GHz。</li>
+            <li>訊號強度以 dBm 表示（負值，越接近 0 越強）；SNR 比 RSSI 更能反映實際連線品質。</li>
+            <li>IEEE 802.11 是無線區域網路標準家族，從 1997 年至今歷經多代演進，Wi-Fi 7（802.11be）為最新世代。</li>
+            <li>Wi-Fi Alliance 負責互通性認證，確保不同廠商設備可相互運作，並推廣 Wi-Fi 世代命名。</li>
+          </ul>
+        </div>
+
+        <!-- CHAPTER NAV -->
+        <div class="chapter-nav">
+          <a href="index.html">← 課程首頁</a>
+          <a href="chapter2.html" class="next">Chapter 02：Wi-Fi 標準與技術規格 →</a>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="foot-left">AP & Wireless Network Application — Chapter 01</div>
+    <div class="foot-right">無線網路基礎概念</div>
+  </footer>
+
+  <script>
+    // Active TOC highlighting
+    const sections = document.querySelectorAll('.section-anchor');
+    const tocLinks = document.querySelectorAll('.toc-list a');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          tocLinks.forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, { rootMargin: '-64px 0px -60% 0px' });
+
+    sections.forEach(s => observer.observe(s));
+  </script>
+
+</body>
+</html>

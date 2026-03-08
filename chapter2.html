@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chapter 2：Wi-Fi 標準與技術規格｜AP 與無線網路應用</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --paper: #F5F0E8;
+      --paper-dark: #EDE7D9;
+      --paper-rule: #DDD5C4;
+      --ink: #1A1610;
+      --ink-mid: #4A4035;
+      --ink-light: #8A7D6A;
+      --red: #C0392B;
+      --red-muted: #D9584A;
+    }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body { background: var(--paper); color: var(--ink); font-family: 'Noto Serif TC', serif; line-height: 1.85; }
+
+    header {
+      border-bottom: 2px solid var(--ink); padding: 0 4rem;
+      position: sticky; top: 0; background: var(--paper); z-index: 100;
+      display: flex; align-items: center; justify-content: space-between; height: 64px;
+    }
+    .site-title { font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-mid); text-decoration: none; }
+    .site-title span { color: var(--red); }
+    .header-nav { display: flex; gap: 1.5rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; letter-spacing: 0.08em; }
+    .header-nav a { color: var(--ink-light); text-decoration: none; transition: color 0.2s; }
+    .header-nav a:hover { color: var(--red); }
+
+    .chapter-banner { background: var(--ink); color: var(--paper); padding: 4rem 4rem 3.5rem; border-bottom: 2px solid var(--ink); }
+    .chapter-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--red-muted); margin-bottom: 1.2rem; }
+    .chapter-banner h1 { font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; margin-bottom: 1.2rem; }
+    .chapter-banner .subtitle { font-size: 1rem; color: #B8AC9E; max-width: 620px; line-height: 1.8; }
+    .chapter-meta-row { display: flex; gap: 3rem; margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid #3A342C; flex-wrap: wrap; }
+    .chapter-meta-row .m-item .m-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: #6A5E52; margin-bottom: 0.3rem; }
+    .chapter-meta-row .m-item .m-value { font-size: 0.9rem; color: #D4CCBF; }
+
+    .page-layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 64px); align-items: start; }
+
+    .sidebar { position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto; border-right: 1px solid var(--paper-rule); padding: 2.5rem 1.5rem; }
+    .toc-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 1.2rem; }
+    .toc-list { list-style: none; display: flex; flex-direction: column; gap: 0.15rem; }
+    .toc-list a { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; color: var(--ink-mid); text-decoration: none; padding: 0.35rem 0.6rem; border-left: 2px solid transparent; transition: all 0.15s; line-height: 1.5; }
+    .toc-list a:hover { color: var(--red); border-left-color: var(--red); background: var(--paper-dark); }
+    .toc-list a.active { color: var(--red); border-left-color: var(--red); }
+    .toc-section { margin-top: 1.2rem; margin-bottom: 0.3rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--paper-rule); }
+    .sidebar-nav { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--paper-rule); display: flex; flex-direction: column; gap: 0.5rem; }
+    .sidebar-nav a { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--ink-light); text-decoration: none; transition: color 0.15s; }
+    .sidebar-nav a:hover { color: var(--red); }
+
+    main { padding: 3.5rem 4rem 6rem 3.5rem; max-width: 860px; }
+    .content-section { margin-bottom: 4.5rem; }
+    .section-anchor { display: block; height: 64px; margin-top: -64px; visibility: hidden; }
+
+    h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.01em; margin-bottom: 1.5rem; padding-bottom: 0.7rem; border-bottom: 2px solid var(--ink); display: flex; align-items: baseline; gap: 1rem; }
+    h2 .h2-num { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; font-weight: 400; letter-spacing: 0.1em; color: var(--red); }
+    h3 { font-size: 1.1rem; font-weight: 600; margin-top: 2rem; margin-bottom: 0.8rem; color: var(--ink); }
+    h4 { font-size: 0.95rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--ink-mid); font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.03em; }
+    p { font-size: 0.97rem; color: var(--ink-mid); margin-bottom: 1rem; line-height: 1.9; }
+    strong { color: var(--ink); font-weight: 600; }
+    em.term { font-style: normal; color: var(--red); font-weight: 500; }
+
+    code { font-family: 'IBM Plex Mono', monospace; font-size: 0.82em; background: var(--paper-dark); border: 1px solid var(--paper-rule); padding: 0.1em 0.4em; color: var(--ink); }
+    pre { background: var(--ink); color: #D4CCBF; font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; line-height: 1.7; padding: 1.5rem 2rem; margin: 1.5rem 0; overflow-x: auto; border-left: 3px solid var(--red); }
+
+    .callout { border-left: 3px solid var(--ink); background: var(--paper-dark); padding: 1.2rem 1.5rem; margin: 1.5rem 0; }
+    .callout.important { border-left-color: var(--red); }
+    .callout .callout-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 0.5rem; color: var(--ink-light); }
+    .callout.important .callout-label { color: var(--red); }
+    .callout p { margin-bottom: 0; font-size: 0.9rem; }
+
+    .table-wrap { overflow-x: auto; margin: 1.5rem 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+    thead tr { background: var(--ink); color: var(--paper); }
+    thead th { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.75rem 1rem; text-align: left; font-weight: 500; }
+    tbody tr { border-bottom: 1px solid var(--paper-rule); }
+    tbody tr:hover { background: var(--paper-dark); }
+    tbody td { padding: 0.7rem 1rem; color: var(--ink-mid); line-height: 1.6; vertical-align: top; }
+    tbody td:first-child { font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; color: var(--ink); font-weight: 500; }
+
+    .tag-red { display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; background: var(--red); color: var(--paper); padding: 0.1em 0.5em; letter-spacing: 0.06em; }
+    .tag-ink { display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; background: var(--ink); color: var(--paper); padding: 0.1em 0.5em; letter-spacing: 0.06em; }
+
+    .def-list { display: grid; grid-template-columns: auto 1fr; gap: 0; border-top: 1px solid var(--paper-rule); margin: 1.5rem 0; }
+    .def-list dt { font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; font-weight: 500; padding: 0.75rem 1.5rem 0.75rem 0; border-bottom: 1px solid var(--paper-rule); color: var(--ink); white-space: nowrap; }
+    .def-list dd { font-size: 0.88rem; color: var(--ink-mid); padding: 0.75rem 0; border-bottom: 1px solid var(--paper-rule); line-height: 1.7; }
+
+    .diagram { background: var(--paper-dark); border: 1px solid var(--paper-rule); padding: 2rem; margin: 2rem 0; }
+    .diagram-ascii { font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; line-height: 1.65; color: var(--ink); display: block; white-space: pre; overflow-x: auto; }
+    .diagram-caption { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: var(--ink-light); margin-top: 1rem; letter-spacing: 0.06em; text-transform: uppercase; }
+
+    /* Generation comparison cards */
+    .gen-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.2rem; margin: 1.5rem 0; }
+    .gen-card { border: 1px solid var(--paper-rule); padding: 1.4rem 1.5rem; background: var(--paper); }
+    .gen-card .gen-name { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--red); margin-bottom: 0.4rem; }
+    .gen-card .gen-std { font-size: 1rem; font-weight: 700; margin-bottom: 0.8rem; }
+    .gen-card .gen-row { display: flex; justify-content: space-between; font-size: 0.82rem; padding: 0.3rem 0; border-bottom: 1px solid var(--paper-rule); }
+    .gen-card .gen-row:last-child { border-bottom: none; }
+    .gen-card .gen-row .g-label { color: var(--ink-light); font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; }
+    .gen-card .gen-row .g-val { color: var(--ink); font-weight: 500; }
+
+    /* Stream/antenna visual */
+    .stream-visual { display: flex; flex-direction: column; gap: 0.8rem; margin: 1.5rem 0; }
+    .stream-row { display: grid; grid-template-columns: 100px 1fr; align-items: center; gap: 1rem; }
+    .stream-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; color: var(--ink-mid); }
+    .stream-bars { display: flex; gap: 4px; }
+    .stream-bar { height: 20px; width: 28px; background: var(--ink); }
+    .stream-bar.red { background: var(--red); }
+    .stream-bar.empty { background: var(--paper-rule); }
+
+    /* Comparison highlight row */
+    tbody tr.highlight td { background: rgba(192,57,43,0.06); }
+    tbody tr.highlight td:first-child { color: var(--red); }
+
+    .summary-box { background: var(--ink); color: var(--paper); padding: 2rem 2.5rem; margin: 3rem 0 0; }
+    .summary-box .sum-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--red-muted); margin-bottom: 1rem; }
+    .summary-box ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+    .summary-box ul li { font-size: 0.9rem; color: #D4CCBF; padding-left: 1.2rem; position: relative; line-height: 1.7; }
+    .summary-box ul li::before { content: '—'; position: absolute; left: 0; color: var(--red-muted); font-family: 'IBM Plex Mono', monospace; }
+
+    .chapter-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 5rem; padding-top: 2rem; border-top: 2px solid var(--ink); }
+    .chapter-nav a { font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; letter-spacing: 0.08em; color: var(--ink-mid); text-decoration: none; padding: 0.75rem 1.5rem; border: 1px solid var(--paper-rule); transition: all 0.2s; }
+    .chapter-nav a:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .chapter-nav .next { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .chapter-nav .next:hover { background: var(--red); border-color: var(--red); }
+
+    footer { padding: 2rem 4rem; border-top: 2px solid var(--ink); display: flex; justify-content: space-between; align-items: center; }
+    footer .foot-left { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; letter-spacing: 0.08em; color: var(--ink-light); }
+    footer .foot-right { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--red); }
+
+    @media (max-width: 860px) {
+      header { padding: 0 1.5rem; }
+      .chapter-banner { padding: 3rem 1.5rem 2.5rem; }
+      .page-layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      main { padding: 2rem 1.5rem 4rem; }
+      .gen-grid { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 0.5rem; padding: 1.5rem; }
+    }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .chapter-banner { animation: fadeUp 0.5s ease both; }
+    main { animation: fadeUp 0.5s ease 0.1s both; }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="site-title" href="index.html">AP & Wireless — <span>初學者完整課程</span></a>
+  <nav class="header-nav">
+    <a href="chapter1.html">← 上一章</a>
+    <a href="index.html">課程首頁</a>
+    <a href="chapter3.html">下一章 →</a>
+  </nav>
+</header>
+
+<div class="chapter-banner">
+  <div class="chapter-label">Chapter 02 / 08</div>
+  <h1>Wi-Fi 標準與技術規格</h1>
+  <p class="subtitle">深入比較 802.11 各世代標準，剖析 2.4 GHz、5 GHz、6 GHz 三個頻段的差異，並完整解說 OFDM、MIMO、MU-MIMO、OFDMA 等現代無線網路核心技術。</p>
+  <div class="chapter-meta-row">
+    <div class="m-item"><div class="m-label">建議閱讀時間</div><div class="m-value">約 3～4 小時</div></div>
+    <div class="m-item"><div class="m-label">難度</div><div class="m-value">入門至中階</div></div>
+    <div class="m-item"><div class="m-label">先備章節</div><div class="m-value">Chapter 01</div></div>
+    <div class="m-item"><div class="m-label">本章重點</div><div class="m-value">802.11 各代比較、MIMO、OFDMA、頻段選擇</div></div>
+  </div>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <div class="toc-label">本章目錄</div>
+    <ul class="toc-list">
+      <li><div class="toc-section">頻段深入</div></li>
+      <li><a href="#s1">2.1 三大頻段全面比較</a></li>
+      <li><a href="#s2">2.2 頻道規劃詳解</a></li>
+      <li><div class="toc-section">各世代標準</div></li>
+      <li><a href="#s3">2.3 802.11b/a/g：早期世代</a></li>
+      <li><a href="#s4">2.4 802.11n（Wi-Fi 4）</a></li>
+      <li><a href="#s5">2.5 802.11ac（Wi-Fi 5）</a></li>
+      <li><a href="#s6">2.6 802.11ax（Wi-Fi 6/6E）</a></li>
+      <li><a href="#s7">2.7 802.11be（Wi-Fi 7）</a></li>
+      <li><div class="toc-section">核心技術</div></li>
+      <li><a href="#s8">2.8 MIMO 與空間串流</a></li>
+      <li><a href="#s9">2.9 MU-MIMO 多用戶傳輸</a></li>
+      <li><a href="#s10">2.10 OFDMA 資源分配</a></li>
+      <li><a href="#s11">2.11 BSS Color 與 SR</a></li>
+      <li><a href="#s12">2.12 TWT 目標喚醒時間</a></li>
+      <li><a href="#s13">2.13 MCS 索引與速率計算</a></li>
+      <li><div class="toc-section">本章總結</div></li>
+      <li><a href="#summary">重點整理</a></li>
+    </ul>
+    <div class="sidebar-nav">
+      <a href="chapter1.html">← Chapter 01</a>
+      <a href="index.html">課程首頁</a>
+      <a href="chapter3.html">Chapter 03 →</a>
+    </div>
+  </aside>
+
+  <main>
+
+    <!-- 2.1 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s1"></span>
+      <h2><span class="h2-num">2.1</span>三大頻段全面比較</h2>
+
+      <p>Wi-Fi 目前使用三個主要頻段，每個頻段在物理特性、可用頻寬、干擾程度上都大相徑庭。選擇正確的頻段是 AP 部署的第一個關鍵決策。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>特性</th><th>2.4 GHz</th><th>5 GHz</th><th>6 GHz</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>頻率範圍</td><td>2400 ～ 2483.5 MHz</td><td>5150 ～ 5850 MHz</td><td>5925 ～ 7125 MHz</td></tr>
+            <tr><td>可用頻寬</td><td>83.5 MHz</td><td>500 ～ 700 MHz（依國家）</td><td>1200 MHz</td></tr>
+            <tr><td>不重疊 20MHz 頻道數</td><td>3 個（CH1/6/11）</td><td>最多 25 個</td><td>最多 59 個</td></tr>
+            <tr><td>最大頻道寬度</td><td>40 MHz</td><td>160 MHz</td><td>320 MHz（Wi-Fi 7）</td></tr>
+            <tr><td>覆蓋距離（室內）</td><td>較遠（約 50～70m）</td><td>中等（約 30～50m）</td><td>較近（約 20～30m）</td></tr>
+            <tr><td>穿牆能力</td><td>強</td><td>中</td><td>弱</td></tr>
+            <tr><td>干擾來源</td><td>藍牙、微波爐、嬰兒監視器、鄰居 Wi-Fi</td><td>部分雷達系統（需 DFS）</td><td>幾乎無干擾（全新頻段）</td></tr>
+            <tr><td>支援的最新標準</td><td>Wi-Fi 6（802.11ax）</td><td>Wi-Fi 7（802.11be）</td><td>Wi-Fi 6E / Wi-Fi 7</td></tr>
+            <tr class="highlight"><td>最適場景</td><td>IoT、大範圍覆蓋、舊裝置相容</td><td>一般辦公、家庭主力頻段</td><td>高效能、高密度、未來應用</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>頻段選擇的實務思維</h3>
+      <p>在規劃無線網路時，不同頻段應有明確的分工定位，而非隨意分配：</p>
+
+      <dl class="def-list">
+        <dt>2.4 GHz 的定位</dt>
+        <dd>作為<strong>覆蓋延伸頻段</strong>，負責照顧訊號覆蓋邊緣地帶、IoT 裝置（智慧燈泡、感測器）及舊型裝置。由於頻道數少，不建議讓大量高流量裝置使用此頻段。</dd>
+        <dt>5 GHz 的定位</dt>
+        <dd>作為<strong>主力傳輸頻段</strong>，承擔大多數高速資料傳輸任務。頻道數充足、速率高，是目前企業和家庭網路的核心頻段。</dd>
+        <dt>6 GHz 的定位</dt>
+        <dd>作為<strong>高效能專用頻段</strong>，提供最低干擾、最大頻寬的傳輸環境。適合 AR/VR、8K 串流、高密度大型場館等應用，但需要支援 Wi-Fi 6E 或 Wi-Fi 7 的裝置才能使用。</dd>
+      </dl>
+
+      <div class="callout important">
+        <div class="callout-label">Band Steering 技術</div>
+        <p>現代 AP 支援<strong>Band Steering（頻段引導）</strong>技術，可自動偵測客戶端支援的頻段，並優先引導有能力的裝置連接 5 GHz 或 6 GHz，避免雙頻裝置「偷懶」地黏在 2.4 GHz 上，浪費高頻段資源。在 AP 管理介面中通常可以啟用或調整此功能。</p>
+      </div>
+    </div>
+
+    <!-- 2.2 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s2"></span>
+      <h2><span class="h2-num">2.2</span>頻道規劃詳解</h2>
+
+      <h3>2.4 GHz 頻道規劃</h3>
+      <p>如第一章所述，2.4 GHz 的可用頻寬只有 83.5 MHz，而每個頻道寬 22 MHz，造成嚴重的頻道重疊問題。以下是台灣 2.4 GHz 頻道配置的完整示意：</p>
+
+      <div class="diagram">
+        <div class="diagram-ascii">頻率 (MHz)  2412  2422  2432  2437  2442  2452  2462  2472
+                    |     |     |     |     |     |     |     |
+頻道 1      [=============================]
+頻道 2            [=============================]
+頻道 3                  [=============================]
+頻道 4                        [=============================]
+頻道 5                              [=============================]
+頻道 6                                    [=============================]
+頻道 7                                          [=============================]
+...
+頻道 11                                                     [====================]
+
+不重疊組合：
+  CH 1  ────────────────────────────────────  2412 MHz
+  CH 6  ────────────────────────────────────  2437 MHz  (+25 MHz)
+  CH 11 ────────────────────────────────────  2462 MHz  (+25 MHz)</div>
+        <div class="diagram-caption">Fig 2.1 — 2.4 GHz 頻道重疊示意與不重疊頻道組合</div>
+      </div>
+
+      <h3>5 GHz 頻道規劃（UNII 頻段）</h3>
+      <p>5 GHz 頻段依 FCC/各國規範分為多個 UNII（Unlicensed National Information Infrastructure）子頻段，台灣適用範圍如下：</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>子頻段</th><th>頻率範圍</th><th>頻道號碼</th><th>最大 EIRP</th><th>備註</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>UNII-1</td><td>5150～5250 MHz</td><td>36, 40, 44, 48</td><td>200 mW</td><td>室內使用，台灣開放</td></tr>
+            <tr><td>UNII-2A</td><td>5250～5350 MHz</td><td>52, 56, 60, 64</td><td>200 mW</td><td>需 DFS，可能遇到雷達</td></tr>
+            <tr><td>UNII-2C</td><td>5470～5725 MHz</td><td>100～144</td><td>1W</td><td>需 DFS，台灣部分開放</td></tr>
+            <tr><td>UNII-3</td><td>5725～5850 MHz</td><td>149, 153, 157, 161, 165</td><td>1W</td><td>不需 DFS，最常用</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>DFS（Dynamic Frequency Selection）</h4>
+      <p>
+        <em class="term">DFS（動態頻率選擇）</em>是一種強制機制，要求 5 GHz 頻段的無線設備在偵測到雷達訊號時，必須在 10 秒內自動切換到其他頻道。這是因為部分 5 GHz 頻道與氣象雷達、軍事雷達共用。DFS 頻道（如 CH 52～144）雖然可用，但 AP 切換頻道時客戶端會短暫斷線，需特別注意。
+      </p>
+
+      <h3>頻道綁定（Channel Bonding）</h3>
+      <p>將兩個或多個相鄰 20 MHz 頻道合併，可以提升傳輸速率，但代價是佔用更多頻譜資源：</p>
+
+      <div class="diagram">
+        <div class="diagram-ascii">20 MHz 模式（4 個獨立頻道）：
+[CH36 20MHz] [CH40 20MHz] [CH44 20MHz] [CH48 20MHz]
+ 容量較低       容量較低       容量較低       容量較低
+
+40 MHz 綁定（2 個 40MHz 頻道）：
+[——CH36+CH40 40MHz——] [——CH44+CH48 40MHz——]
+      容量 x2                 容量 x2
+
+80 MHz 綁定（1 個 80MHz 頻道）：
+[————CH36+40+44+48  80MHz————]
+            容量 x4
+
+160 MHz 綁定（佔用 8 個 20MHz 頻道）：
+[——————CH36～CH64  160MHz——————————————————]
+                  容量 x8（但可用頻道大幅減少）</div>
+        <div class="diagram-caption">Fig 2.2 — 5 GHz 頻道綁定示意（以 UNII-1 為例）</div>
+      </div>
+
+      <div class="callout important">
+        <div class="callout-label">部署決策</div>
+        <p>在高密度環境（如辦公室、學校），建議使用 <strong>20 MHz 或 40 MHz</strong> 頻道，保留更多不重疊頻道供多台 AP 分配，避免同頻干擾。在低密度環境（如家庭），可使用 <strong>80 MHz 或 160 MHz</strong> 追求更高的單一裝置速率。寬頻道不代表整體效能更好，密度規劃才是關鍵。</p>
+      </div>
+    </div>
+
+    <!-- 2.3 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s3"></span>
+      <h2><span class="h2-num">2.3</span>802.11b / a / g：早期世代</h2>
+
+      <h3>802.11b（Wi-Fi 1）— 1999 年</h3>
+      <p>
+        802.11b 是第一個廣泛商用的 Wi-Fi 標準，使用 <strong>2.4 GHz</strong> 頻段，採用 <em class="term">HR-DSSS（High Rate Direct Sequence Spread Spectrum）</em>調變技術，最高速率達 <strong>11 Mbps</strong>。雖然速率低，但其低成本與廣泛相容性使其在 2000 年代初期主導市場。802.11b 裝置的存在至今仍是 2.4 GHz 干擾的來源之一，因為它使用的 DSSS 技術與 OFDM 並不相容，會強迫整個 BSS 降速運作（Protection Mechanism）。
+      </p>
+
+      <h3>802.11a（Wi-Fi 2）— 1999 年</h3>
+      <p>
+        802.11a 與 802.11b 同年發布，但採用 <strong>5 GHz</strong> 頻段和 <em class="term">OFDM</em> 技術，最高速率達 <strong>54 Mbps</strong>。5 GHz 在當時干擾極少，效能遠優於 802.11b，但因為初期設備成本高、5 GHz 穿透力弱，主要用於企業環境，消費市場普及度不如 802.11b。802.11a 是 OFDM 首次應用於 Wi-Fi 的里程碑。
+      </p>
+
+      <h3>802.11g（Wi-Fi 3）— 2003 年</h3>
+      <p>
+        802.11g 結合了 802.11b 的 <strong>2.4 GHz</strong> 頻段與 802.11a 的 <strong>OFDM</strong> 技術，最高速率同為 <strong>54 Mbps</strong>，且向下相容 802.11b 裝置。這使其迅速普及，成為 2000 年代中期最主流的 Wi-Fi 標準。然而相容模式下（Mixed Mode），802.11b 裝置的存在會使整個網路效能下降，因為 AP 需要傳送保護機制（CTS-to-Self 或 RTS/CTS）讓舊裝置理解現代封包格式。
+      </p>
+
+      <div class="callout">
+        <div class="callout-label">歷史教訓</div>
+        <p>現代網路中如果仍有 802.11b 的舊裝置連接，會拖累整個 2.4 GHz 網路效能。企業環境建議在 AP 設定中<strong>停用 802.11b 速率</strong>（最低支援速率設為 6 Mbps 或以上），強制舊裝置無法連接，以保護整體網路效能。</p>
+      </div>
+    </div>
+
+    <!-- 2.4 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s4"></span>
+      <h2><span class="h2-num">2.4</span>802.11n（Wi-Fi 4）</h2>
+
+      <p>
+        802.11n 於 2009 年正式發布，帶來了無線網路史上最重要的技術躍進之一——<em class="term">MIMO（Multiple Input Multiple Output）</em>，讓 Wi-Fi 速率從 54 Mbps 一口氣提升至理論 <strong>600 Mbps</strong>。
+      </p>
+
+      <h3>802.11n 的關鍵創新</h3>
+
+      <dl class="def-list">
+        <dt>MIMO（多輸入多輸出）</dt>
+        <dd>透過多根天線同時傳送多條獨立的資料串流（Spatial Stream），大幅提升傳輸速率。802.11n 最多支援 <strong>4 條空間串流</strong>，詳見 2.8 節。</dd>
+        <dt>40 MHz 頻道綁定</dt>
+        <dd>首次支援在 2.4 GHz 和 5 GHz 上使用 40 MHz 頻道（Primary + Extension Channel 各 20 MHz），使頻道容量翻倍。</dd>
+        <dt>Short Guard Interval（SGI）</dt>
+        <dd>將保護間隔（Guard Interval）從 800 ns 縮短至 400 ns，提升約 11% 的速率（但需要環境多重路徑不嚴重才能啟用）。</dd>
+        <dt>Frame Aggregation（封包聚合）</dt>
+        <dd>A-MSDU 和 A-MPDU 技術將多個封包合併在一次傳輸中，大幅減少協定開銷，顯著提升實際吞吐量。</dd>
+        <dt>雙頻支援</dt>
+        <dd>同一裝置可同時支援 2.4 GHz 和 5 GHz，是第一個真正雙頻的 Wi-Fi 標準。</dd>
+      </dl>
+
+      <h3>802.11n 速率計算</h3>
+      <p>802.11n 的速率由四個因素決定：串流數、頻道寬度、MCS 索引、保護間隔：</p>
+
+      <pre>單串流 MCS 7（64-QAM 5/6），20 MHz，Long GI = 65 Mbps
+單串流 MCS 7（64-QAM 5/6），20 MHz，Short GI = 72.2 Mbps
+單串流 MCS 7（64-QAM 5/6），40 MHz，Long GI = 135 Mbps
+單串流 MCS 7（64-QAM 5/6），40 MHz，Short GI = 150 Mbps
+
+最高速率（4 串流 x MCS 7 x 40 MHz x Short GI）：
+  150 Mbps × 4 = 600 Mbps（理論最大值）</pre>
+
+      <div class="gen-grid">
+        <div class="gen-card">
+          <div class="gen-name">Wi-Fi 4</div>
+          <div class="gen-std">802.11n</div>
+          <div class="gen-row"><span class="g-label">發布</span><span class="g-val">2009</span></div>
+          <div class="gen-row"><span class="g-label">頻段</span><span class="g-val">2.4 + 5 GHz</span></div>
+          <div class="gen-row"><span class="g-label">最大速率</span><span class="g-val">600 Mbps</span></div>
+          <div class="gen-row"><span class="g-label">最大串流</span><span class="g-val">4 × 4 MIMO</span></div>
+          <div class="gen-row"><span class="g-label">最大頻道寬</span><span class="g-val">40 MHz</span></div>
+          <div class="gen-row"><span class="g-label">最高 QAM</span><span class="g-val">64-QAM</span></div>
+        </div>
+        <div class="gen-card">
+          <div class="gen-name" style="color:var(--ink-light)">前代比較</div>
+          <div class="gen-std">802.11g</div>
+          <div class="gen-row"><span class="g-label">發布</span><span class="g-val">2003</span></div>
+          <div class="gen-row"><span class="g-label">頻段</span><span class="g-val">2.4 GHz</span></div>
+          <div class="gen-row"><span class="g-label">最大速率</span><span class="g-val">54 Mbps</span></div>
+          <div class="gen-row"><span class="g-label">最大串流</span><span class="g-val">1（無 MIMO）</span></div>
+          <div class="gen-row"><span class="g-label">最大頻道寬</span><span class="g-val">20 MHz</span></div>
+          <div class="gen-row"><span class="g-label">最高 QAM</span><span class="g-val">64-QAM</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2.5 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s5"></span>
+      <h2><span class="h2-num">2.5</span>802.11ac（Wi-Fi 5）</h2>
+
+      <p>
+        802.11ac 於 2013 年發布，是第一個<strong>純 5 GHz</strong> 標準（2.4 GHz 仍由 802.11n 負責），引入了 MU-MIMO、更寬的頻道與更高階的 QAM，將理論最大速率推至近 <strong>7 Gbps</strong>。
+      </p>
+
+      <h3>802.11ac 的兩個 Wave</h3>
+      <p>802.11ac 的規格分兩個階段（Wave）推出，能力差距顯著：</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>特性</th><th>Wave 1（2013）</th><th>Wave 2（2016）</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>最大空間串流</td><td>3 條</td><td>4 條</td></tr>
+            <tr><td>最大頻道寬度</td><td>80 MHz</td><td>160 MHz</td></tr>
+            <tr><td>MU-MIMO</td><td>不支援</td><td>支援（下行，最多 4 用戶）</td></tr>
+            <tr><td>最高 QAM</td><td>256-QAM</td><td>256-QAM</td></tr>
+            <tr><td>單一串流最大速率</td><td>433 Mbps（80MHz）</td><td>867 Mbps（160MHz）</td></tr>
+            <tr><td>理論最大速率</td><td>1.3 Gbps（3×3，80MHz）</td><td>3.47 Gbps（4×4，160MHz）</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>802.11ac 的重要特性</h3>
+
+      <dl class="def-list">
+        <dt>波束成形（Beamforming）</dt>
+        <dd><em class="term">Beamforming（波束成形）</em>讓 AP 能將無線訊號集中朝特定客戶端方向傳送，而非向四面八方均勻輻射。802.11ac 標準化了 <strong>Transmit Beamforming（TxBF）</strong>，需要客戶端回傳通道狀態資訊（CSI）。波束成形可改善 SNR，延伸有效覆蓋距離。</dd>
+        <dt>256-QAM</dt>
+        <dd>相較於 802.11n 的 64-QAM（每符元 6 位元），256-QAM 每符元攜帶 8 位元，理論速率提升 33%。但需要更高的 SNR（約 30 dB 以上）才能穩定使用。</dd>
+        <dt>VHT（Very High Throughput）</dt>
+        <dd>802.11ac 引入的 <em class="term">VHT（極高吞吐量）</em>模式，採用新的訊框格式（VHT PHY），優化了高速傳輸的協定效率。</dd>
+      </dl>
+
+      <div class="callout">
+        <div class="callout-label">實際速率 vs 理論速率</div>
+        <p>802.11ac Wave 2 的理論最大速率 3.47 Gbps 幾乎不可能在實際環境中達到，因為這需要 4 條空間串流、160 MHz 頻道、完美的 SNR，且只有一台裝置在傳輸。實際環境中，單台裝置的有效吞吐量通常是理論值的 <strong>50%～70%</strong>，且受多用戶競爭影響會進一步下降。</p>
+      </div>
+    </div>
+
+    <!-- 2.6 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s6"></span>
+      <h2><span class="h2-num">2.6</span>802.11ax（Wi-Fi 6 / 6E）</h2>
+
+      <p>
+        802.11ax 於 2019 年正式發布，商業名稱為 <strong>Wi-Fi 6</strong>，2021 年的 6 GHz 擴充版本稱為 <strong>Wi-Fi 6E</strong>。與前代相比，Wi-Fi 6 的設計重點不只是提升速率，更是針對<em class="term">高密度環境</em>優化整體系統容量與效率。
+      </p>
+
+      <h3>Wi-Fi 6 的核心設計目標</h3>
+      <p>在早餐廳、體育館、機場等有數百台裝置同時連線的環境中，Wi-Fi 5 的效能會因為<strong>競爭激烈</strong>而急劇下降。Wi-Fi 6 的目標是在這類場景中，讓每台裝置的<em class="term">平均吞吐量</em>提升至 Wi-Fi 5 的 4 倍。</p>
+
+      <h3>Wi-Fi 6 主要新技術</h3>
+
+      <dl class="def-list">
+        <dt>OFDMA</dt>
+        <dd>Orthogonal Frequency Division Multiple Access，允許一次傳輸同時服務多個裝置，將頻道資源細分為<strong>資源單元（RU, Resource Unit）</strong>分配給不同用戶。詳見 2.10 節。</dd>
+        <dt>上下行 MU-MIMO</dt>
+        <dd>Wi-Fi 5 的 MU-MIMO 只支援<strong>下行</strong>（AP 傳給多台裝置），Wi-Fi 6 同時支援<strong>上行</strong>（多台裝置同時傳給 AP），最多 8 條空間串流。</dd>
+        <dt>1024-QAM</dt>
+        <dd>每符元攜帶 10 位元，相較 Wi-Fi 5 的 256-QAM（8 位元）提升 25% 理論速率。需要極佳的 SNR（> 35 dB）。</dd>
+        <dt>BSS Coloring</dt>
+        <dd>Coloring 機制讓 AP 在訊框中加入「顏色」標籤，客戶端可快速識別訊框是否來自自己的 BSS，減少不必要的退讓等待，提升頻譜重用效率。詳見 2.11 節。</dd>
+        <dt>TWT（Target Wake Time）</dt>
+        <dd>AP 與裝置協商特定的喚醒時間，讓 IoT 裝置在非通訊時段進入深度休眠，大幅延長電池壽命。詳見 2.12 節。</dd>
+        <dt>WPA3 強制支援</dt>
+        <dd>Wi-Fi 6 認證設備必須支援 WPA3，提供更強的安全保護。</dd>
+      </dl>
+
+      <div class="gen-grid">
+        <div class="gen-card">
+          <div class="gen-name">Wi-Fi 6</div>
+          <div class="gen-std">802.11ax</div>
+          <div class="gen-row"><span class="g-label">發布</span><span class="g-val">2019</span></div>
+          <div class="gen-row"><span class="g-label">頻段</span><span class="g-val">2.4 + 5 GHz</span></div>
+          <div class="gen-row"><span class="g-label">最大速率</span><span class="g-val">9.6 Gbps</span></div>
+          <div class="gen-row"><span class="g-label">最大串流</span><span class="g-val">8 × 8 MU-MIMO</span></div>
+          <div class="gen-row"><span class="g-label">最高 QAM</span><span class="g-val">1024-QAM</span></div>
+          <div class="gen-row"><span class="g-label">OFDMA</span><span class="g-val">上行 + 下行</span></div>
+        </div>
+        <div class="gen-card">
+          <div class="gen-name">Wi-Fi 6E</div>
+          <div class="gen-std">802.11ax + 6 GHz</div>
+          <div class="gen-row"><span class="g-label">發布</span><span class="g-val">2021</span></div>
+          <div class="gen-row"><span class="g-label">頻段</span><span class="g-val">2.4 + 5 + 6 GHz</span></div>
+          <div class="gen-row"><span class="g-label">6 GHz 頻寬</span><span class="g-val">1200 MHz</span></div>
+          <div class="gen-row"><span class="g-label">6 GHz 頻道數</span><span class="g-val">最多 59 個（20MHz）</span></div>
+          <div class="gen-row"><span class="g-label">最大頻道寬</span><span class="g-val">160 MHz</span></div>
+          <div class="gen-row"><span class="g-label">核心差異</span><span class="g-val">新增 6 GHz 頻段</span></div>
+        </div>
+      </div>
+
+      <h3>Wi-Fi 6E 的 6 GHz 優勢</h3>
+      <p>
+        6 GHz 是全新開放的頻段，所有裝置都需要支援 Wi-Fi 6E 才能使用，這意味著：沒有舊裝置的干擾、沒有歷史遺留的協定開銷、完全可以用 80 MHz 或 160 MHz 的寬頻道。在 6 GHz 上，一個 160 MHz 的頻道旁邊還可以放 6 個不重疊的 160 MHz 頻道，這在 5 GHz 上幾乎是不可能的。
+      </p>
+    </div>
+
+    <!-- 2.7 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s7"></span>
+      <h2><span class="h2-num">2.7</span>802.11be（Wi-Fi 7）</h2>
+
+      <p>
+        802.11be 於 2024 年正式批准，商業名稱為 <strong>Wi-Fi 7</strong>，目標是突破 <strong>40 Gbps</strong> 的極限速率，並大幅降低延遲，為 AR/VR 及工業應用鋪路。
+      </p>
+
+      <h3>Wi-Fi 7 的革命性技術</h3>
+
+      <dl class="def-list">
+        <dt>320 MHz 超寬頻道</dt>
+        <dd>在 6 GHz 頻段支援 320 MHz 超寬頻道，為 Wi-Fi 6 的 160 MHz 的兩倍。單條串流最高速率可達 5.8 Gbps。</dd>
+        <dt>4096-QAM</dt>
+        <dd>每符元攜帶 12 位元，相較 Wi-Fi 6 的 1024-QAM（10 位元）提升 20% 的頻譜效率。但對 SNR 要求極高（> 40 dB），僅適用於裝置非常靠近 AP 的場景。</dd>
+        <dt>Multi-Link Operation（MLO）</dt>
+        <dd><em class="term">MLO（多鏈路操作）</em>是 Wi-Fi 7 最重要的創新。裝置可以同時在多個頻段（如 5 GHz + 6 GHz）上建立連線，封包可在多條鏈路上同時傳輸或備援切換，實現：
+          <ul style="margin: 0.5rem 0 0 1.2rem; display:flex; flex-direction:column; gap:0.3rem;">
+            <li style="font-size:0.88rem; color:var(--ink-mid);">更高吞吐量（多條鏈路聚合）</li>
+            <li style="font-size:0.88rem; color:var(--ink-mid);">更低延遲（封包可選擇最快的鏈路）</li>
+            <li style="font-size:0.88rem; color:var(--ink-mid);">更高可靠性（一條鏈路壅塞時自動切換）</li>
+          </ul>
+        </dd>
+        <dt>16 條空間串流</dt>
+        <dd>最多支援 16 條空間串流（Wi-Fi 6 為 8 條），進一步提升 AP 的整體容量。</dd>
+        <dt>Multi-RU（多資源單元）</dt>
+        <dd>允許單台裝置佔用多個不連續的 RU，更靈活地分配頻譜資源給不同裝置。</dd>
+      </dl>
+
+      <div class="callout">
+        <div class="callout-label">Wi-Fi 7 的現實狀況</div>
+        <p>Wi-Fi 7 設備（AP 與客戶端）已在 2024 年開始上市，但完整發揮 MLO 和 4096-QAM 的優勢需要<strong>同時支援 Wi-Fi 7 的 AP 與客戶端</strong>，且需要良好的無線環境。目前多數部署仍以 Wi-Fi 6/6E 為主流；Wi-Fi 7 的大規模普及預計在 2025～2027 年間。</p>
+      </div>
+    </div>
+
+    <!-- 2.8 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s8"></span>
+      <h2><span class="h2-num">2.8</span>MIMO 與空間串流</h2>
+
+      <p>
+        <em class="term">MIMO（Multiple Input Multiple Output，多輸入多輸出）</em>是現代 Wi-Fi 速率的基石。它透過在 AP 和客戶端上各配置多根天線，利用多重路徑效應同時傳送多條獨立資料串流。
+      </p>
+
+      <h3>MIMO 的工作原理</h3>
+      <p>
+        傳統的單天線（SISO）系統一次只能傳一條資料流。MIMO 則利用了原本被視為問題的<em class="term">多重路徑效應</em>：訊號經由多條不同路徑到達接收端，MIMO 的信號處理演算法可以從這些混合訊號中「分離」出各條獨立的原始資料流（<strong>空間串流，Spatial Stream</strong>）。
+      </p>
+
+      <div class="diagram">
+        <div class="diagram-ascii">SISO（傳統單天線）：
+  [AP 天線 1] ————————————→ [裝置天線 1]
+              只有 1 條資料流
+
+2×2 MIMO：
+  [AP 天線 1] ——→ (多重路徑) ——→ [裝置天線 1]
+  [AP 天線 2] ——→ (多重路徑) ——→ [裝置天線 2]
+               2 條獨立資料流，速率 ×2
+
+4×4 MIMO（802.11n 最大）：
+  [AP 天線 1]
+  [AP 天線 2]   ——→ (多重路徑矩陣) ——→   [裝置天線 1]
+  [AP 天線 3]                             [裝置天線 2]
+  [AP 天線 4]                             [裝置天線 3]
+                                          [裝置天線 4]
+               4 條獨立資料流，速率 ×4</div>
+        <div class="diagram-caption">Fig 2.3 — SISO vs MIMO 空間串流示意</div>
+      </div>
+
+      <h3>MIMO 規格的表示方式</h3>
+      <p>MIMO 規格通常以 <code>TxR:S</code> 格式表示，其中：</p>
+      <ul style="margin: 0.5rem 0 1rem 1.2rem; display:flex; flex-direction:column; gap:0.4rem;">
+        <li style="font-size:0.9rem; color:var(--ink-mid);"><strong>T</strong> = 發射天線數（Transmit antennas）</li>
+        <li style="font-size:0.9rem; color:var(--ink-mid);"><strong>R</strong> = 接收天線數（Receive antennas）</li>
+        <li style="font-size:0.9rem; color:var(--ink-mid);"><strong>S</strong> = 最大空間串流數（Spatial Streams，S ≤ min(T, R)）</li>
+      </ul>
+
+      <pre>範例：
+  2×2:2  → 2 發射、2 接收天線、最多 2 條空間串流
+  4×4:4  → 4 發射、4 接收天線、最多 4 條空間串流
+  8×8:8  → 8 發射、8 接收天線、最多 8 條空間串流（Wi-Fi 6 AP 最大值）
+
+注意：空間串流數受限於 AP 和客戶端中的較小值
+  若 AP 支援 4×4:4，但手機只有 2×2:2
+  → 實際最多只能使用 2 條空間串流</pre>
+
+      <h3>空間串流數對速率的影響</h3>
+
+      <div class="stream-visual">
+        <div class="stream-row">
+          <span class="stream-label">1 串流</span>
+          <div class="stream-bars">
+            <div class="stream-bar red"></div>
+            <div class="stream-bar empty"></div>
+            <div class="stream-bar empty"></div>
+            <div class="stream-bar empty"></div>
+          </div>
+        </div>
+        <div class="stream-row">
+          <span class="stream-label">2 串流</span>
+          <div class="stream-bars">
+            <div class="stream-bar red"></div>
+            <div class="stream-bar red"></div>
+            <div class="stream-bar empty"></div>
+            <div class="stream-bar empty"></div>
+          </div>
+        </div>
+        <div class="stream-row">
+          <span class="stream-label">3 串流</span>
+          <div class="stream-bars">
+            <div class="stream-bar red"></div>
+            <div class="stream-bar red"></div>
+            <div class="stream-bar red"></div>
+            <div class="stream-bar empty"></div>
+          </div>
+        </div>
+        <div class="stream-row">
+          <span class="stream-label">4 串流</span>
+          <div class="stream-bars">
+            <div class="stream-bar red"></div>
+            <div class="stream-bar red"></div>
+            <div class="stream-bar red"></div>
+            <div class="stream-bar red"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <div class="callout-label">重要觀念</div>
+        <p>大多數智慧型手機為 <strong>2×2:2</strong>（2 條串流），筆電通常為 <strong>2×2:2</strong> 或 <strong>3×3:3</strong>。企業級 AP 通常為 <strong>4×4:4</strong> 或 <strong>8×8:8</strong>。AP 的天線數越多，不只是對單一裝置可提供更多串流，更重要的是在 MU-MIMO 環境下可同時服務更多裝置。</p>
+      </div>
+    </div>
+
+    <!-- 2.9 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s9"></span>
+      <h2><span class="h2-num">2.9</span>MU-MIMO 多用戶傳輸</h2>
+
+      <p>
+        <em class="term">SU-MIMO（Single User MIMO）</em>是 Wi-Fi 4（802.11n）的模式，一次只與一台裝置溝通。<em class="term">MU-MIMO（Multi-User MIMO）</em>從 Wi-Fi 5（802.11ac Wave 2）起引入，讓 AP 能<strong>同時</strong>與多台裝置通訊。
+      </p>
+
+      <h3>SU-MIMO vs MU-MIMO</h3>
+
+      <div class="diagram">
+        <div class="diagram-ascii">SU-MIMO（Wi-Fi 4/5）：AP 一次只服務一台裝置：
+  時間軸：
+  ──[裝置A傳輸]──[裝置B傳輸]──[裝置C傳輸]──[裝置D傳輸]──
+  AP 的天線閒置等待，整體頻道利用率低
+
+MU-MIMO（Wi-Fi 5 Wave 2，下行 4 用戶）：
+  時間軸：
+  ──[A+B+C+D 同時傳輸]──[A+B+C+D 同時傳輸]──
+  
+  AP 4 根天線 → 同時發送給 4 台裝置：
+    天線1 → 串流1 → 裝置 A（手機，2 串流中的 1 條）
+    天線2 → 串流2 → 裝置 A（手機，2 串流中的 1 條）
+    天線3 → 串流3 → 裝置 B（筆電）
+    天線4 → 串流4 → 裝置 C（平板）
+  （4 條串流分給 3 台裝置）</div>
+        <div class="diagram-caption">Fig 2.4 — SU-MIMO vs MU-MIMO 傳輸模式比較</div>
+      </div>
+
+      <h3>各世代 MU-MIMO 規格演進</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Wi-Fi 世代</th><th>MU-MIMO 下行</th><th>MU-MIMO 上行</th><th>最多同時用戶</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Wi-Fi 4（802.11n）</td><td>不支援</td><td>不支援</td><td>1（SU 模式）</td></tr>
+            <tr><td>Wi-Fi 5 Wave 1</td><td>不支援</td><td>不支援</td><td>1（SU 模式）</td></tr>
+            <tr><td>Wi-Fi 5 Wave 2</td><td>支援（4 用戶）</td><td>不支援</td><td>4（下行）</td></tr>
+            <tr class="highlight"><td>Wi-Fi 6（802.11ax）</td><td>支援（8 用戶）</td><td>支援（8 用戶）</td><td>8（雙向）</td></tr>
+            <tr class="highlight"><td>Wi-Fi 7（802.11be）</td><td>支援（16 用戶）</td><td>支援（16 用戶）</td><td>16（雙向）</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout important">
+        <div class="callout-label">MU-MIMO 的限制</div>
+        <p>MU-MIMO 的效益在客戶端<strong>空間上分散</strong>且各自需要不同串流數的情況下最大。若所有裝置集中在同一方向，AP 難以有效分離空間串流。此外，MU-MIMO 的協商需要額外的控制封包（NDP Sounding），在裝置少或移動快的場景反而會增加開銷。Wi-Fi 6 的 OFDMA 在多用戶場景中通常比 MU-MIMO 更有效率。</p>
+      </div>
+    </div>
+
+    <!-- 2.10 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s10"></span>
+      <h2><span class="h2-num">2.10</span>OFDMA 資源分配</h2>
+
+      <p>
+        Wi-Fi 6 引入的 <em class="term">OFDMA（Orthogonal Frequency Division Multiple Access）</em>是提升高密度環境效能的最關鍵技術。與 MU-MIMO 的空間分離不同，OFDMA 的核心思想是將頻率資源（子載波）切分後分配給多台裝置。
+      </p>
+
+      <h3>OFDM vs OFDMA：根本區別</h3>
+
+      <div class="diagram">
+        <div class="diagram-ascii">OFDM（Wi-Fi 5 及之前）：整個頻道每次只給一台裝置
+  頻率 →
+  ┌────────────────────────────────────────────────┐
+  │         [     裝置 A 佔用全部子載波     ]       │  時間1
+  ├────────────────────────────────────────────────┤
+  │         [     裝置 B 佔用全部子載波     ]       │  時間2
+  ├────────────────────────────────────────────────┤
+  │         [     裝置 A 佔用全部子載波     ]       │  時間3
+  └────────────────────────────────────────────────┘
+  → 裝置必須輪流等待，小封包也要佔用整個頻道
+
+OFDMA（Wi-Fi 6）：同一時間頻道切分給多台裝置
+  頻率 →
+  ┌──────────┬───────────────┬──────────┬──────────┐
+  │ 裝置 A   │    裝置 B     │ 裝置 C   │ 裝置 D   │  時間1
+  │ (26個RU) │  (52個RU)     │ (26個RU) │ (26個RU) │
+  ├──────────┼───────────────┼──────────┼──────────┤
+  │ 裝置 E   │    裝置 F     │     裝置 A（大檔案）  │  時間2
+  └──────────┴───────────────┴──────────┴──────────┘
+  → 根據需求彈性分配 RU，小封包不再浪費資源</div>
+        <div class="diagram-caption">Fig 2.5 — OFDM vs OFDMA 資源分配方式比較</div>
+      </div>
+
+      <h3>資源單元（Resource Unit, RU）</h3>
+      <p>OFDMA 將頻道劃分為不同大小的 <em class="term">RU（資源單元）</em>，每個 RU 包含特定數量的子載波。AP 根據各裝置的需求（資料量大小）動態分配 RU：</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>RU 大小</th><th>子載波數</th><th>用途</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>26-子載波 RU</td><td>26</td><td>小型封包（IoT、ACK）</td></tr>
+            <tr><td>52-子載波 RU</td><td>52</td><td>中型流量</td></tr>
+            <tr><td>106-子載波 RU</td><td>106</td><td>一般流量</td></tr>
+            <tr><td>242-子載波 RU</td><td>242</td><td>大型流量（相當於 20MHz OFDM）</td></tr>
+            <tr><td>484-子載波 RU</td><td>484</td><td>高速傳輸（40MHz 等效）</td></tr>
+            <tr><td>996-子載波 RU</td><td>996</td><td>最大 RU（80MHz 等效）</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>OFDMA 的優勢場景</h3>
+      <p>OFDMA 在以下場景的效益最為顯著：</p>
+      <dl class="def-list">
+        <dt>大量小型封包</dt>
+        <dd>IoT 裝置、感測器、ACK 回應等小型封包在傳統 OFDM 中需要輪流等待，OFDMA 可將多個小封包一次處理，大幅減少傳輸延遲與等待時間。</dd>
+        <dt>高密度裝置環境</dt>
+        <dd>數十至數百台裝置同時連線的場館、教室、展場。每台裝置分配到較小的 RU，雖然單一裝置速率下降，但整體系統容量和公平性大幅提升。</dd>
+        <dt>混合流量類型</dt>
+        <dd>同時有語音（小封包、低延遲）和視訊（大封包、高吞吐）需求的環境，OFDMA 可根據流量特性彈性分配 RU。</dd>
+      </dl>
+    </div>
+
+    <!-- 2.11 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s11"></span>
+      <h2><span class="h2-num">2.11</span>BSS Color 與空間重用</h2>
+
+      <p>
+        在高密度 AP 部署環境中，即使兩個 AP 使用不同頻道，但頻道重疊或訊號洩漏仍然會讓裝置誤以為頻道正在使用，而不必要地延遲傳輸。Wi-Fi 6 的 <em class="term">BSS Coloring（BSS 著色）</em>技術解決了這個問題。
+      </p>
+
+      <h3>問題根源：不必要的退讓</h3>
+      <p>
+        Wi-Fi 使用 <em class="term">CSMA/CA（Carrier Sense Multiple Access with Collision Avoidance）</em>機制：裝置在傳輸前先「聽」頻道是否被使用，若偵測到訊號就等待。問題在於，裝置可能偵測到來自鄰近 BSS（不同 AP）的微弱訊號，並誤以為自己的頻道正在使用，造成<strong>不必要的等待</strong>，降低頻譜利用率。
+      </p>
+
+      <h3>BSS Color 的解決方案</h3>
+      <p>
+        BSS Coloring 在每個 Wi-Fi 訊框的 PHY 標頭中加入一個 <strong>6 位元的「顏色」值（1～63）</strong>，標示這個訊框所屬的 BSS。接收端可以快速識別：
+      </p>
+      <ul style="margin: 0.5rem 0 1rem 1.2rem; display:flex; flex-direction:column; gap:0.4rem;">
+        <li style="font-size:0.9rem; color:var(--ink-mid);">若訊框顏色與自己的 BSS 相同 → 這是本 BSS 的傳輸，需要等待</li>
+        <li style="font-size:0.9rem; color:var(--ink-mid);">若訊框顏色不同（Inter-BSS）→ 即使訊號可被偵測，也可嘗試同時傳輸（Spatial Reuse）</li>
+      </ul>
+
+      <p>這讓鄰近 BSS 的傳輸可以<strong>同時進行</strong>，提升整體頻譜重用效率，特別在高密度 AP 部署環境中效益顯著。</p>
+
+      <div class="callout">
+        <div class="callout-label">BSS Color 碰撞</div>
+        <p>若兩個鄰近 BSS 恰好使用相同的顏色值（Color Collision），裝置可能誤判鄰居的訊框為自己 BSS 的訊框。AP 有機制偵測碰撞並通知裝置更換顏色。63 個顏色值在大多數環境中已足夠避免碰撞。</p>
+      </div>
+    </div>
+
+    <!-- 2.12 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s12"></span>
+      <h2><span class="h2-num">2.12</span>TWT 目標喚醒時間</h2>
+
+      <p>
+        <em class="term">TWT（Target Wake Time）</em>是 Wi-Fi 6 引入的節能協定，由 AP 與客戶端裝置<strong>協商</strong>一個固定的「喚醒時間表」，讓裝置在非傳輸時段進入深度休眠，大幅延長電池壽命。
+      </p>
+
+      <h3>TWT 的工作流程</h3>
+
+      <div class="diagram">
+        <div class="diagram-ascii">傳統 Wi-Fi（Wi-Fi 5）：裝置必須持續監聽 Beacon
+  AP:      ─Beacon─Beacon─Beacon─Beacon─Beacon─ (每 100ms 一次)
+  裝置:    ──監聽──監聽──監聽──監聽──監聽──  ← 電池持續消耗
+
+TWT（Wi-Fi 6）：AP 與裝置協商喚醒時間
+  AP 與裝置協商：「你每 1 秒醒來一次，每次維持 5ms」
+
+  AP:      ──────────────Beacon──────────────
+  裝置:    ─休眠──休眠──喚醒─休眠──休眠──喚醒─  ← 電池消耗大幅降低
+               ↑                    ↑
+           TWT 喚醒期            TWT 喚醒期
+           （傳送/接收資料）</div>
+        <div class="diagram-caption">Fig 2.6 — TWT 節能機制運作示意</div>
+      </div>
+
+      <h3>TWT 的兩種模式</h3>
+
+      <dl class="def-list">
+        <dt>Individual TWT</dt>
+        <dd>AP 與單一裝置點對點協商獨特的喚醒時間表。每台裝置根據自身流量特性（如傳感器每 30 秒回傳一次資料）協商最適合的時間間隔，靈活性最高。</dd>
+        <dt>Broadcast TWT</dt>
+        <dd>AP 廣播統一的喚醒時間表，讓整組裝置同時喚醒。可進一步搭配 OFDMA，讓多台裝置在同一喚醒時段內同時傳輸，適用於大量 IoT 裝置的場景。</dd>
+      </dl>
+
+      <p>TWT 對電池驅動的 IoT 裝置（如智慧感測器、穿戴裝置）效益尤為顯著，理論上可將裝置的 Wi-Fi 模組功耗降低達 <strong>7 倍</strong>以上。</p>
+    </div>
+
+    <!-- 2.13 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s13"></span>
+      <h2><span class="h2-num">2.13</span>MCS 索引與速率計算</h2>
+
+      <p>
+        <em class="term">MCS（Modulation and Coding Scheme，調變與編碼方案）</em>索引是一個數字，代表特定的調變方式與前向糾錯編碼率（Coding Rate）的組合。MCS 索引越高，代表速率越高，但對訊號品質要求也越嚴格。
+      </p>
+
+      <h3>Wi-Fi 6 MCS 索引表（單條串流，20 MHz 頻道）</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>MCS 索引</th><th>調變方式</th><th>編碼率</th><th>速率（800ns GI）</th><th>最低 SNR 需求</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>MCS 0</td><td>BPSK</td><td>1/2</td><td>8.6 Mbps</td><td>10 dB</td></tr>
+            <tr><td>MCS 1</td><td>QPSK</td><td>1/2</td><td>17.2 Mbps</td><td>13 dB</td></tr>
+            <tr><td>MCS 2</td><td>QPSK</td><td>3/4</td><td>25.8 Mbps</td><td>16 dB</td></tr>
+            <tr><td>MCS 3</td><td>16-QAM</td><td>1/2</td><td>34.4 Mbps</td><td>19 dB</td></tr>
+            <tr><td>MCS 4</td><td>16-QAM</td><td>3/4</td><td>51.6 Mbps</td><td>22 dB</td></tr>
+            <tr><td>MCS 5</td><td>64-QAM</td><td>2/3</td><td>68.8 Mbps</td><td>25 dB</td></tr>
+            <tr><td>MCS 6</td><td>64-QAM</td><td>3/4</td><td>77.4 Mbps</td><td>27 dB</td></tr>
+            <tr><td>MCS 7</td><td>64-QAM</td><td>5/6</td><td>86.0 Mbps</td><td>28 dB</td></tr>
+            <tr><td>MCS 8</td><td>256-QAM</td><td>3/4</td><td>114.7 Mbps</td><td>30 dB</td></tr>
+            <tr><td>MCS 9</td><td>256-QAM</td><td>5/6</td><td>129.0 Mbps</td><td>32 dB</td></tr>
+            <tr class="highlight"><td>MCS 10</td><td>1024-QAM</td><td>3/4</td><td>143.4 Mbps</td><td>35 dB</td></tr>
+            <tr class="highlight"><td>MCS 11</td><td>1024-QAM</td><td>5/6</td><td>172.1 Mbps</td><td>38 dB</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>總速率計算公式</h3>
+      <pre>總速率 = 單串流速率 × 空間串流數
+
+範例 1：家用 Wi-Fi 6 路由器，2×2 MIMO，80 MHz，MCS 11
+  80 MHz 單串流速率（MCS 11）= 600.5 Mbps
+  總速率 = 600.5 × 2 = 1201 Mbps ≈ 1.2 Gbps
+
+範例 2：企業 AP，4×4 MIMO，80 MHz，MCS 9
+  80 MHz 單串流速率（MCS 9）= 490.7 Mbps
+  總速率 = 490.7 × 4 = 1963 Mbps ≈ 2 Gbps（Wi-Fi CERTIFIED 6 常見規格）
+
+範例 3：Wi-Fi 6 最大值，8×8 MIMO，160 MHz，MCS 11
+  160 MHz 單串流速率（MCS 11）= 1201 Mbps
+  總速率 = 1201 × 8 = 9608 Mbps ≈ 9.6 Gbps（理論最大值）</pre>
+
+      <div class="callout important">
+        <div class="callout-label">速率自適應（Rate Adaptation）</div>
+        <p>Wi-Fi 的傳輸速率是<strong>動態的</strong>，AP 和裝置會不斷評估訊號品質，自動選擇當前最適合的 MCS 索引。當你靠近 AP 時，系統會提升至 MCS 11；當你走遠或訊號變差時，系統會降至 MCS 5 或更低。這個機制稱為 <strong>Rate Adaptation（速率自適應）</strong>或 <strong>Link Adaptation</strong>，是 Wi-Fi 能在各種距離下維持連線的關鍵。</p>
+      </div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="content-section">
+      <span class="section-anchor" id="summary"></span>
+      <h2><span class="h2-num">—</span>本章重點整理</h2>
+
+      <div class="summary-box">
+        <div class="sum-label">Chapter 02 Summary</div>
+        <ul>
+          <li>2.4 GHz 覆蓋廣但頻道少（僅 3 個不重疊）；5 GHz 速率高頻道多；6 GHz 頻寬最大、干擾最少，需 Wi-Fi 6E 支援。</li>
+          <li>802.11b/a/g 為早期標準，802.11g 首次在 2.4 GHz 使用 OFDM；若有 802.11b 裝置連線會使整個網路降速。</li>
+          <li>802.11n（Wi-Fi 4）引入 MIMO 和 40 MHz 頻道；802.11ac（Wi-Fi 5）引入 MU-MIMO（下行）和 256-QAM；802.11ax（Wi-Fi 6）引入 OFDMA、雙向 MU-MIMO 和 1024-QAM。</li>
+          <li>MIMO 利用多根天線同時傳送多條空間串流；串流數受 AP 與客戶端天線數的最小值限制。</li>
+          <li>MU-MIMO 讓 AP 同時服務多台裝置（空間分離）；OFDMA 將頻道的子載波切分給多台裝置（頻率分離），兩者可以同時運作。</li>
+          <li>BSS Coloring 讓鄰近 BSS 的裝置能辨別訊框歸屬，減少不必要退讓，提升頻譜重用率。</li>
+          <li>TWT 讓 AP 與裝置協商喚醒時間，IoT 裝置電池壽命可提升數倍。</li>
+          <li>MCS 索引決定傳輸速率，系統會根據 SNR 動態自適應選擇最佳 MCS；Wi-Fi 6 支援 MCS 0～11（最高 1024-QAM）。</li>
+        </ul>
+      </div>
+
+      <div class="chapter-nav">
+        <a href="chapter1.html">← Chapter 01：無線網路基礎概念</a>
+        <a href="chapter3.html" class="next">Chapter 03：AP 架構與類型 →</a>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer>
+  <div class="foot-left">AP & Wireless Network Application — Chapter 02</div>
+  <div class="foot-right">Wi-Fi 標準與技術規格</div>
+</footer>
+
+<script>
+  const sections = document.querySelectorAll('.section-anchor');
+  const tocLinks = document.querySelectorAll('.toc-list a');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        tocLinks.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-64px 0px -60% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

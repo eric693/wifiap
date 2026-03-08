@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chapter 3：存取點（AP）架構與類型｜AP 與無線網路應用</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --paper: #F5F0E8;
+      --paper-dark: #EDE7D9;
+      --paper-rule: #DDD5C4;
+      --ink: #1A1610;
+      --ink-mid: #4A4035;
+      --ink-light: #8A7D6A;
+      --red: #C0392B;
+      --red-muted: #D9584A;
+    }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body { background: var(--paper); color: var(--ink); font-family: 'Noto Serif TC', serif; line-height: 1.85; }
+
+    header { border-bottom: 2px solid var(--ink); padding: 0 4rem; position: sticky; top: 0; background: var(--paper); z-index: 100; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .site-title { font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-mid); text-decoration: none; }
+    .site-title span { color: var(--red); }
+    .header-nav { display: flex; gap: 1.5rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; letter-spacing: 0.08em; }
+    .header-nav a { color: var(--ink-light); text-decoration: none; transition: color 0.2s; }
+    .header-nav a:hover { color: var(--red); }
+
+    .chapter-banner { background: var(--ink); color: var(--paper); padding: 4rem 4rem 3.5rem; border-bottom: 2px solid var(--ink); }
+    .chapter-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--red-muted); margin-bottom: 1.2rem; }
+    .chapter-banner h1 { font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; margin-bottom: 1.2rem; }
+    .chapter-banner .subtitle { font-size: 1rem; color: #B8AC9E; max-width: 640px; line-height: 1.8; }
+    .chapter-meta-row { display: flex; gap: 3rem; margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid #3A342C; flex-wrap: wrap; }
+    .chapter-meta-row .m-item .m-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: #6A5E52; margin-bottom: 0.3rem; }
+    .chapter-meta-row .m-item .m-value { font-size: 0.9rem; color: #D4CCBF; }
+
+    .page-layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 64px); align-items: start; }
+
+    .sidebar { position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto; border-right: 1px solid var(--paper-rule); padding: 2.5rem 1.5rem; }
+    .toc-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 1.2rem; }
+    .toc-list { list-style: none; display: flex; flex-direction: column; gap: 0.15rem; }
+    .toc-list a { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; color: var(--ink-mid); text-decoration: none; padding: 0.35rem 0.6rem; border-left: 2px solid transparent; transition: all 0.15s; line-height: 1.5; }
+    .toc-list a:hover, .toc-list a.active { color: var(--red); border-left-color: var(--red); background: var(--paper-dark); }
+    .toc-section { margin-top: 1.2rem; margin-bottom: 0.3rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--paper-rule); }
+    .sidebar-nav { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--paper-rule); display: flex; flex-direction: column; gap: 0.5rem; }
+    .sidebar-nav a { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--ink-light); text-decoration: none; transition: color 0.15s; }
+    .sidebar-nav a:hover { color: var(--red); }
+
+    main { padding: 3.5rem 4rem 6rem 3.5rem; max-width: 860px; }
+    .content-section { margin-bottom: 4.5rem; }
+    .section-anchor { display: block; height: 64px; margin-top: -64px; visibility: hidden; }
+
+    h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.01em; margin-bottom: 1.5rem; padding-bottom: 0.7rem; border-bottom: 2px solid var(--ink); display: flex; align-items: baseline; gap: 1rem; }
+    h2 .h2-num { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; font-weight: 400; letter-spacing: 0.1em; color: var(--red); }
+    h3 { font-size: 1.1rem; font-weight: 600; margin-top: 2rem; margin-bottom: 0.8rem; color: var(--ink); }
+    h4 { font-size: 0.95rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--ink-mid); font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.03em; }
+    p { font-size: 0.97rem; color: var(--ink-mid); margin-bottom: 1rem; line-height: 1.9; }
+    strong { color: var(--ink); font-weight: 600; }
+    em.term { font-style: normal; color: var(--red); font-weight: 500; }
+
+    code { font-family: 'IBM Plex Mono', monospace; font-size: 0.82em; background: var(--paper-dark); border: 1px solid var(--paper-rule); padding: 0.1em 0.4em; color: var(--ink); }
+    pre { background: var(--ink); color: #D4CCBF; font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; line-height: 1.7; padding: 1.5rem 2rem; margin: 1.5rem 0; overflow-x: auto; border-left: 3px solid var(--red); }
+
+    .callout { border-left: 3px solid var(--ink); background: var(--paper-dark); padding: 1.2rem 1.5rem; margin: 1.5rem 0; }
+    .callout.important { border-left-color: var(--red); }
+    .callout .callout-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 0.5rem; color: var(--ink-light); }
+    .callout.important .callout-label { color: var(--red); }
+    .callout p { margin-bottom: 0; font-size: 0.9rem; }
+
+    .table-wrap { overflow-x: auto; margin: 1.5rem 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+    thead tr { background: var(--ink); color: var(--paper); }
+    thead th { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.75rem 1rem; text-align: left; font-weight: 500; }
+    tbody tr { border-bottom: 1px solid var(--paper-rule); }
+    tbody tr:hover { background: var(--paper-dark); }
+    tbody td { padding: 0.7rem 1rem; color: var(--ink-mid); line-height: 1.7; vertical-align: top; }
+    tbody td:first-child { font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; color: var(--ink); font-weight: 500; }
+    tbody tr.highlight td { background: rgba(192,57,43,0.05); }
+    tbody tr.highlight td:first-child { color: var(--red); }
+
+    .tag-red { display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; background: var(--red); color: var(--paper); padding: 0.1em 0.5em; letter-spacing: 0.06em; }
+    .tag-ink { display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; background: var(--ink); color: var(--paper); padding: 0.1em 0.5em; letter-spacing: 0.06em; }
+
+    .def-list { display: grid; grid-template-columns: auto 1fr; gap: 0; border-top: 1px solid var(--paper-rule); margin: 1.5rem 0; }
+    .def-list dt { font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; font-weight: 500; padding: 0.75rem 1.5rem 0.75rem 0; border-bottom: 1px solid var(--paper-rule); color: var(--ink); white-space: nowrap; }
+    .def-list dd { font-size: 0.88rem; color: var(--ink-mid); padding: 0.75rem 0; border-bottom: 1px solid var(--paper-rule); line-height: 1.75; }
+
+    .diagram { background: var(--paper-dark); border: 1px solid var(--paper-rule); padding: 2rem; margin: 2rem 0; }
+    .diagram-ascii { font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; line-height: 1.65; color: var(--ink); display: block; white-space: pre; overflow-x: auto; }
+    .diagram-caption { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: var(--ink-light); margin-top: 1rem; letter-spacing: 0.06em; text-transform: uppercase; }
+
+    /* AP type comparison cards */
+    .ap-type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--paper-rule); margin: 1.5rem 0; }
+    .ap-type-card { padding: 1.8rem 1.5rem; border-right: 1px solid var(--paper-rule); }
+    .ap-type-card:last-child { border-right: none; }
+    .ap-type-card .type-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--red); margin-bottom: 0.5rem; }
+    .ap-type-card .type-name { font-size: 1rem; font-weight: 700; margin-bottom: 1rem; padding-bottom: 0.7rem; border-bottom: 1px solid var(--paper-rule); }
+    .ap-type-card .type-row { font-size: 0.82rem; color: var(--ink-mid); padding: 0.3rem 0; display: flex; flex-direction: column; gap: 0.1rem; }
+    .ap-type-card .type-row + .type-row { border-top: 1px solid var(--paper-rule); margin-top: 0.3rem; padding-top: 0.4rem; }
+    .ap-type-card .type-row .r-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-light); }
+    .ap-type-card .type-row .r-val { color: var(--ink); font-size: 0.85rem; }
+
+    /* PoE class table visual */
+    .poe-bar-wrap { display: flex; flex-direction: column; gap: 0.5rem; margin: 1.2rem 0; }
+    .poe-row { display: grid; grid-template-columns: 110px 1fr 80px; align-items: center; gap: 0.8rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; }
+    .poe-label { color: var(--ink-mid); }
+    .poe-bar { height: 22px; background: var(--paper-rule); }
+    .poe-fill { height: 100%; background: var(--ink); }
+    .poe-fill.red { background: var(--red); }
+    .poe-val { color: var(--ink-light); text-align: right; }
+
+    /* Hardware component breakdown */
+    .hw-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.2rem; margin: 1.5rem 0; }
+    .hw-card { border: 1px solid var(--paper-rule); padding: 1.3rem 1.4rem; }
+    .hw-card .hw-title { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--red); margin-bottom: 0.6rem; }
+    .hw-card .hw-desc { font-size: 0.85rem; color: var(--ink-mid); line-height: 1.7; }
+    .hw-card .hw-detail { font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; color: var(--ink-light); margin-top: 0.5rem; }
+
+    /* Antenna pattern */
+    .antenna-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0; }
+    .antenna-card { border: 1px solid var(--paper-rule); padding: 1.2rem; text-align: center; }
+    .antenna-card .ant-diagram { font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; line-height: 1.5; color: var(--ink); margin-bottom: 0.8rem; white-space: pre; }
+    .antenna-card .ant-name { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem; }
+    .antenna-card .ant-desc { font-size: 0.78rem; color: var(--ink-light); line-height: 1.6; }
+
+    .summary-box { background: var(--ink); color: var(--paper); padding: 2rem 2.5rem; margin: 3rem 0 0; }
+    .summary-box .sum-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--red-muted); margin-bottom: 1rem; }
+    .summary-box ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+    .summary-box ul li { font-size: 0.9rem; color: #D4CCBF; padding-left: 1.2rem; position: relative; line-height: 1.7; }
+    .summary-box ul li::before { content: '—'; position: absolute; left: 0; color: var(--red-muted); font-family: 'IBM Plex Mono', monospace; }
+
+    .chapter-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 5rem; padding-top: 2rem; border-top: 2px solid var(--ink); }
+    .chapter-nav a { font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; letter-spacing: 0.08em; color: var(--ink-mid); text-decoration: none; padding: 0.75rem 1.5rem; border: 1px solid var(--paper-rule); transition: all 0.2s; }
+    .chapter-nav a:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .chapter-nav .next { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .chapter-nav .next:hover { background: var(--red); border-color: var(--red); }
+
+    footer { padding: 2rem 4rem; border-top: 2px solid var(--ink); display: flex; justify-content: space-between; align-items: center; }
+    footer .foot-left { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; letter-spacing: 0.08em; color: var(--ink-light); }
+    footer .foot-right { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--red); }
+
+    @media (max-width: 900px) {
+      header { padding: 0 1.5rem; }
+      .chapter-banner { padding: 3rem 1.5rem 2.5rem; }
+      .page-layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      main { padding: 2rem 1.5rem 4rem; }
+      .ap-type-grid { grid-template-columns: 1fr; }
+      .ap-type-card { border-right: none; border-bottom: 1px solid var(--paper-rule); }
+      .ap-type-card:last-child { border-bottom: none; }
+      .hw-grid, .antenna-grid { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 0.5rem; padding: 1.5rem; }
+    }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .chapter-banner { animation: fadeUp 0.5s ease both; }
+    main { animation: fadeUp 0.5s ease 0.1s both; }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="site-title" href="index.html">AP & Wireless — <span>初學者完整課程</span></a>
+  <nav class="header-nav">
+    <a href="chapter2.html">← 上一章</a>
+    <a href="index.html">課程首頁</a>
+    <a href="chapter4.html">下一章 →</a>
+  </nav>
+</header>
+
+<div class="chapter-banner">
+  <div class="chapter-label">Chapter 03 / 08</div>
+  <h1>存取點（AP）架構與類型</h1>
+  <p class="subtitle">深入解析 AP 的硬體構造、運作架構，比較獨立式、控制器式、雲端管理三種部署模式的差異，並說明 PoE 供電、天線類型與 AP 選型的關鍵要素。</p>
+  <div class="chapter-meta-row">
+    <div class="m-item"><div class="m-label">建議閱讀時間</div><div class="m-value">約 2～3 小時</div></div>
+    <div class="m-item"><div class="m-label">難度</div><div class="m-value">入門至中階</div></div>
+    <div class="m-item"><div class="m-label">先備章節</div><div class="m-value">Chapter 01、02</div></div>
+    <div class="m-item"><div class="m-label">本章重點</div><div class="m-value">AP 架構模式、PoE、天線、選型</div></div>
+  </div>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <div class="toc-label">本章目錄</div>
+    <ul class="toc-list">
+      <li><div class="toc-section">AP 基礎</div></li>
+      <li><a href="#s1">3.1 AP 的角色與功能</a></li>
+      <li><a href="#s2">3.2 AP 的運作模式</a></li>
+      <li><div class="toc-section">部署架構</div></li>
+      <li><a href="#s3">3.3 獨立式 AP</a></li>
+      <li><a href="#s4">3.4 控制器式 AP（WLC）</a></li>
+      <li><a href="#s5">3.5 雲端管理 AP</a></li>
+      <li><a href="#s6">3.6 三種架構比較</a></li>
+      <li><div class="toc-section">硬體深入</div></li>
+      <li><a href="#s7">3.7 AP 硬體元件</a></li>
+      <li><a href="#s8">3.8 PoE 供電技術</a></li>
+      <li><a href="#s9">3.9 天線類型與特性</a></li>
+      <li><a href="#s10">3.10 AP 規格解讀</a></li>
+      <li><div class="toc-section">進階概念</div></li>
+      <li><a href="#s11">3.11 CAPWAP 通道協定</a></li>
+      <li><a href="#s12">3.12 AP 選型指南</a></li>
+      <li><div class="toc-section">本章總結</div></li>
+      <li><a href="#summary">重點整理</a></li>
+    </ul>
+    <div class="sidebar-nav">
+      <a href="chapter2.html">← Chapter 02</a>
+      <a href="index.html">課程首頁</a>
+      <a href="chapter4.html">Chapter 04 →</a>
+    </div>
+  </aside>
+
+  <main>
+
+    <!-- 3.1 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s1"></span>
+      <h2><span class="h2-num">3.1</span>AP 的角色與功能</h2>
+
+      <p>
+        <em class="term">AP（Access Point，存取點）</em>是無線網路的核心基礎設施裝置，其主要任務是在<strong>有線網路</strong>與<strong>無線裝置</strong>之間建立橋樑，讓手機、筆電等無線裝置能夠存取有線骨幹網路（以及網際網路）。
+      </p>
+
+      <p>簡單來說，AP 做了以下幾件核心工作：</p>
+
+      <dl class="def-list">
+        <dt>無線訊號收發</dt>
+        <dd>透過天線向空中發送和接收 2.4 GHz、5 GHz、6 GHz 的無線電訊號，讓裝置能在覆蓋範圍內進行無線連線。</dd>
+        <dt>有線與無線橋接</dt>
+        <dd>將無線介質（Wi-Fi 訊框，802.11 格式）和有線介質（乙太網路訊框，802.3 格式）互相轉換，讓無線裝置能與有線網路上的伺服器、路由器透明地通訊。</dd>
+        <dt>多裝置接入管理</dt>
+        <dd>管理多台裝置同時連線的競爭仲裁（CSMA/CA）、身分認證（開放、WPA2、WPA3、802.1X）、加密（CCMP/GCMP）與流量轉發。</dd>
+        <dt>SSID 廣播</dt>
+        <dd>定期發送 <em class="term">Beacon 訊框</em>（預設每 100 ms 一次）廣播 SSID 名稱、支援的速率、安全參數等資訊，讓附近裝置知道此 AP 的存在及連線條件。</dd>
+        <dt>功率管理協調</dt>
+        <dd>與客戶端協商 TWT（Wi-Fi 6）、PS-Poll（舊版省電）等節能機制，在裝置休眠時暫存待傳封包。</dd>
+      </dl>
+
+      <h3>AP 在網路架構中的位置</h3>
+
+      <div class="diagram">
+        <div class="diagram-ascii">         網際網路
+              |
+         [路由器 / 防火牆]
+              |
+       [核心交換器（L3）]
+        /      |      \
+[接取交換器] [接取交換器] [接取交換器]
+   |    |       |    |      |    |
+ [AP1][AP2]  [AP3][AP4]  [AP5][AP6]
+   )))  )))    )))  )))    )))  )))
+  無線覆蓋區域1   無線覆蓋區域2   無線覆蓋區域3
+
+AP 透過有線乙太網路（PoE）上行連接交換器
+每台 AP 覆蓋一個無線服務區域（BSS）
+多個 AP 共用相同 SSID 組成 ESS（延伸服務集）</div>
+        <div class="diagram-caption">Fig 3.1 — AP 在企業網路架構中的典型位置</div>
+      </div>
+
+      <div class="callout">
+        <div class="callout-label">AP vs 無線路由器</div>
+        <p>家用的「無線路由器（Wireless Router）」是 AP 加上路由器（Router）加上 DHCP 伺服器的<strong>多合一</strong>裝置。純粹的 AP（如企業級 AP）本身不做路由，只負責無線接入，IP 分配和路由由上層的路由器或交換器負責。區分這兩者有助於理解企業網路的分層設計。</p>
+      </div>
+    </div>
+
+    <!-- 3.2 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s2"></span>
+      <h2><span class="h2-num">3.2</span>AP 的運作模式</h2>
+
+      <p>一台 AP 可以設定為不同的運作模式，每種模式承擔不同的網路角色：</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>模式</th><th>說明</th><th>典型用途</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Root AP（Infrastructure）</td>
+              <td>最常見的模式。AP 連接有線網路，提供無線覆蓋讓裝置接入。</td>
+              <td>所有一般 Wi-Fi 部署</td>
+            </tr>
+            <tr>
+              <td>Repeater（中繼）</td>
+              <td>AP 以無線方式連接另一台 Root AP，並將訊號轉發延伸覆蓋範圍。不需要有線上行線路，但每次中繼速率約減半。</td>
+              <td>難以佈線的空間延伸覆蓋</td>
+            </tr>
+            <tr>
+              <td>Bridge（橋接）</td>
+              <td>兩台 AP 以點對點無線連接，將兩個有線網路橋接在一起，取代長距離實體線路。</td>
+              <td>跨棟或跨建築連線</td>
+            </tr>
+            <tr>
+              <td>Mesh（網狀）</td>
+              <td>多台 AP 互相以無線連接形成自我修復的網狀拓撲，部分 AP 有線上行（Mesh Gateway），其餘無線上行（Mesh Node）。</td>
+              <td>家用 Mesh 系統、難以佈線的場所</td>
+            </tr>
+            <tr>
+              <td>Monitor（監控）</td>
+              <td>AP 不提供無線接入服務，專門掃描所有頻道監聽無線環境，偵測惡意 AP 或干擾來源。</td>
+              <td>無線入侵偵測（WIDS）</td>
+            </tr>
+            <tr>
+              <td>Sniffer（封包擷取）</td>
+              <td>AP 擷取特定頻道的所有無線訊框，傳送至分析工具（如 Wireshark）進行除錯分析。</td>
+              <td>無線網路故障排除</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout important">
+        <div class="callout-label">Repeater 的效能代價</div>
+        <p>Repeater（中繼）模式中，AP 使用<strong>相同無線介質</strong>接收和轉發訊號，必須先接收完整訊框再轉發，造成延遲增加且有效頻寬約減半。若使用<strong>雙頻或三頻 AP</strong>並以不同頻段承擔上行和下行（Dedicated Backhaul），可以大幅減輕此問題——這也是現代 Mesh 系統的設計思路。</p>
+      </div>
+    </div>
+
+    <!-- 3.3 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s3"></span>
+      <h2><span class="h2-num">3.3</span>獨立式 AP（Standalone / Autonomous AP）</h2>
+
+      <p>
+        <em class="term">獨立式 AP</em>（又稱 Autonomous AP 或 Fat AP）是最傳統的 AP 形態，所有的無線管理功能——包含訊框轉發、加密、認證、QoS、頻道選擇——全部在 AP 本機執行，不依賴任何外部控制器。
+      </p>
+
+      <h3>獨立式 AP 的架構</h3>
+
+      <div class="diagram">
+        <div class="diagram-ascii">獨立式 AP 架構：每台 AP 完全自主運作
+
+  ┌─────────────────────────────┐
+  │         獨立式 AP            │
+  │  ┌──────────────────────┐   │
+  │  │  無線功能（RF 處理）  │   │
+  │  │  加密 / 解密（CCMP）  │   │
+  │  │  SSID 管理 / 廣播     │   │
+  │  │  認證處理（WPA2/3）   │   │
+  │  │  DHCP 功能（可選）    │   │
+  │  │  本機設定介面（GUI）  │   │
+  │  └──────────────────────┘   │
+  │  ┌──────┐                   │
+  │  │ 乙太 │── 上行至交換器    │
+  │  │ 網路 │                   │
+  │  └──────┘                   │
+  └─────────────────────────────┘
+
+管理方式：直接登入各台 AP 的 Web 管理介面
+           或透過 CLI（Telnet / SSH）設定</div>
+        <div class="diagram-caption">Fig 3.2 — 獨立式 AP 架構示意</div>
+      </div>
+
+      <h3>獨立式 AP 的特點</h3>
+      <dl class="def-list">
+        <dt>優點：部署簡單</dt>
+        <dd>不需要額外的控制器硬體或軟體。單台 AP 插上電源和網路線即可運作，適合小型環境（1～5 台 AP）。</dd>
+        <dt>優點：低成本</dt>
+        <dd>無需購買控制器授權，前期投入成本低。家用和小型辦公室首選。</dd>
+        <dt>缺點：管理分散</dt>
+        <dd>每台 AP 需要獨立設定和維護。10 台 AP 的環境要更改一個 SSID 密碼，就需要逐一登入 10 台設備，耗時且容易出錯。</dd>
+        <dt>缺點：漫遊品質差</dt>
+        <dd>裝置在獨立式 AP 間漫遊時，每次都要重新執行完整的認證流程，造成短暫斷線（特別影響 VoIP 通話）。</dd>
+        <dt>缺點：缺乏集中視野</dt>
+        <dd>無法集中監控所有 AP 的連線裝置、流量統計與異常事件，故障排除困難。</dd>
+      </dl>
+
+      <p><strong>適用規模：</strong>1～10 台 AP，家庭、小型辦公室、小型商店。</p>
+    </div>
+
+    <!-- 3.4 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s4"></span>
+      <h2><span class="h2-num">3.4</span>控制器式 AP（Controller-Based / Thin AP）</h2>
+
+      <p>
+        <em class="term">控制器式 AP</em>（又稱 Thin AP 或 Lightweight AP）將大部分的智慧功能從 AP 本機移至集中的<em class="term">無線區域網路控制器（WLC, Wireless LAN Controller）</em>處理。AP 本身只負責最基本的無線射頻操作，其餘由 WLC 統一指揮。
+      </p>
+
+      <h3>功能分工：AP 與 WLC</h3>
+
+      <div class="diagram">
+        <div class="diagram-ascii">控制器式架構：功能集中在 WLC
+
+  ┌─────────────────────────┐      ┌───────────────────────────┐
+  │      Thin AP            │      │    WLC（控制器）           │
+  │  ┌────────────────┐    │      │  ┌─────────────────────┐  │
+  │  │ RF 訊號收發    │◄───┼──────┼─►│ SSID 設定管理       │  │
+  │  │ 802.11 基本    │    │      │  │ 認證與安全政策      │  │
+  │  │ 訊框封裝/解封  │    │      │  │ 漫遊管理（快速漫遊）│  │
+  │  │（CAPWAP 隧道）│    │      │  │ 頻道與功率控制      │  │
+  │  └────────────────┘    │      │  │ QoS 政策套用        │  │
+  │                         │      │  │ 集中監控與統計      │  │
+  │  乙太網路上行 ──────────┼──────┼─►│ 韌體統一更新        │  │
+  └─────────────────────────┘      │  │ AP 授權管理         │  │
+                                   │  └─────────────────────┘  │
+  多台 AP ← CAPWAP 隧道 → WLC      └───────────────────────────┘</div>
+        <div class="diagram-caption">Fig 3.3 — 控制器式 AP 架構：功能集中於 WLC</div>
+      </div>
+
+      <h3>Split MAC 架構</h3>
+      <p>
+        控制器式 AP 採用 <em class="term">Split MAC（分割 MAC 層）</em>架構，將 802.11 MAC 層的功能分成兩部分：
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>功能類別</th><th>在 AP 本機執行</th><th>在 WLC 執行</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Beacon 廣播</td><td>AP 本機</td><td>—</td></tr>
+            <tr><td>Probe Response</td><td>AP 本機</td><td>—</td></tr>
+            <tr><td>ACK 回應</td><td>AP 本機（時間敏感）</td><td>—</td></tr>
+            <tr><td>資料訊框加密/解密</td><td>AP 本機（Local Switching）或 WLC</td><td>Central Switching 模式</td></tr>
+            <tr><td>身分認證</td><td>—</td><td>WLC 執行</td></tr>
+            <tr><td>關聯（Association）</td><td>—</td><td>WLC 決策</td></tr>
+            <tr><td>漫遊決策</td><td>—</td><td>WLC 統籌</td></tr>
+            <tr><td>SSID 與安全政策</td><td>—</td><td>WLC 集中管理</td></tr>
+            <tr><td>QoS 標記</td><td>—</td><td>WLC 政策</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Central Switching vs Local Switching</h3>
+      <dl class="def-list">
+        <dt>Central Switching</dt>
+        <dd>所有用戶流量透過 CAPWAP 隧道送回 WLC 集中轉發。WLC 可以對所有流量做統一的政策控制、防火牆過濾、QoS 標記。缺點是 WLC 需承擔大量流量，且增加延遲（流量繞道 WLC）。</dd>
+        <dt>Local Switching（FlexConnect / H-REAP）</dt>
+        <dd>用戶資料流量在 AP 本機直接轉發至有線網路，不繞道 WLC；只有控制訊令（認證、漫遊）才走 CAPWAP 隧道。適合分支機構場景（WAN 頻寬有限），即使 WLC 連線中斷 AP 仍可繼續服務。</dd>
+      </dl>
+
+      <p><strong>代表廠商與產品：</strong>Cisco WLC + Catalyst AP、Aruba 控制器 + AP、Ruckus SmartZone + AP。</p>
+      <p><strong>適用規模：</strong>50 台以上 AP，中大型企業、校園、醫院、購物中心。</p>
+    </div>
+
+    <!-- 3.5 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s5"></span>
+      <h2><span class="h2-num">3.5</span>雲端管理 AP（Cloud-Managed AP）</h2>
+
+      <p>
+        <em class="term">雲端管理 AP</em> 是近年來成長最快的部署模式。AP 的管理功能由廠商託管的<strong>雲端控制器</strong>提供，管理員透過瀏覽器或 App 存取雲端儀表板，無需在現場安裝或維護任何控制器硬體。
+      </p>
+
+      <h3>雲端管理架構</h3>
+
+      <div class="diagram">
+        <div class="diagram-ascii">雲端管理架構：控制器在雲端，用戶流量走本地
+
+                      ┌──────────────────────┐
+                      │   廠商雲端資料中心    │
+                      │  ┌──────────────────┐│
+                      │  │  雲端控制器       ││
+                      │  │  設定管理         ││
+                      │  │  監控 / 警報      ││
+                      │  │  韌體更新         ││
+                      │  │  報表分析         ││
+                      │  └──────────────────┘│
+                      └──────────────────────┘
+                                ▲  控制平面（設定指令）
+  ─────────────────────────────┼────────────────
+              現場（客戶端）    │
+                                │
+  [交換器]──[AP1]  [AP2]  [AP3]
+     |                          
+  [本地路由器]──[網際網路]──────┘
+
+  用戶資料流量：直接走本地，不上雲端
+  管理流量：AP ←→ 雲端控制器（HTTPS / CAPWAP）</div>
+        <div class="diagram-caption">Fig 3.4 — 雲端管理 AP 架構：管理在雲，資料走本地</div>
+      </div>
+
+      <h3>雲端管理的特點</h3>
+      <dl class="def-list">
+        <dt>優點：零觸碰部署（Zero-Touch Provisioning）</dt>
+        <dd>AP 插電連上網路後自動連至雲端，下載最新設定並完成配置，無需現場技術人員介入設定。特別適合多分點組織（連鎖店、分公司）的遠端部署。</dd>
+        <dt>優點：無控制器硬體成本</dt>
+        <dd>無需購買和維護實體 WLC 設備，通常以訂閱制（SaaS）計費，將資本支出（CapEx）轉為營運支出（OpEx）。</dd>
+        <dt>優點：跨地點統一管理</dt>
+        <dd>從單一雲端儀表板管理分散在全球各地的 AP，實時查看連線裝置、流量統計、安全事件，無需 VPN 連回現場。</dd>
+        <dt>缺點：需要網際網路連線</dt>
+        <dd>若現場網際網路中斷，AP 可能無法接受新的設定變更（但通常仍可繼續服務已連線的裝置，視廠商設計而定）。</dd>
+        <dt>缺點：訂閱費用長期累積</dt>
+        <dd>按授權數量和年份收費，長期下來的總成本可能高於傳統控制器架構，需做 TCO（總持有成本）評估。</dd>
+        <dt>缺點：資料隱私考量</dt>
+        <dd>設定資料（SSID、VLAN、安全政策）儲存於廠商雲端，部分具有資料主權或合規需求的組織可能有顧慮。</dd>
+      </dl>
+
+      <p><strong>代表廠商與產品：</strong>Cisco Meraki、Ubiquiti UniFi（可選雲端或本地控制器）、Aruba Central、Ruckus Cloud。</p>
+      <p><strong>適用規模：</strong>任何規模皆可，特別適合 5～500 台 AP 的多分點組織。</p>
+    </div>
+
+    <!-- 3.6 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s6"></span>
+      <h2><span class="h2-num">3.6</span>三種架構完整比較</h2>
+
+      <div class="ap-type-grid">
+        <div class="ap-type-card">
+          <div class="type-label">模式一</div>
+          <div class="type-name">獨立式 AP</div>
+          <div class="type-row"><div class="r-label">初期成本</div><div class="r-val">低</div></div>
+          <div class="type-row"><div class="r-label">控制器</div><div class="r-val">不需要</div></div>
+          <div class="type-row"><div class="r-label">集中管理</div><div class="r-val">無</div></div>
+          <div class="type-row"><div class="r-label">漫遊品質</div><div class="r-val">差</div></div>
+          <div class="type-row"><div class="r-label">擴展性</div><div class="r-val">低（1～10 台）</div></div>
+          <div class="type-row"><div class="r-label">適合場景</div><div class="r-val">家庭、小辦公室</div></div>
+        </div>
+        <div class="ap-type-card">
+          <div class="type-label">模式二</div>
+          <div class="type-name">控制器式 AP</div>
+          <div class="type-row"><div class="r-label">初期成本</div><div class="r-val">高（含 WLC）</div></div>
+          <div class="type-row"><div class="r-label">控制器</div><div class="r-val">實體 WLC</div></div>
+          <div class="type-row"><div class="r-label">集中管理</div><div class="r-val">完整</div></div>
+          <div class="type-row"><div class="r-label">漫遊品質</div><div class="r-val">優秀（802.11r）</div></div>
+          <div class="type-row"><div class="r-label">擴展性</div><div class="r-val">高（50～5000 台）</div></div>
+          <div class="type-row"><div class="r-label">適合場景</div><div class="r-val">大型企業、校園</div></div>
+        </div>
+        <div class="ap-type-card">
+          <div class="type-label">模式三</div>
+          <div class="type-name">雲端管理 AP</div>
+          <div class="type-row"><div class="r-label">初期成本</div><div class="r-val">中（訂閱制）</div></div>
+          <div class="type-row"><div class="r-label">控制器</div><div class="r-val">雲端 SaaS</div></div>
+          <div class="type-row"><div class="r-label">集中管理</div><div class="r-val">完整（跨地點）</div></div>
+          <div class="type-row"><div class="r-label">漫遊品質</div><div class="r-val">良好</div></div>
+          <div class="type-row"><div class="r-label">擴展性</div><div class="r-val">高（任何規模）</div></div>
+          <div class="type-row"><div class="r-label">適合場景</div><div class="r-val">多分點組織</div></div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>比較項目</th><th>獨立式</th><th>控制器式</th><th>雲端管理</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>韌體更新</td><td>手動逐台</td><td>WLC 統一推送</td><td>雲端自動更新</td></tr>
+            <tr><td>設定一致性</td><td>容易出現差異</td><td>模板統一套用</td><td>模板統一套用</td></tr>
+            <tr><td>離線運作</td><td>完全自主</td><td>需 WLC 在線</td><td>有限（依廠商）</td></tr>
+            <tr><td>授權模式</td><td>買斷</td><td>買斷 + AP 授權</td><td>年費訂閱</td></tr>
+            <tr><td>RF 最佳化</td><td>手動</td><td>RRM 自動調整</td><td>AI 自動調整</td></tr>
+            <tr><td>訪客網路</td><td>基本支援</td><td>進階管控</td><td>進階管控</td></tr>
+            <tr class="highlight"><td>總持有成本（5 年）</td><td>最低（小規模）</td><td>最低（大規模）</td><td>中等</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 3.7 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s7"></span>
+      <h2><span class="h2-num">3.7</span>AP 硬體元件詳解</h2>
+
+      <p>了解 AP 的內部硬體構造，有助於正確解讀規格表、評估效能，以及在出現問題時理解可能的原因。一台 AP 主要由以下元件構成：</p>
+
+      <div class="hw-grid">
+        <div class="hw-card">
+          <div class="hw-title">無線晶片（Radio Chipset）</div>
+          <div class="hw-desc">AP 的核心元件，負責無線訊號的<strong>調變、解調、編碼</strong>等物理層處理。每個頻段（2.4G / 5G / 6G）通常對應一顆獨立的無線晶片。晶片效能決定支援的 Wi-Fi 標準、最大 MCS、空間串流數。</div>
+          <div class="hw-detail">主要廠商：Qualcomm（Atheros）、Broadcom、MediaTek、Intel</div>
+        </div>
+        <div class="hw-card">
+          <div class="hw-title">主處理器（CPU）</div>
+          <div class="hw-desc">負責 AP 的整體系統運作：運行作業系統（通常為 Linux）、處理封包轉發、執行加密演算法（AES 硬體加速）、管理 CAPWAP 隧道、運行 Web 管理介面。</div>
+          <div class="hw-detail">常見：MIPS、ARM Cortex-A 架構，頻率 1～4 GHz，企業級 AP 通常多核心</div>
+        </div>
+        <div class="hw-card">
+          <div class="hw-title">記憶體（RAM / Flash）</div>
+          <div class="hw-desc"><strong>RAM</strong>（動態記憶體）儲存運行中的作業系統、連線資料表、封包緩衝區。RAM 越大，可同時處理的連線裝置數越多。<strong>Flash</strong>（快閃記憶體）儲存韌體、設定檔。容量影響可安裝的軟體功能。</div>
+          <div class="hw-detail">企業級 AP 典型：RAM 1～4 GB，Flash 256 MB～2 GB</div>
+        </div>
+        <div class="hw-card">
+          <div class="hw-title">乙太網路介面（Ethernet Port）</div>
+          <div class="hw-desc">AP 的有線上行介面，連接交換器。現代企業 AP 通常配備 <strong>1 或 2 個 GbE（1 Gbps）</strong> 或 <strong>Multi-Gig（2.5G / 5G / 10G）</strong>埠。2 個埠可做 Link Aggregation（鏈路聚合）或主備備援。</div>
+          <div class="hw-detail">注意：AP 的無線端聚合速率若超過 1 Gbps，單個 GbE 埠會成為瓶頸</div>
+        </div>
+        <div class="hw-card">
+          <div class="hw-title">PA / LNA（功率放大器 / 低雜訊放大器）</div>
+          <div class="hw-desc"><strong>PA（Power Amplifier）</strong>放大發射功率，增加訊號傳播距離。<strong>LNA（Low Noise Amplifier）</strong>放大接收訊號同時抑制雜訊，提升接收靈敏度。高端 AP 的 PA/LNA 規格通常明顯優於消費級設備。</div>
+          <div class="hw-detail">企業級 AP 發射功率通常可達 23～30 dBm（依法規限制）</div>
+        </div>
+        <div class="hw-card">
+          <div class="hw-title">天線（Antenna）</div>
+          <div class="hw-desc">將電路中的電訊號轉換為空中的電磁波（發射），或將電磁波轉換為電訊號（接收）。天線的類型（全向 / 指向）、增益（dBi）、極化方向直接影響訊號覆蓋形狀和距離。詳見 3.9 節。</div>
+          <div class="hw-detail">企業 AP 多為內建天線；特殊環境可換外接天線</div>
+        </div>
+      </div>
+
+      <h3>PoE 受電模組</h3>
+      <p>大多數企業 AP 沒有獨立的電源接頭，而是透過 <em class="term">PoE（Power over Ethernet）</em>從乙太網路線同時接收資料和電力。AP 內部有 PoE 受電模組（PD, Powered Device），從網路線的銅線對中提取電力轉換為 AP 所需的工作電壓（通常 5V / 12V）。</p>
+    </div>
+
+    <!-- 3.8 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s8"></span>
+      <h2><span class="h2-num">3.8</span>PoE 供電技術</h2>
+
+      <p>
+        <em class="term">PoE（Power over Ethernet，乙太網路供電）</em>讓交換器（PSE, Power Sourcing Equipment）透過標準的網路線（Cat5e 或以上）同時傳輸資料和電力，AP 不需要額外的電源線或插座，大幅簡化安裝工程。
+      </p>
+
+      <h3>PoE 標準演進</h3>
+
+      <div class="poe-bar-wrap">
+        <div class="poe-row">
+          <span class="poe-label">IEEE 802.3af</span>
+          <div class="poe-bar"><div class="poe-fill" style="width:25%"></div></div>
+          <span class="poe-val">15.4 W</span>
+        </div>
+        <div class="poe-row">
+          <span class="poe-label">IEEE 802.3at</span>
+          <div class="poe-bar"><div class="poe-fill" style="width:45%"></div></div>
+          <span class="poe-val">30 W</span>
+        </div>
+        <div class="poe-row">
+          <span class="poe-label">IEEE 802.3bt</span>
+          <div class="poe-bar"><div class="poe-fill red" style="width:70%"></div></div>
+          <span class="poe-val">60 W</span>
+        </div>
+        <div class="poe-row">
+          <span class="poe-label">802.3bt Type 4</span>
+          <div class="poe-bar"><div class="poe-fill red" style="width:100%"></div></div>
+          <span class="poe-val">100 W</span>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>標準</th><th>別名</th><th>最大供電功率</th><th>使用線對</th><th>適用 AP 類型</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>IEEE 802.3af</td><td>PoE</td><td>15.4 W（PD 端 12.95 W）</td><td>2 對</td><td>基本單頻 AP、IP 電話</td></tr>
+            <tr><td>IEEE 802.3at</td><td>PoE+</td><td>30 W（PD 端 25.5 W）</td><td>2 對</td><td>雙頻 AP（主流企業 AP）</td></tr>
+            <tr class="highlight"><td>IEEE 802.3bt Type 3</td><td>PoE++（4PPoE）</td><td>60 W（PD 端 51 W）</td><td>4 對</td><td>三頻 AP、Wi-Fi 6 高階 AP</td></tr>
+            <tr class="highlight"><td>IEEE 802.3bt Type 4</td><td>PoE++</td><td>100 W（PD 端 71.3 W）</td><td>4 對</td><td>Wi-Fi 6E/7 旗艦 AP</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>PoE 部署的重要注意事項</h3>
+
+      <dl class="def-list">
+        <dt>PSE 的總功率預算</dt>
+        <dd>PoE 交換器（PSE）有總功率預算限制（如 370 W），需計算所有 AP 的實際功耗總和，避免超過預算導致部分 AP 無法供電。計算時要用 AP 的<strong>最大功耗</strong>（非標稱功率），並保留 20% 餘裕。</dd>
+        <dt>線材規格要求</dt>
+        <dd>802.3bt（PoE++）使用全部 4 對線對，需要 Cat5e 或以上的線材，且線路長度不得超過 <strong>100 公尺</strong>（包含水平佈線和跳線的總和）。線材品質差（如雜牌無截面積標示的 CCA 線）可能導致電壓降過大。</dd>
+        <dt>供電功率 vs 使用功率的差距</dt>
+        <dd>標準標示的是「最大可提供功率」，但受線路電阻影響，AP 實際獲得的功率會低於標示值。例如 802.3at 標示 30 W，AP 端實際只能獲得 25.5 W。AP 規格書會分別標示 <code>PoE Power Draw</code>（AP 消耗）和 <code>PoE Input</code>（PSE 需提供）兩個數值。</dd>
+        <dt>降級運作（Power Negotiation）</dt>
+        <dd>若交換器只支援 PoE+（802.3at）但 AP 需要 PoE++（802.3bt），AP 可能以降低效能的方式運作（例如關閉 6 GHz 無線電或降低發射功率）。部署前務必確認交換器與 AP 的 PoE 規格相符。</dd>
+      </dl>
+
+      <div class="callout important">
+        <div class="callout-label">PoE Injector（PoE 注入器）</div>
+        <p>若現有交換器不支援 PoE，可加裝 <strong>PoE Injector（PoE 注入器）</strong>——一個中介裝置，接收非 PoE 交換器輸出和外部電源，輸出帶電力的網路訊號給 AP。單台 AP 的場景下這是最經濟的解法，但多台 AP 建議直接換購 PoE 交換器。</p>
+      </div>
+    </div>
+
+    <!-- 3.9 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s9"></span>
+      <h2><span class="h2-num">3.9</span>天線類型與特性</h2>
+
+      <p>
+        天線是 AP 最直接影響覆蓋品質的元件。天線的<em class="term">增益（Gain）</em>以 <strong>dBi</strong> 為單位，表示相對於全向性參考天線（Isotropic）的訊號聚焦程度。增益越高，訊號在特定方向越強，但覆蓋角度越窄。
+      </p>
+
+      <h3>主要天線類型</h3>
+
+      <div class="antenna-grid">
+        <div class="antenna-card">
+          <div class="ant-diagram">    ↑ ↑ ↑
+   ← 〇 →
+    ↓ ↓ ↓
+  （360° 全向）</div>
+          <div class="ant-name">全向天線（Omni）</div>
+          <div class="ant-desc">訊號向四周均勻輻射（水平 360°），垂直方向有一定聚焦。增益 2～8 dBi。適合室內天花板安裝，覆蓋四周空間。</div>
+        </div>
+        <div class="antenna-card">
+          <div class="ant-diagram">        ↑
+     ↗ ↑ ↑ ↖
+  ←  ◎ ○ ○ ○→
+     ↘   ↓
+        ↓</div>
+          <div class="ant-name">指向天線（Directional）</div>
+          <div class="ant-desc">訊號集中在特定方向，覆蓋角度窄（如 60°～90°），但距離遠。增益 10～23 dBi。適合走廊、戶外點對點連線。</div>
+        </div>
+        <div class="antenna-card">
+          <div class="ant-diagram">  ▲ ▲ ▲ ▲ ▲
+  ← ◎ ◎ ◎ ◎ →
+  ▼ ▼ ▼ ▼ ▼
+  （半球形覆蓋）</div>
+          <div class="ant-name">貼片天線（Patch）</div>
+          <div class="ant-desc">半球形覆蓋，常見於壁掛式 AP。增益 5～10 dBi。適合會議室牆面安裝，訊號朝向房間內部。</div>
+        </div>
+      </div>
+
+      <h3>天線增益的代價：能量守恆</h3>
+      <p>
+        天線增益不是憑空增加訊號能量，而是將有限的無線電能量<strong>重新分配</strong>到特定方向，犧牲其他方向的訊號強度。一個 6 dBi 全向天線相比 2 dBi 天線，會把更多能量壓縮在水平平面，垂直方向的訊號就相對較弱——這也是為什麼天花板型 AP 的全向天線通常選用 2～4 dBi，而非越高越好。
+      </p>
+
+      <h3>內建天線 vs 外接天線</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>類型</th><th>特點</th><th>適用場景</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>內建天線（Integrated）</td><td>外觀整潔、安裝簡便、特性固定，由廠商在設計時優化。企業 AP 的主流選擇。</td><td>辦公室天花板、一般室內環境</td></tr>
+            <tr><td>外接天線（Detachable）</td><td>可依需求更換不同類型天線（全向、指向、高增益）。靈活性高但外觀較凌亂。</td><td>倉庫、戶外、需客製化覆蓋的場景</td></tr>
+            <tr><td>MIMO 天線陣列</td><td>多根天線在空間上錯開排列，各天線間距至少半個波長（2.4 GHz 約 6.25 cm），確保各串流的訊號相關性低。</td><td>所有現代 Wi-Fi 4+ 設備</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>天線極化（Polarization）</h3>
+      <p>
+        天線極化是指電磁波電場的振盪方向。常見的極化方式有<strong>垂直極化</strong>、<strong>水平極化</strong>和<strong>雙極化（Dual Polarization）</strong>。現代 AP 通常採用雙極化天線（每根天線同時具備垂直和水平兩個極化元素），可以更好地對抗多重路徑效應，提升在各種方向安裝時的訊號品質。
+      </p>
+    </div>
+
+    <!-- 3.10 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s10"></span>
+      <h2><span class="h2-num">3.10</span>AP 規格表解讀</h2>
+
+      <p>採購 AP 時，廠商的規格表充滿術語，以下以一台典型企業 Wi-Fi 6 AP 為範例，逐項說明各規格的實際意義：</p>
+
+      <pre>─── 範例規格：企業 Wi-Fi 6 AP ───────────────────────────────
+
+Wi-Fi Standards      : 802.11ax/ac/n/g/b/a
+Frequency Bands      : 2.4 GHz, 5 GHz (Dual-Band)
+Max Throughput       : 2.4 Gbps (5 GHz: 2400 Mbps + 2.4 GHz: 574 Mbps)
+
+Radio Chains (2.4G)  : 2×2:2 MIMO        ← 2 發射、2 接收、2 串流
+Radio Chains (5G)    : 4×4:4 MU-MIMO     ← 4 發射、4 接收、4 串流
+Max Spatial Streams  : 6 (2+4)
+
+Channel Width (5G)   : 20/40/80/160 MHz
+Channel Width (2.4G) : 20/40 MHz
+
+OFDMA               : Yes (Uplink + Downlink)
+BSS Coloring        : Yes
+TWT                 : Yes
+
+Ethernet Port        : 1× 2.5GbE (PoE In) + 1× 1GbE (PoE Out)
+PoE Input            : IEEE 802.3bt (PoE++)
+Max Power Consumption: 25.5 W
+
+Max Client Support   : 512 clients
+Concurrent SSIDs     : Up to 16 per radio
+
+Operating Temp       : 0°C ～ 50°C
+Mounting             : Ceiling / Wall</pre>
+
+      <h3>規格解讀重點</h3>
+
+      <dl class="def-list">
+        <dt>Max Throughput 的真相</dt>
+        <dd>規格書標示的 2.4 Gbps 是 <strong>2.4 GHz + 5 GHz 兩個頻段速率的加總</strong>，且為理論最大值（最佳訊號、最少干擾、單台裝置）。實際環境中的有效吞吐量通常為理論值的 <strong>40%～60%</strong>。</dd>
+        <dt>2.5GbE 埠的必要性</dt>
+        <dd>5 GHz 的 4×4 MIMO 在 80 MHz 頻道下理論速率約 2.4 Gbps，已超過 1 GbE 的 1 Gbps 上限，因此需要 <strong>2.5G 或更高速的上行埠</strong>，否則有線端會成為瓶頸。</dd>
+        <dt>1× GbE PoE Out 的用途</dt>
+        <dd>部分 AP 有額外的 PoE 輸出埠，可為其他裝置（如 IP 電話、IP 攝影機）供電，無需在附近再拉一條有線 PoE 線。</dd>
+        <dt>Max Client Support 的意義</dt>
+        <dd>512 clients 是技術上的最大連線數，但不代表 512 台裝置同時高速傳輸。實務上單台 AP 的<strong>建議</strong>並發用戶數通常為 30～60 台（依流量特性而定）。</dd>
+      </dl>
+    </div>
+
+    <!-- 3.11 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s11"></span>
+      <h2><span class="h2-num">3.11</span>CAPWAP 通道協定</h2>
+
+      <p>
+        <em class="term">CAPWAP（Control And Provisioning of Wireless Access Points）</em>是定義 AP 與 WLC 之間通訊格式的標準協定，由 RFC 5415 定義，廣泛用於控制器式無線網路。
+      </p>
+
+      <h3>CAPWAP 的雙通道架構</h3>
+      <p>CAPWAP 在 AP 與 WLC 之間建立兩條 UDP 隧道：</p>
+
+      <dl class="def-list">
+        <dt>控制通道（UDP 5246）</dt>
+        <dd>傳送 AP 管理訊令：AP 設定推送、頻道/功率指令、韌體更新指示、狀態監控心跳（Keepalive）。使用 DTLS（Datagram TLS）加密，確保管理指令不被竊聽或篡改。</dd>
+        <dt>資料通道（UDP 5247）</dt>
+        <dd>在 Central Switching 模式下，傳送用戶資料訊框（從 AP 封裝後送往 WLC，或 WLC 解封裝後送出）。</dd>
+      </dl>
+
+      <h3>AP 加入 WLC 的流程</h3>
+
+      <pre>Step 1：AP 開機，取得 IP（DHCP）
+        ↓
+Step 2：AP 透過以下方式之一發現 WLC：
+        a. DHCP Option 43（WLC IP 位址寫入 DHCP 回應）
+        b. DNS 解析（cisco-capwap-controller.domain）
+        c. 廣播探索（同一 VLAN 內）
+        d. 靜態設定（AP 本機儲存 WLC IP）
+        ↓
+Step 3：AP 發送 Discovery Request → WLC 回應 Discovery Response
+        ↓
+Step 4：AP 建立 DTLS 加密通道
+        ↓
+Step 5：AP 發送 Join Request → WLC 驗證後回應 Join Response
+        ↓
+Step 6：WLC 推送設定（SSID、VLAN、頻道、功率、安全政策）
+        ↓
+Step 7：AP 設定完成，開始廣播 Beacon，服務無線客戶端</pre>
+
+      <div class="callout">
+        <div class="callout-label">AP 的預設模式</div>
+        <p>Cisco 等廠商的控制器式 AP 出廠後預設為 Lightweight 模式，必須連接 WLC 才能完整運作。若要以獨立模式使用，需先將韌體切換為 Autonomous 模式。反之，獨立式 AP 也可以刷入 Lightweight 韌體加入 WLC 管理。</p>
+      </div>
+    </div>
+
+    <!-- 3.12 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s12"></span>
+      <h2><span class="h2-num">3.12</span>AP 選型指南</h2>
+
+      <p>面對市場上繁多的 AP 選項，以下提供系統化的選型思考框架：</p>
+
+      <h3>第一步：確定使用環境</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>環境類型</th><th>關鍵需求</th><th>推薦規格方向</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>家庭（1～2 層樓）</td><td>覆蓋優先、易設定</td><td>雙頻 Wi-Fi 6、2×2 或 3×3、Mesh 支援</td></tr>
+            <tr><td>小型辦公室（10～30 人）</td><td>穩定連線、訪客網路</td><td>雙頻 Wi-Fi 6、4×4（5G）、獨立或雲端管理</td></tr>
+            <tr><td>中型企業（50～300 人）</td><td>漫遊、集中管理、VLAN</td><td>雙/三頻 Wi-Fi 6、控制器或雲端管理、PoE++</td></tr>
+            <tr><td>高密度場館（體育館、展場）</td><td>容量優先、OFDMA</td><td>Wi-Fi 6/6E、高容量 AP、20/40 MHz 頻道（5G）</td></tr>
+            <tr><td>倉庫 / 工廠</td><td>廣覆蓋、耐環境（IP54+）</td><td>工業級 AP、指向或高增益天線、低頻段</td></tr>
+            <tr><td>戶外（停車場、廣場）</td><td>防水防塵（IP67）、耐溫</td><td>戶外 AP、防雷保護、PoE+ 或 PoE++ 供電</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>第二步：確認用戶數量與流量需求</h3>
+
+      <pre>評估原則（每台 AP 的建議並發用戶數）：
+
+  一般辦公（郵件、網頁、視訊會議）：
+    Wi-Fi 5 AP       → 建議 ≤ 30 台裝置
+    Wi-Fi 6 AP       → 建議 ≤ 50 台裝置
+
+  高密度（教室、展場、演講廳）：
+    Wi-Fi 6 AP（大容量型）→ 建議 ≤ 100 台裝置
+    （需搭配 20 MHz 頻道規劃）
+
+  AP 數量計算範例：
+    辦公室 200 人、平均每人 1.5 台裝置 = 300 台裝置
+    使用 Wi-Fi 6 AP（建議 50 台/AP）
+    所需 AP 數量 = 300 ÷ 50 = 6 台（再加 1～2 台作備援覆蓋）</pre>
+
+      <h3>第三步：核對供電與交換器規格</h3>
+      <ul style="margin: 0.5rem 0 1.2rem 1.2rem; display:flex; flex-direction:column; gap:0.5rem;">
+        <li style="font-size:0.9rem; color:var(--ink-mid);">確認交換器支援的 PoE 標準（802.3af / at / bt）和總功率預算</li>
+        <li style="font-size:0.9rem; color:var(--ink-mid);">高階 AP（Wi-Fi 6E 三頻）通常需要 802.3bt（PoE++，60 W）</li>
+        <li style="font-size:0.9rem; color:var(--ink-mid);">若 AP 有 2.5G 或更高速的上行埠，交換器也需要對應速率的埠</li>
+      </ul>
+
+      <h3>第四步：管理架構決策</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>情境</th><th>建議架構</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1～5 台 AP，技術人員有限</td><td>獨立式 AP 或 Mesh 系統</td></tr>
+            <tr><td>6～20 台 AP，單一地點</td><td>軟體控制器（如 UniFi Controller）或雲端管理</td></tr>
+            <tr><td>20～100 台 AP，多地點</td><td>雲端管理（Meraki、UniFi Cloud）</td></tr>
+            <tr><td>100 台以上 AP，高度客製化需求</td><td>硬體 WLC 控制器（Cisco、Aruba）</td></tr>
+            <tr><td>有嚴格資料主權要求</td><td>本地控制器（On-Premises），避免雲端</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout important">
+        <div class="callout-label">不要只看無線規格</div>
+        <p>許多人選購 AP 只看無線規格（Wi-Fi 幾、速率多少），卻忽略了<strong>上行埠速率</strong>（1GbE 還是 2.5GbE）、<strong>CPU 與 RAM 規格</strong>（影響最大連線數和穩定性）、<strong>PoE 需求</strong>、<strong>管理軟體品質</strong>和<strong>廠商售後支援</strong>。一台無線規格漂亮但 CPU 不足的 AP，在實際多用戶環境中表現可能遠不如預期。</p>
+      </div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="content-section">
+      <span class="section-anchor" id="summary"></span>
+      <h2><span class="h2-num">—</span>本章重點整理</h2>
+
+      <div class="summary-box">
+        <div class="sum-label">Chapter 03 Summary</div>
+        <ul>
+          <li>AP 的核心功能是橋接有線與無線網路，透過 Beacon 廣播 SSID，管理多裝置的認證、加密與轉發。</li>
+          <li>AP 有多種運作模式：Root AP（正常服務）、Repeater（無線中繼，速率減半）、Bridge（點對點橋接）、Monitor（WIDS 掃描）等。</li>
+          <li>三種主要部署架構：獨立式（適合小型環境，無集中管理）、控制器式（WLC 集中管理，適合大型企業）、雲端管理（SaaS 訂閱，適合多分點）。</li>
+          <li>控制器式 AP 採用 Split MAC 架構，時間敏感操作在 AP 本機執行，管理決策由 WLC 統籌；FlexConnect 讓流量本地轉發，適合 WAN 有限的分支機構。</li>
+          <li>AP 硬體由無線晶片（每頻段一顆）、CPU、RAM / Flash、乙太網路介面、PA/LNA 和天線組成；CPU 與 RAM 規格影響實際多用戶效能。</li>
+          <li>PoE 讓 AP 透過網路線接收電力：802.3af（15.4W）、802.3at（30W）、802.3bt Type 3（60W）、Type 4（100W）。Wi-Fi 6 三頻 AP 通常需要 PoE++。</li>
+          <li>天線增益（dBi）代表訊號聚焦程度而非增加能量；全向天線適合天花板安裝，指向天線適合走廊和遠距點對點。</li>
+          <li>CAPWAP 是 AP 與 WLC 間的標準通訊協定，分控制通道（UDP 5246）和資料通道（UDP 5247），AP 啟動後透過 DHCP Option 43 或 DNS 自動發現 WLC。</li>
+        </ul>
+      </div>
+
+      <div class="chapter-nav">
+        <a href="chapter2.html">← Chapter 02：Wi-Fi 標準與技術規格</a>
+        <a href="chapter4.html" class="next">Chapter 04：拓撲與部署規劃 →</a>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer>
+  <div class="foot-left">AP & Wireless Network Application — Chapter 03</div>
+  <div class="foot-right">存取點（AP）架構與類型</div>
+</footer>
+
+<script>
+  const sections = document.querySelectorAll('.section-anchor');
+  const tocLinks = document.querySelectorAll('.toc-list a');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        tocLinks.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-64px 0px -60% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

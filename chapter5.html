@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chapter 5：AP 安裝、設定與管理｜AP 與無線網路應用</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --paper: #F5F0E8;
+      --paper-dark: #EDE7D9;
+      --paper-rule: #DDD5C4;
+      --ink: #1A1610;
+      --ink-mid: #4A4035;
+      --ink-light: #8A7D6A;
+      --red: #C0392B;
+      --red-muted: #D9584A;
+    }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body { background: var(--paper); color: var(--ink); font-family: 'Noto Serif TC', serif; line-height: 1.85; }
+
+    header { border-bottom: 2px solid var(--ink); padding: 0 4rem; position: sticky; top: 0; background: var(--paper); z-index: 100; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .site-title { font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-mid); text-decoration: none; }
+    .site-title span { color: var(--red); }
+    .header-nav { display: flex; gap: 1.5rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; letter-spacing: 0.08em; }
+    .header-nav a { color: var(--ink-light); text-decoration: none; transition: color 0.2s; }
+    .header-nav a:hover { color: var(--red); }
+
+    .chapter-banner { background: var(--ink); color: var(--paper); padding: 4rem 4rem 3.5rem; }
+    .chapter-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--red-muted); margin-bottom: 1.2rem; }
+    .chapter-banner h1 { font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; margin-bottom: 1.2rem; }
+    .chapter-banner .subtitle { font-size: 1rem; color: #B8AC9E; max-width: 640px; line-height: 1.8; }
+    .chapter-meta-row { display: flex; gap: 3rem; margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid #3A342C; flex-wrap: wrap; }
+    .chapter-meta-row .m-item .m-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: #6A5E52; margin-bottom: 0.3rem; }
+    .chapter-meta-row .m-item .m-value { font-size: 0.9rem; color: #D4CCBF; }
+
+    .page-layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 64px); align-items: start; }
+
+    .sidebar { position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto; border-right: 1px solid var(--paper-rule); padding: 2.5rem 1.5rem; }
+    .toc-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 1.2rem; }
+    .toc-list { list-style: none; display: flex; flex-direction: column; gap: 0.15rem; }
+    .toc-list a { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; color: var(--ink-mid); text-decoration: none; padding: 0.35rem 0.6rem; border-left: 2px solid transparent; transition: all 0.15s; line-height: 1.5; }
+    .toc-list a:hover, .toc-list a.active { color: var(--red); border-left-color: var(--red); background: var(--paper-dark); }
+    .toc-section { margin-top: 1.2rem; margin-bottom: 0.3rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--paper-rule); }
+    .sidebar-nav { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--paper-rule); display: flex; flex-direction: column; gap: 0.5rem; }
+    .sidebar-nav a { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--ink-light); text-decoration: none; transition: color 0.15s; }
+    .sidebar-nav a:hover { color: var(--red); }
+
+    main { padding: 3.5rem 4rem 6rem 3.5rem; max-width: 860px; }
+    .content-section { margin-bottom: 4.5rem; }
+    .section-anchor { display: block; height: 64px; margin-top: -64px; visibility: hidden; }
+
+    h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.01em; margin-bottom: 1.5rem; padding-bottom: 0.7rem; border-bottom: 2px solid var(--ink); display: flex; align-items: baseline; gap: 1rem; }
+    h2 .h2-num { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; font-weight: 400; letter-spacing: 0.1em; color: var(--red); }
+    h3 { font-size: 1.1rem; font-weight: 600; margin-top: 2rem; margin-bottom: 0.8rem; color: var(--ink); }
+    h4 { font-size: 0.95rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--ink-mid); font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.03em; }
+    p { font-size: 0.97rem; color: var(--ink-mid); margin-bottom: 1rem; line-height: 1.9; }
+    strong { color: var(--ink); font-weight: 600; }
+    em.term { font-style: normal; color: var(--red); font-weight: 500; }
+
+    code { font-family: 'IBM Plex Mono', monospace; font-size: 0.82em; background: var(--paper-dark); border: 1px solid var(--paper-rule); padding: 0.1em 0.4em; color: var(--ink); }
+    pre { background: var(--ink); color: #D4CCBF; font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; line-height: 1.75; padding: 1.5rem 2rem; margin: 1.5rem 0; overflow-x: auto; border-left: 3px solid var(--red); }
+    pre .comment { color: #6A5E52; }
+    pre .key { color: #E8A87C; }
+    pre .val { color: #A8C6A0; }
+    pre .prompt { color: var(--red-muted); user-select: none; }
+
+    .callout { border-left: 3px solid var(--ink); background: var(--paper-dark); padding: 1.2rem 1.5rem; margin: 1.5rem 0; }
+    .callout.important { border-left-color: var(--red); }
+    .callout .callout-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 0.5rem; color: var(--ink-light); }
+    .callout.important .callout-label { color: var(--red); }
+    .callout p { margin-bottom: 0.5rem; font-size: 0.9rem; }
+    .callout p:last-child { margin-bottom: 0; }
+
+    .table-wrap { overflow-x: auto; margin: 1.5rem 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+    thead tr { background: var(--ink); color: var(--paper); }
+    thead th { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.75rem 1rem; text-align: left; font-weight: 500; }
+    tbody tr { border-bottom: 1px solid var(--paper-rule); }
+    tbody tr:hover { background: var(--paper-dark); }
+    tbody td { padding: 0.7rem 1rem; color: var(--ink-mid); line-height: 1.7; vertical-align: top; }
+    tbody td:first-child { font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; color: var(--ink); font-weight: 500; }
+    tbody tr.highlight td { background: rgba(192,57,43,0.05); }
+    tbody tr.highlight td:first-child { color: var(--red); }
+
+    .def-list { display: grid; grid-template-columns: auto 1fr; gap: 0; border-top: 1px solid var(--paper-rule); margin: 1.5rem 0; }
+    .def-list dt { font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; font-weight: 500; padding: 0.75rem 1.5rem 0.75rem 0; border-bottom: 1px solid var(--paper-rule); color: var(--ink); white-space: nowrap; }
+    .def-list dd { font-size: 0.88rem; color: var(--ink-mid); padding: 0.75rem 0; border-bottom: 1px solid var(--paper-rule); line-height: 1.75; }
+
+    .diagram { background: var(--paper-dark); border: 1px solid var(--paper-rule); padding: 2rem; margin: 2rem 0; }
+    .diagram-ascii { font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; line-height: 1.65; color: var(--ink); display: block; white-space: pre; overflow-x: auto; }
+    .diagram-caption { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: var(--ink-light); margin-top: 1rem; letter-spacing: 0.06em; text-transform: uppercase; }
+
+    /* Step flow */
+    .step-flow { display: flex; flex-direction: column; gap: 0; margin: 1.5rem 0; border: 1px solid var(--paper-rule); }
+    .step-item { display: grid; grid-template-columns: 64px 1fr; border-bottom: 1px solid var(--paper-rule); }
+    .step-item:last-child { border-bottom: none; }
+    .step-num { background: var(--ink); color: var(--paper); display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', monospace; font-size: 1.1rem; font-weight: 300; }
+    .step-content { padding: 1.2rem 1.5rem; }
+    .step-content .s-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.35rem; color: var(--ink); }
+    .step-content .s-desc { font-size: 0.85rem; color: var(--ink-mid); line-height: 1.7; }
+
+    /* Config panel tabs */
+    .config-block { border: 1px solid var(--paper-rule); margin: 1.5rem 0; }
+    .config-header { background: var(--paper-dark); border-bottom: 1px solid var(--paper-rule); padding: 0.7rem 1.2rem; display: flex; align-items: center; gap: 1rem; }
+    .config-header .cfg-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; background: var(--ink); color: var(--paper); padding: 0.15em 0.6em; }
+    .config-header .cfg-title { font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; color: var(--ink-mid); }
+    .config-body { padding: 1.3rem 1.5rem; }
+    .config-row { display: grid; grid-template-columns: 180px 1fr; gap: 0.8rem; padding: 0.5rem 0; border-bottom: 1px solid var(--paper-rule); align-items: start; }
+    .config-row:last-child { border-bottom: none; }
+    .config-key { font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; color: var(--ink); font-weight: 500; padding-top: 0.1rem; }
+    .config-val { font-size: 0.85rem; color: var(--ink-mid); line-height: 1.65; }
+    .config-val code { font-size: 0.8em; }
+    .config-val .recommended { color: var(--red); font-weight: 500; font-size: 0.82rem; font-family: 'IBM Plex Mono', monospace; }
+
+    /* Platform cards */
+    .platform-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin: 1.5rem 0; }
+    .platform-card { border: 1px solid var(--paper-rule); padding: 1.5rem; }
+    .platform-card .p-name { font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .platform-card .p-vendor { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; letter-spacing: 0.1em; color: var(--red); text-transform: uppercase; margin-bottom: 1rem; }
+    .platform-card .p-row { font-size: 0.85rem; color: var(--ink-mid); padding: 0.3rem 0; border-bottom: 1px solid var(--paper-rule); line-height: 1.6; }
+    .platform-card .p-row:last-child { border-bottom: none; }
+    .platform-card .p-row .pl { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--ink-light); display: block; }
+
+    /* VLAN diagram */
+    .vlan-strip { display: flex; gap: 0; margin: 1.5rem 0; border: 1px solid var(--paper-rule); overflow: hidden; }
+    .vlan-block { flex: 1; padding: 0.9rem 1rem; border-right: 1px solid var(--paper-rule); }
+    .vlan-block:last-child { border-right: none; }
+    .vlan-block .vb-id { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; letter-spacing: 0.1em; color: var(--red); text-transform: uppercase; margin-bottom: 0.3rem; }
+    .vlan-block .vb-name { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.3rem; }
+    .vlan-block .vb-desc { font-size: 0.78rem; color: var(--ink-light); line-height: 1.5; }
+    .vlan-block.dark { background: var(--ink); }
+    .vlan-block.dark .vb-id { color: var(--red-muted); }
+    .vlan-block.dark .vb-name { color: var(--paper); }
+    .vlan-block.dark .vb-desc { color: #7A6E62; }
+
+    /* Troubleshooting cards */
+    .trouble-list { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--paper-rule); margin: 1.5rem 0; }
+    .trouble-item { border-bottom: 1px solid var(--paper-rule); }
+    .trouble-item:last-child { border-bottom: none; }
+    .trouble-q { background: var(--paper-dark); padding: 0.8rem 1.2rem; font-size: 0.92rem; font-weight: 600; color: var(--ink); cursor: default; display: flex; justify-content: space-between; align-items: center; }
+    .trouble-q::after { content: '▾'; font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; color: var(--red); }
+    .trouble-body { padding: 1rem 1.2rem 1.2rem; }
+    .trouble-body .cause { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--red); margin-bottom: 0.4rem; }
+    .trouble-body p { font-size: 0.87rem; margin-bottom: 0.5rem; }
+    .trouble-body p:last-child { margin-bottom: 0; }
+
+    .summary-box { background: var(--ink); color: var(--paper); padding: 2rem 2.5rem; margin: 3rem 0 0; }
+    .summary-box .sum-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--red-muted); margin-bottom: 1rem; }
+    .summary-box ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+    .summary-box ul li { font-size: 0.9rem; color: #D4CCBF; padding-left: 1.2rem; position: relative; line-height: 1.7; }
+    .summary-box ul li::before { content: '—'; position: absolute; left: 0; color: var(--red-muted); font-family: 'IBM Plex Mono', monospace; }
+
+    .chapter-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 5rem; padding-top: 2rem; border-top: 2px solid var(--ink); }
+    .chapter-nav a { font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; letter-spacing: 0.08em; color: var(--ink-mid); text-decoration: none; padding: 0.75rem 1.5rem; border: 1px solid var(--paper-rule); transition: all 0.2s; }
+    .chapter-nav a:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .chapter-nav .next { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .chapter-nav .next:hover { background: var(--red); border-color: var(--red); }
+
+    footer { padding: 2rem 4rem; border-top: 2px solid var(--ink); display: flex; justify-content: space-between; align-items: center; }
+    footer .foot-left { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; letter-spacing: 0.08em; color: var(--ink-light); }
+    footer .foot-right { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--red); }
+
+    @media (max-width: 900px) {
+      header { padding: 0 1.5rem; }
+      .chapter-banner { padding: 3rem 1.5rem 2.5rem; }
+      .page-layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      main { padding: 2rem 1.5rem 4rem; }
+      .platform-grid { grid-template-columns: 1fr; }
+      .config-row { grid-template-columns: 1fr; }
+      .vlan-strip { flex-direction: column; }
+      .vlan-block { border-right: none; border-bottom: 1px solid var(--paper-rule); }
+      footer { flex-direction: column; gap: 0.5rem; padding: 1.5rem; }
+    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .chapter-banner { animation: fadeUp 0.5s ease both; }
+    main { animation: fadeUp 0.5s ease 0.1s both; }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="site-title" href="index.html">AP & Wireless — <span>初學者完整課程</span></a>
+  <nav class="header-nav">
+    <a href="chapter4.html">← 上一章</a>
+    <a href="index.html">課程首頁</a>
+    <a href="chapter6.html">下一章 →</a>
+  </nav>
+</header>
+
+<div class="chapter-banner">
+  <div class="chapter-label">Chapter 05 / 08</div>
+  <h1>AP 安裝、設定與管理</h1>
+  <p class="subtitle">從實體安裝到完整設定，逐步說明 SSID、頻道、功率等基本參數配置，介紹 WLC 控制器的管理流程，並實際操作 UniFi 與 Meraki 等主流雲端管理平台，最後涵蓋常見故障排除方法。</p>
+  <div class="chapter-meta-row">
+    <div class="m-item"><div class="m-label">建議閱讀時間</div><div class="m-value">約 3～4 小時</div></div>
+    <div class="m-item"><div class="m-label">難度</div><div class="m-value">中階（含實作）</div></div>
+    <div class="m-item"><div class="m-label">先備章節</div><div class="m-value">Chapter 03、04</div></div>
+    <div class="m-item"><div class="m-label">本章重點</div><div class="m-value">AP 設定參數、VLAN、WLC、雲端平台、排障</div></div>
+  </div>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <div class="toc-label">本章目錄</div>
+    <ul class="toc-list">
+      <li><div class="toc-section">實體安裝</div></li>
+      <li><a href="#s1">5.1 AP 安裝前置作業</a></li>
+      <li><a href="#s2">5.2 AP 實體安裝步驟</a></li>
+      <li><div class="toc-section">基本設定</div></li>
+      <li><a href="#s3">5.3 首次登入與初始設定</a></li>
+      <li><a href="#s4">5.4 SSID 設定詳解</a></li>
+      <li><a href="#s5">5.5 頻道與功率設定</a></li>
+      <li><a href="#s6">5.6 VLAN 與多 SSID 架構</a></li>
+      <li><a href="#s7">5.7 進階無線參數調整</a></li>
+      <li><div class="toc-section">控制器管理</div></li>
+      <li><a href="#s8">5.8 WLC 基本設定流程</a></li>
+      <li><a href="#s9">5.9 AP 群組與模板管理</a></li>
+      <li><div class="toc-section">雲端平台</div></li>
+      <li><a href="#s10">5.10 UniFi 平台操作</a></li>
+      <li><a href="#s11">5.11 Cisco Meraki 操作</a></li>
+      <li><div class="toc-section">監控與排障</div></li>
+      <li><a href="#s12">5.12 AP 監控指標</a></li>
+      <li><a href="#s13">5.13 常見問題排除</a></li>
+      <li><a href="#s14">5.14 韌體管理</a></li>
+      <li><div class="toc-section">本章總結</div></li>
+      <li><a href="#summary">重點整理</a></li>
+    </ul>
+    <div class="sidebar-nav">
+      <a href="chapter4.html">← Chapter 04</a>
+      <a href="index.html">課程首頁</a>
+      <a href="chapter6.html">Chapter 06 →</a>
+    </div>
+  </aside>
+
+  <main>
+
+    <!-- 5.1 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s1"></span>
+      <h2><span class="h2-num">5.1</span>AP 安裝前置作業</h2>
+
+      <p>物理安裝 AP 之前，妥善的前置作業能避免事後大量返工。以下是安裝前必須確認的清單：</p>
+
+      <h3>硬體清點</h3>
+      <dl class="def-list">
+        <dt>AP 本體</dt>
+        <dd>核對 AP 型號是否與採購清單一致；確認每台 AP 的序號（S/N）已記錄（後續管理和保固需要）；若 AP 需要配合特定 WLC 版本，確認韌體版本相容性。</dd>
+        <dt>安裝附件</dt>
+        <dd>天花板掛架（T-bar bracket）或牆面掛板；安裝螺絲（不同天花板材質需要不同螺絲）；安全纜線（防盜防摔，企業環境必備）。</dd>
+        <dt>網路線與PoE</dt>
+        <dd>已佈好的 Cat5e 或以上網路線，測試每條線路長度不超過 100 公尺；確認 PoE 交換器有足夠的可用埠和功率預算；若使用 PoE Injector，確認其規格符合 AP 的 PoE 需求。</dd>
+      </dl>
+
+      <h3>網路基礎設施確認</h3>
+      <dl class="def-list">
+        <dt>交換器 VLAN 設定</dt>
+        <dd>AP 的上行交換器埠必須設定為 <strong>Trunk 模式</strong>（允許多個 VLAN 通過），並允許所有 AP 需要的 VLAN（員工網路、訪客網路、管理 VLAN 等）。若漏設此步驟，多 SSID 的 VLAN 隔離功能將無法運作。</dd>
+        <dt>DHCP 服務</dt>
+        <dd>管理 VLAN 中需要有 DHCP 伺服器為 AP 本身分配 IP 位址（AP 需要 IP 才能連接 WLC 或雲端管理平台）。若使用 WLC 架構，也需確認 DHCP Option 43 已設定好 WLC 的 IP 位址。</dd>
+        <dt>DNS 解析</dt>
+        <dd>若使用雲端管理 AP，確認 AP 的管理 VLAN 可以解析外部 DNS 並存取網際網路。Meraki 需要能連接 <code>dashboard.meraki.com</code>，UniFi 雲端需要連接 <code>unifi.ui.com</code>。</dd>
+        <dt>防火牆規則</dt>
+        <dd>確認防火牆允許 AP 與 WLC 之間的 CAPWAP 流量（UDP 5246、5247），以及雲端管理平台所需的 HTTPS（TCP 443）連出流量。</dd>
+      </dl>
+
+      <div class="callout important">
+        <div class="callout-label">最常見的安裝失敗原因</div>
+        <p>根據實務經驗，AP 安裝後無法上線最常見的三個原因是：<strong>（1）交換器埠未設定 Trunk 模式</strong>（AP 的管理 VLAN 無法通過）、<strong>（2）防火牆封鎖了 CAPWAP 或 HTTPS 連出流量</strong>、<strong>（3）PoE 交換器功率不足</strong>（AP 無電力或降級運作）。安裝前逐一確認這三項可以排除 80% 的安裝問題。</p>
+      </div>
+    </div>
+
+    <!-- 5.2 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s2"></span>
+      <h2><span class="h2-num">5.2</span>AP 實體安裝步驟</h2>
+
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-num">01</div>
+          <div class="step-content">
+            <div class="s-title">確認天花板結構</div>
+            <div class="s-desc">辨別天花板類型：T-bar 輕鋼架天花板（最常見）、石膏板天花板、混凝土天花板。不同結構使用不同安裝方式和螺絲。T-bar 天花板通常使用廠商附贈的卡扣式掛架，直接夾在 T-bar 上，無需打孔。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">02</div>
+          <div class="step-content">
+            <div class="s-title">穿線與測試</div>
+            <div class="s-desc">將網路線從走線管道穿出至 AP 安裝位置，預留約 30～40 cm 的線材餘裕（方便日後維護和重新安裝）。使用線材測試儀（Cable Tester）測試線路通斷和接線正確性，確認後再繼續安裝。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">03</div>
+          <div class="step-content">
+            <div class="s-title">固定掛架</div>
+            <div class="s-desc">依廠商說明書固定 AP 掛架。T-bar 天花板：將掛架的金屬爪扣住 T-bar 鋼架，鎖緊固定螺絲。石膏板天花板：在標示位置鑽孔，使用壁虎和螺絲固定掛架，確認掛架水平且牢固。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">04</div>
+          <div class="step-content">
+            <div class="s-title">連接網路線</div>
+            <div class="s-desc">將網路線插入 AP 的 PoE 埠（通常標示為 ETH0 或 LAN1），確認 RJ45 接頭完全插入（聽到卡扣聲）。若 AP 有多個乙太網路埠，確認插入的是主要 PoE 輸入埠（查閱說明書確認）。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">05</div>
+          <div class="step-content">
+            <div class="s-title">安裝 AP 本體</div>
+            <div class="s-desc">將 AP 本體對準掛架，依廠商指示旋轉鎖定（通常順時鐘旋轉約 90°）。繫上安全纜線（防盜鋼索穿過 AP 的 Kensington Lock 孔，固定在天花板結構上）。確認 AP 安裝牢固，不會晃動。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">06</div>
+          <div class="step-content">
+            <div class="s-title">確認開機狀態</div>
+            <div class="s-desc">AP 獲得 PoE 供電後會開始啟動，觀察 LED 指示燈狀態。不同廠商 LED 意義不同，但通常：<strong>白色 / 綠色閃爍</strong> = 正在啟動；<strong>白色 / 綠色常亮</strong> = 已正常運作；<strong>橙色 / 紅色</strong> = 錯誤或未連線。查閱各廠商說明書確認 LED 定義。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">07</div>
+          <div class="step-content">
+            <div class="s-title">標籤與記錄</div>
+            <div class="s-desc">在 AP 附近的天花板或走線管道貼上標籤，記錄 AP 的識別資訊（AP 名稱、序號、連接的交換器埠號）。同時更新資產管理系統和部署文件。這一步經常被跳過，但對日後維護價值極高。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5.3 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s3"></span>
+      <h2><span class="h2-num">5.3</span>首次登入與初始設定</h2>
+
+      <p>獨立式 AP 通常透過 Web 管理介面進行初始設定。以下是通用的首次登入流程：</p>
+
+      <h3>出廠預設連線方式</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>廠商 / 系列</th><th>預設 IP / 連線方式</th><th>預設帳號</th><th>預設密碼</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Cisco Aironet（獨立模式）</td><td>192.168.1.1</td><td>Cisco</td><td>Cisco</td></tr>
+            <tr><td>Aruba Instant AP</td><td>192.168.1.1（或 DHCP）</td><td>admin</td><td>admin</td></tr>
+            <tr><td>Ubiquiti UniFi</td><td>透過 UniFi Controller 採用（不直接登入）</td><td>—</td><td>—</td></tr>
+            <tr><td>TP-Link EAP（Omada）</td><td>192.168.0.1（或 DHCP）</td><td>admin</td><td>admin</td></tr>
+            <tr><td>Ruckus Unleashed</td><td>192.168.0.1</td><td>super</td><td>sp-admin</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>初始設定必做項目</h3>
+
+      <div class="config-block">
+        <div class="config-header">
+          <span class="cfg-tag">Security</span>
+          <span class="cfg-title">第一步：立即更改管理員密碼</span>
+        </div>
+        <div class="config-body">
+          <div class="config-row">
+            <div class="config-key">新密碼要求</div>
+            <div class="config-val">至少 12 字元，混合大小寫、數字和特殊符號。<span class="recommended">切勿使用廠商預設密碼，這是最常被利用的安全漏洞。</span></div>
+          </div>
+          <div class="config-row">
+            <div class="config-key">管理員帳號</div>
+            <div class="config-val">避免使用 <code>admin</code>，建議改為自訂名稱（如 <code>netadmin</code>）降低暴力破解風險</div>
+          </div>
+          <div class="config-row">
+            <div class="config-key">管理 IP</div>
+            <div class="config-val">將 AP 的管理 IP 設定在獨立的管理 VLAN 中，不與用戶流量混用</div>
+          </div>
+          <div class="config-row">
+            <div class="config-key">管理協定</div>
+            <div class="config-val">停用 Telnet 和 HTTP；只允許 SSH 和 HTTPS 管理存取</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="config-block">
+        <div class="config-header">
+          <span class="cfg-tag">System</span>
+          <span class="cfg-title">基本系統設定</span>
+        </div>
+        <div class="config-body">
+          <div class="config-row">
+            <div class="config-key">裝置名稱</div>
+            <div class="config-val">設定有意義的主機名稱，如 <code>AP-Floor3-NE-01</code>（樓層-位置-序號），方便日後識別和管理</div>
+          </div>
+          <div class="config-row">
+            <div class="config-key">NTP 時間同步</div>
+            <div class="config-val">設定 NTP 伺服器（如 <code>time.google.com</code> 或內部 NTP）確保時間同步。這對安全日誌和憑證驗證至關重要，<span class="recommended">時間不正確會導致 WPA3 和 802.1X 認證失敗。</span></div>
+          </div>
+          <div class="config-row">
+            <div class="config-key">時區</div>
+            <div class="config-val">台灣設定為 <code>Asia/Taipei（UTC+8）</code></div>
+          </div>
+          <div class="config-row">
+            <div class="config-key">Syslog</div>
+            <div class="config-val">設定遠端 Syslog 伺服器 IP，將 AP 日誌集中儲存，方便故障排除和安全稽核</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5.4 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s4"></span>
+      <h2><span class="h2-num">5.4</span>SSID 設定詳解</h2>
+
+      <p>SSID 是使用者看到的「無線網路名稱」，但其背後的設定遠比名稱本身複雜，每個參數都會直接影響用戶體驗和安全性。</p>
+
+      <div class="config-block">
+        <div class="config-header">
+          <span class="cfg-tag">SSID</span>
+          <span class="cfg-title">SSID 核心設定參數</span>
+        </div>
+        <div class="config-body">
+          <div class="config-row">
+            <div class="config-key">SSID 名稱</div>
+            <div class="config-val">最多 32 字元（ASCII 或 UTF-8）。避免在 SSID 中包含公司名稱、地址、樓層等資訊，降低社交工程攻擊風險。不同用途使用不同 SSID（員工 / 訪客 / IoT）。</div>
+          </div>
+          <div class="config-row">
+            <div class="config-key">廣播 SSID</div>
+            <div class="config-val">建議<strong>啟用</strong>（預設）。隱藏 SSID（Hidden SSID）並不能提供真正的安全保護，裝置仍會發出 Probe Request 尋找隱藏 SSID，反而增加管理複雜度。</div>
+          </div>
+          <div class="config-row">
+            <div class="config-key">安全性模式</div>
+            <div class="config-val"><span class="recommended">企業：WPA3-Enterprise 或 WPA2/WPA3 混合</span><br>一般辦公：WPA3-Personal 或 WPA2-Personal（AES/CCMP）<br>訪客：WPA2-Personal 或開放（搭配 Captive Portal）<br><strong>切勿使用 WEP 或 TKIP</strong>（已被破解）</div>
+          </div>
+          <div class="config-row">
+            <div class="config-key">密碼（PSK）</div>
+            <div class="config-val">WPA2/3-Personal 密碼長度至少 12 字元，建議 20 字元以上。字典攻擊對短密碼極其有效。<span class="recommended">考慮每 90 天輪換一次訪客網路密碼。</span></div>
+          </div>
+          <div class="config-row">
+            <div class="config-key">頻段選擇</div>
+            <div class="config-val">可設定 SSID 只廣播在特定頻段（2.4G / 5G / 6G / 全部）。企業建議員工 SSID 僅廣播於 5G 和 6G，2.4G 僅用於 IoT SSID。</div>
+          </div>
+          <div class="config-row">
+            <div class="config-key">Client Isolation</div>
+            <div class="config-val">訪客 SSID 必須啟用<strong>Client Isolation（用戶隔離）</strong>，防止同一 SSID 的裝置互相通訊。避免訪客裝置攻擊其他訪客或掃描內網。</div>
+          </div>
+          <div class="config-row">
+            <div class="config-key">最低速率限制</div>
+            <div class="config-val">設定 SSID 的最低連線速率（Minimum Basic Rate）為 <code>12 Mbps</code> 或 <code>24 Mbps</code>，強制停用低速率，排除 802.11b 裝置和距離過遠的裝置連線，保護整體網路效能。</div>
+          </div>
+          <div class="config-row">
+            <div class="config-key">Band Steering</div>
+            <div class="config-val">啟用頻段引導，讓支援 5 GHz 的裝置優先連接 5 GHz，避免雙頻裝置黏在 2.4 GHz。</div>
+          </div>
+          <div class="config-row">
+            <div class="config-key">最大用戶數</div>
+            <div class="config-val">設定每個 SSID 在此 AP 上的最大連線裝置數（通常 25～50），超過後新裝置無法連線，避免單台 AP 過載。</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>訪客網路的特殊設定</h3>
+      <p>訪客網路需要特別處理，確保訪客能上網但無法存取企業內網：</p>
+
+      <pre><span class="comment"># 訪客網路設計要點</span>
+
+SSID     : "Guest-WiFi"
+VLAN     : 200  (訪客 VLAN，與企業網路完全隔離)
+安全性   : WPA2-Personal（簡單密碼或開放 + Captive Portal）
+Client Isolation : 啟用（防止訪客互攻）
+Band Steering    : 停用（訪客裝置多樣，相容性優先）
+頻寬限制  : 下行 20 Mbps / 上行 5 Mbps（防止訪客佔用全部頻寬）
+DNS 重定向: 強制使用公共 DNS（8.8.8.8），防止 DNS Rebinding 攻擊
+存取控制  : 防火牆規則封鎖訪客 VLAN 存取企業內網（僅允許 Internet 出口）
+Captive Portal : 可選，要求訪客同意使用條款後才開放網際網路</pre>
+    </div>
+
+    <!-- 5.5 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s5"></span>
+      <h2><span class="h2-num">5.5</span>頻道與功率設定</h2>
+
+      <p>AP 的頻道和功率設定直接影響覆蓋範圍和與鄰近 AP 的干擾程度，是部署品質的關鍵參數。</p>
+
+      <div class="config-block">
+        <div class="config-header">
+          <span class="cfg-tag">Radio</span>
+          <span class="cfg-title">2.4 GHz 無線電設定</span>
+        </div>
+        <div class="config-body">
+          <div class="config-row">
+            <div class="config-key">頻道（Channel）</div>
+            <div class="config-val"><span class="recommended">手動設定 1、6 或 11 其中之一</span>，依頻道規劃圖分配。避免使用自動選擇（Auto）於生產環境，AP 可能選到與鄰居衝突的頻道。</div>
+          </div>
+          <div class="config-row">
+            <div class="config-key">頻道寬度</div>
+            <div class="config-val"><span class="recommended">企業環境強制使用 20 MHz</span>。40 MHz 在 2.4 GHz 幾乎佔滿所有可用頻段，嚴重干擾鄰居 AP。</div>
+          </div>
+          <div class="config-row">
+            <div class="config-key">發射功率（Tx Power）</div>
+            <div class="config-val">一般辦公室建議 <code>12～17 dBm</code>（取決於 AP 間距）。<span class="recommended">功率越高不代表越好</span>，過高功率增大覆蓋重疊和同頻干擾。調整原則：相鄰 AP 重疊區的 RSSI 在 -65 到 -75 dBm 之間。</div>
+          </div>
+          <div class="config-row">
+            <div class="config-key">最低基本速率</div>
+            <div class="config-val"><span class="recommended">設為 12 Mbps 或 24 Mbps</span>，停用 1、2、5.5、6、9、11 Mbps 等低速率，防止遠端裝置降速連線拖累整體效能。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="config-block">
+        <div class="config-header">
+          <span class="cfg-tag">Radio</span>
+          <span class="cfg-title">5 GHz 無線電設定</span>
+        </div>
+        <div class="config-body">
+          <div class="config-row">
+            <div class="config-key">頻道（Channel）</div>
+            <div class="config-val">依頻道規劃圖手動指定（如 36、40、44、48、149 等），高密度環境使用 20 MHz 頻道以最大化可用頻道數。</div>
+          </div>
+          <div class="config-row">
+            <div class="config-key">頻道寬度</div>
+            <div class="config-val">低密度環境（家庭、小型辦公）：<code>80 MHz</code>。中密度辦公室：<code>40 MHz</code>。高密度場館：<span class="recommended">20 MHz</span>。160 MHz 僅在環境極好且裝置密度極低時才有意義。</div>
+          </div>
+          <div class="config-row">
+            <div class="config-key">發射功率</div>
+            <div class="config-val">辦公室環境建議 <code>15～20 dBm</code>（5 GHz 穿透力弱，可適當提高）。戶外 AP 可設至最大值（受法規限制，台灣最大 EIRP 為 1W/30dBm）。</div>
+          </div>
+          <div class="config-row">
+            <div class="config-key">DFS 啟用</div>
+            <div class="config-val">可啟用 DFS 頻道（52～144）以增加可用頻道數，但需接受偶爾的頻道切換（雷達偵測）。若環境中有頻繁的雷達訊號（如靠近機場），建議停用 DFS。</div>
+          </div>
+        </div>
+      </div>
+
+      <pre><span class="comment"># 功率設定的實務推算邏輯</span>
+
+目標：相鄰 AP 重疊區的訊號強度在 -70 dBm 左右（觸發漫遊的臨界點）
+
+若 AP 間距為 15 公尺（辦公室有隔間）：
+  AP1 在 15m 外的 RSSI 目標 = -70 dBm
+  AP 發射功率（Tx Power） = 目標 RSSI + 路徑損耗 + 牆壁損耗
+  路徑損耗（15m 5GHz）≈ 65 dB
+  穿過 2 道石膏板牆    ≈ 10 dB
+  所需 Tx Power  ≈ -70 + 65 + 10 = 5 dBm（+天線增益補正）
+
+實際上 AP 內建天線增益約 3～5 dBi，故設定約 10～15 dBm 即可
+超過此值只會增加干擾範圍，對覆蓋品質無益</pre>
+    </div>
+
+    <!-- 5.6 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s6"></span>
+      <h2><span class="h2-num">5.6</span>VLAN 與多 SSID 架構</h2>
+
+      <p>
+        在企業環境中，不同用途的無線網路應該使用不同的 <em class="term">VLAN（Virtual LAN，虛擬區域網路）</em>進行流量隔離，防止不同安全等級的裝置互相存取。
+      </p>
+
+      <h3>典型的多 SSID / VLAN 規劃</h3>
+
+      <div class="vlan-strip">
+        <div class="vlan-block dark">
+          <div class="vb-id">VLAN 10</div>
+          <div class="vb-name">員工網路</div>
+          <div class="vb-desc">SSID: CorpWiFi<br>WPA2/3-Enterprise<br>完整內網存取</div>
+        </div>
+        <div class="vlan-block">
+          <div class="vb-id">VLAN 20</div>
+          <div class="vb-name">訪客網路</div>
+          <div class="vb-desc">SSID: Guest<br>WPA2-Personal<br>僅網際網路</div>
+        </div>
+        <div class="vlan-block">
+          <div class="vb-id">VLAN 30</div>
+          <div class="vb-name">IoT 設備</div>
+          <div class="vb-desc">SSID: IoT-Net<br>WPA2-Personal<br>嚴格存取控制</div>
+        </div>
+        <div class="vlan-block dark">
+          <div class="vb-id">VLAN 99</div>
+          <div class="vb-name">AP 管理</div>
+          <div class="vb-desc">無 SSID（有線）<br>僅管理員存取<br>AP 自身管理 IP</div>
+        </div>
+      </div>
+
+      <h3>交換器 Trunk 設定（關鍵步驟）</h3>
+
+      <pre><span class="comment"># Cisco 交換器：AP 上行埠設定為 Trunk</span>
+<span class="prompt">SW(config)#</span> interface GigabitEthernet 0/1
+<span class="prompt">SW(config-if)#</span> description AP-Floor3-01
+<span class="prompt">SW(config-if)#</span> <span class="key">switchport mode trunk</span>
+<span class="prompt">SW(config-if)#</span> <span class="key">switchport trunk allowed vlan</span> <span class="val">10,20,30,99</span>
+<span class="prompt">SW(config-if)#</span> <span class="key">switchport trunk native vlan</span> <span class="val">99</span>   <span class="comment"># AP 管理 VLAN 為 Native VLAN（untagged）</span>
+<span class="prompt">SW(config-if)#</span> spanning-tree portfast
+<span class="prompt">SW(config-if)#</span> end
+
+<span class="comment"># 注意：Native VLAN（untagged）通常用於 AP 的管理流量</span>
+<span class="comment"># 其餘 VLAN（員工/訪客/IoT）以 Tagged 方式傳送</span></pre>
+
+      <h3>AP 端的 VLAN 標記設定</h3>
+      <p>在 AP 的管理介面中，需要為每個 SSID 指定對應的 VLAN ID，AP 才能在收到用戶流量時加上正確的 VLAN 標籤：</p>
+
+      <div class="config-block">
+        <div class="config-header">
+          <span class="cfg-tag">VLAN</span>
+          <span class="cfg-title">SSID 與 VLAN 對應設定（AP 端）</span>
+        </div>
+        <div class="config-body">
+          <div class="config-row">
+            <div class="config-key">CorpWiFi → VLAN 10</div>
+            <div class="config-val">員工 SSID 的流量加上 <code>VLAN Tag 10</code> 後送往交換器，由 VLAN 10 的閘道器處理（通常是 L3 交換器或防火牆的 SVI）</div>
+          </div>
+          <div class="config-row">
+            <div class="config-key">Guest → VLAN 20</div>
+            <div class="config-val">訪客流量加上 <code>VLAN Tag 20</code>，由防火牆的訪客政策處理，只允許連接網際網路，封鎖存取 VLAN 10（企業內網）</div>
+          </div>
+          <div class="config-row">
+            <div class="config-key">IoT-Net → VLAN 30</div>
+            <div class="config-val">IoT 裝置流量加上 <code>VLAN Tag 30</code>，設定嚴格的防火牆規則，僅允許特定 IoT 平台的 IP / 埠，防止 IoT 裝置被入侵後橫向移動</div>
+          </div>
+          <div class="config-row">
+            <div class="config-key">AP 管理 → VLAN 99</div>
+            <div class="config-val">AP 本身的 IP 位址在 VLAN 99（Native VLAN，untagged），AP 透過 VLAN 99 的閘道連接 WLC 或雲端管理平台</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5.7 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s7"></span>
+      <h2><span class="h2-num">5.7</span>進階無線參數調整</h2>
+
+      <p>除了基本的 SSID、頻道、功率設定外，以下進階參數可以顯著改善特定場景下的效能和使用體驗：</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>參數名稱</th><th>預設值</th><th>建議設定</th><th>說明</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Beacon Interval</td>
+              <td>100 ms</td>
+              <td>100 ms（保持預設）</td>
+              <td>AP 廣播 Beacon 的間隔時間。降低間隔（如 50ms）可加快裝置發現速度，但增加管理幀開銷；提高間隔節省電量但裝置發現變慢。一般情況下保持預設值即可。</td>
+            </tr>
+            <tr>
+              <td>DTIM Period</td>
+              <td>2</td>
+              <td>1（VoIP）/ 3（IoT省電）</td>
+              <td>DTIM（Delivery Traffic Indication Map）決定 AP 多久通知休眠裝置有緩存封包待收。值越小延遲越低但耗電越多；值越大省電但延遲提升。VoIP 建議 1，IoT 省電場景可設 3～5。</td>
+            </tr>
+            <tr>
+              <td>RTS/CTS Threshold</td>
+              <td>2347 bytes（停用）</td>
+              <td>高密度環境：256 bytes</td>
+              <td>封包大小超過此門檻時啟用 RTS/CTS 握手，防止隱藏節點問題（Hidden Node Problem）。在高密度環境降低此值可減少碰撞，但增加控制幀開銷。</td>
+            </tr>
+            <tr>
+              <td>Fragmentation Threshold</td>
+              <td>2346 bytes（停用）</td>
+              <td>保持停用</td>
+              <td>大封包拆分成小片段傳送，用於高干擾環境。現代環境中 OFDM 的保護機制已足夠，啟用反而增加開銷。</td>
+            </tr>
+            <tr>
+              <td>Short Guard Interval（SGI）</td>
+              <td>啟用</td>
+              <td>啟用（但訊號差時自動停用）</td>
+              <td>縮短 OFDM 符元間的保護間隔，提升約 11% 速率。現代 AP 會根據 SNR 自動決定是否使用 SGI，不需手動干預。</td>
+            </tr>
+            <tr>
+              <td>UAPSD（WMM Power Save）</td>
+              <td>啟用</td>
+              <td>啟用（保持預設）</td>
+              <td>讓行動裝置在非傳輸時進入省電狀態，同時維持 QoS 保障，延長電池壽命。在 Wi-Fi 6 環境下會被 TWT 進一步強化。</td>
+            </tr>
+            <tr class="highlight">
+              <td>802.11r（Fast Roaming）</td>
+              <td>停用</td>
+              <td>啟用（VoIP / 即時應用環境）</td>
+              <td>快速 BSS 切換，大幅縮短漫遊重新認證時間（從數百 ms 降至 &lt; 50ms），對 VoIP 和即時視訊至關重要。需確認所有客戶端裝置相容（少數舊裝置可能不相容）。</td>
+            </tr>
+            <tr class="highlight">
+              <td>802.11k（鄰居報告）</td>
+              <td>停用</td>
+              <td>啟用</td>
+              <td>AP 提供鄰居 AP 清單給客戶端，讓客戶端能更快地做漫遊決策，與 802.11r 配合效果最佳。</td>
+            </tr>
+            <tr class="highlight">
+              <td>802.11v（BSS Transition）</td>
+              <td>停用</td>
+              <td>啟用</td>
+              <td>AP 可建議（Suggest）或通知（Disassociate）客戶端切換至更合適的 AP，解決 Sticky Client 問題的主要工具。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        <div class="callout-label">802.11r/k/v 套件</div>
+        <p>802.11r（快速漫遊）、802.11k（鄰居報告）、802.11v（BSS 切換）三者合稱「<strong>漫遊三劍客</strong>」，應同時啟用才能發揮最大效益。現代企業 AP 和控制器通常將三者打包為一個「Fast Roaming」或「Seamless Roaming」選項，一鍵啟用。</p>
+      </div>
+    </div>
+
+    <!-- 5.8 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s8"></span>
+      <h2><span class="h2-num">5.8</span>WLC 基本設定流程</h2>
+
+      <p>以 Cisco WLC（Wireless LAN Controller）為例，說明控制器式無線網路的基本設定流程。其他廠商（Aruba、Ruckus）的邏輯相似，僅介面和術語不同。</p>
+
+      <h3>WLC 初始設定（CLI 方式）</h3>
+
+      <pre><span class="comment"># WLC 開機後透過 Console 埠進行初始設定</span>
+
+<span class="prompt">Welcome to the Cisco Wireless LAN Controller</span>
+
+<span class="comment"># 設定管理員帳號密碼</span>
+Enter Administrative User Name : <span class="val">admin</span>
+Enter Administrative Password  : <span class="val">**********</span>
+Re-enter Administrative Password: <span class="val">**********</span>
+
+<span class="comment"># 系統名稱</span>
+System Name [Cisco_xx:xx:xx] : <span class="val">WLC-HQ-01</span>
+
+<span class="comment"># 管理介面 IP（Management Interface）</span>
+Management Interface IP Address : <span class="val">192.168.99.10</span>
+Management Interface Netmask    : <span class="val">255.255.255.0</span>
+Management Interface Default Router : <span class="val">192.168.99.1</span>
+Management Interface VLAN Identifier : <span class="val">99</span>
+
+<span class="comment"># 設定 AP 管理 IP 範圍（AP 從此 DHCP Pool 取得 IP）</span>
+AP Transport Mode [layer2/layer3] : <span class="val">layer3</span>
+
+<span class="comment"># NTP 伺服器</span>
+NTP Server IP Address : <span class="val">time.google.com</span>
+
+<span class="comment"># 設定完成，WLC 重開機後可透過 Web 介面（HTTPS）繼續設定</span></pre>
+
+      <h3>透過 Web 介面建立 WLAN（SSID）</h3>
+
+      <pre><span class="comment"># WLC GUI 路徑：WLANs > Create New</span>
+
+Profile Name   : <span class="val">Corp-Employee</span>    <span class="comment"># 內部識別名稱</span>
+SSID           : <span class="val">CorpWiFi</span>          <span class="comment"># 廣播的無線網路名稱</span>
+Status         : <span class="val">Enabled</span>
+
+<span class="comment"># Security 標籤</span>
+Layer 2 Security : <span class="val">WPA+WPA2</span>
+WPA2 Policy      : <span class="val">Enabled</span>
+WPA2 Encryption  : <span class="val">AES</span>
+Auth Key Mgmt    : <span class="val">802.1X</span>          <span class="comment"># 企業認證</span>
+<span class="comment"># 或 PSK（個人模式）</span>
+
+<span class="comment"># Advanced 標籤</span>
+Allow AAA Override : <span class="val">Enabled</span>        <span class="comment"># 允許 RADIUS 伺服器動態指定 VLAN</span>
+FlexConnect        : <span class="val">Local Switching</span> <span class="comment"># 分支機構設定</span>
+802.11r            : <span class="val">Enabled</span>
+802.11k            : <span class="val">Enabled</span>
+802.11v            : <span class="val">Enabled</span></pre>
+
+      <h3>AP 群組（AP Group）設定</h3>
+      <p>
+        <em class="term">AP Group</em> 讓管理員將多台 AP 歸入同一群組，統一套用 SSID 清單和無線電設定，避免逐台設定的繁瑣：
+      </p>
+
+      <pre><span class="comment"># 建立 AP Group 並指定 SSID</span>
+AP Group Name : <span class="val">Floor3-Group</span>
+Description   : <span class="val">3 樓辦公室 AP 群組</span>
+
+<span class="comment"># 指定此群組廣播的 SSID（WLAN 清單）</span>
+Add WLAN : Corp-Employee  (Interface: vlan10)
+Add WLAN : Guest-Network  (Interface: vlan20)
+Add WLAN : IoT-Devices    (Interface: vlan30)
+
+<span class="comment"># 將實體 AP 加入群組</span>
+<span class="comment"># WLC GUI：AP 清單中，選擇 AP → AP Group → Floor3-Group</span></pre>
+    </div>
+
+    <!-- 5.9 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s9"></span>
+      <h2><span class="h2-num">5.9</span>AP 群組與模板管理</h2>
+
+      <p>
+        在大型部署中（數十至數百台 AP），有效的<strong>群組和模板管理</strong>是維持設定一致性和提高運維效率的核心。不同廠商使用不同術語，但概念相通：
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>廠商</th><th>群組概念</th><th>模板概念</th><th>說明</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Cisco WLC</td>
+              <td>AP Group</td>
+              <td>WLAN Profile</td>
+              <td>AP Group 定義 AP 廣播哪些 SSID；RF Profile 定義無線電參數（功率、頻道策略）</td>
+            </tr>
+            <tr>
+              <td>Aruba</td>
+              <td>AP Group</td>
+              <td>Virtual AP Profile</td>
+              <td>AP Group 繼承多個 Profile，形成完整的無線設定；支援 Profile 繼承（父子關係）</td>
+            </tr>
+            <tr>
+              <td>Ruckus</td>
+              <td>Zone</td>
+              <td>WLAN Service</td>
+              <td>Zone 是 AP 的邏輯分組，每個 Zone 可有不同的 WLAN Service 和 AP 政策</td>
+            </tr>
+            <tr>
+              <td>UniFi</td>
+              <td>Site</td>
+              <td>Wireless Network</td>
+              <td>Site 是完整的管理單元；Wireless Network（SSID）在 Site 內共用，AP 自動繼承</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>零觸碰配置（Zero-Touch Provisioning）流程</h3>
+
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-num">01</div>
+          <div class="step-content">
+            <div class="s-title">在管理平台預先建立設定</div>
+            <div class="s-desc">在 WLC 或雲端管理平台中，預先建立好 AP Group、SSID 清單、VLAN 對應、無線電策略和安全政策。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">02</div>
+          <div class="step-content">
+            <div class="s-title">AP 開機連線</div>
+            <div class="s-desc">現場人員只需將 AP 插入有線網路（PoE 供電），AP 開機後自動透過 DHCP 取得 IP，透過 DHCP Option 43 / DNS 找到 WLC 或雲端控制器。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">03</div>
+          <div class="step-content">
+            <div class="s-title">AP 自動加入管理平台</div>
+            <div class="s-desc">AP 傳送 Join Request 至 WLC；若 AP 的 MAC 位址已預先登錄在管理平台，自動分配到指定的 AP Group。若未登錄，進入待授權（Pending）狀態等待管理員批准。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">04</div>
+          <div class="step-content">
+            <div class="s-title">設定自動下推</div>
+            <div class="s-desc">AP Group 的所有設定（SSID、頻道策略、安全政策）自動推送至 AP，AP 完成設定後開始廣播 SSID。整個流程無需進入 AP 個別設定，現場人員只需要知道「把線插上去」。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5.10 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s10"></span>
+      <h2><span class="h2-num">5.10</span>UniFi 平台操作</h2>
+
+      <p>
+        <em class="term">Ubiquiti UniFi</em> 是目前中小企業和技術玩家最廣泛使用的無線管理平台，兼顧功能完整性和易用性，且可選擇本地控制器（UniFi Network Application，免費軟體）或雲端管理。
+      </p>
+
+      <h3>UniFi 架構概念</h3>
+
+      <div class="diagram">
+        <div class="diagram-ascii">UniFi 管理架構：
+
+  ┌─────────────────────────────────────────────┐
+  │          UniFi Network Application           │
+  │         （本機安裝 或 UniFi Cloud）           │
+  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  │
+  │  │  Sites   │  │ Devices  │  │ Clients  │  │
+  │  │（站點管理）│  │（裝置管理）│  │（用戶管理）│  │
+  │  └──────────┘  └──────────┘  └──────────┘  │
+  └─────────────────────────────────────────────┘
+           ↕  Inform Protocol（HTTPS）
+  ┌────────────────────────────────────────────┐
+  │  UniFi AP / Switch / Gateway（現場裝置）     │
+  │  AP-1  AP-2  AP-3  ...  （自動 Adopt）      │
+  └────────────────────────────────────────────┘
+
+UniFi Devices 在啟動後自動廣播「Inform URL」，
+控制器掃描到後發出 Adopt 請求，AP 確認後自動加入管理。</div>
+        <div class="diagram-caption">Fig 5.1 — UniFi 平台架構與 Adopt 流程</div>
+      </div>
+
+      <h3>UniFi 設定 SSID 步驟</h3>
+
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-num">01</div>
+          <div class="step-content">
+            <div class="s-title">登入 UniFi Network Application</div>
+            <div class="s-desc">開啟瀏覽器連至控制器 IP（預設 <code>https://192.168.1.1</code> 或 <code>https://unifi.ui.com</code>），以管理員帳號登入。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">02</div>
+          <div class="step-content">
+            <div class="s-title">建立 Wireless Network（SSID）</div>
+            <div class="s-desc">前往 <code>Settings → WiFi → Add New WiFi Network</code>。填入 SSID 名稱、選擇安全性（WPA3 / WPA2）、輸入密碼。進階選項中設定對應的 VLAN（Network）、啟用 Client Isolation（訪客用）、設定 Minimum Data Rate。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">03</div>
+          <div class="step-content">
+            <div class="s-title">建立 Network（VLAN）</div>
+            <div class="s-desc">前往 <code>Settings → Networks → Add New Network</code>，建立各 VLAN（如員工、訪客、IoT），指定 VLAN ID 和 IP 段。每個 Network 對應一個 SSID 的後端 VLAN。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">04</div>
+          <div class="step-content">
+            <div class="s-title">Adopt AP</div>
+            <div class="s-desc">前往 <code>Devices</code> 頁面，找到待採用（Pending）的 AP，點選 <code>Adopt</code>。AP 將自動下載設定，約 2～3 分鐘後狀態變為 <code>Connected</code>，開始廣播 SSID。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">05</div>
+          <div class="step-content">
+            <div class="s-title">設定無線電策略</div>
+            <div class="s-desc">前往 <code>Settings → WiFi → WiFi AI</code> 或 <code>Settings → System → Advanced → Radio</code>，設定 2.4G / 5G 的頻道寬度和功率（或啟用 Auto 讓 WiFi AI 自動優化）。</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>UniFi 常用監控功能</h3>
+
+      <pre><span class="comment"># 主要監控頁面與用途</span>
+
+Dashboard          → 整體網路健康、客戶端數量、流量統計
+Devices            → 所有 AP 狀態（訊號、連線客戶端數、上行流量）
+Clients            → 所有已連線和最近連線的裝置詳細資訊
+<span class="comment">                     包括：RSSI、MCS、連線時間、IP、使用的頻段</span>
+Statistics → WiFi  → 各 AP 和 SSID 的歷史流量圖表
+Topology           → 網路拓撲圖（AP / Switch / Gateway 連接關係）
+Events             → 系統事件日誌（AP 離線、裝置連線/斷線記錄）</pre>
+    </div>
+
+    <!-- 5.11 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s11"></span>
+      <h2><span class="h2-num">5.11</span>Cisco Meraki 操作</h2>
+
+      <p>
+        <em class="term">Cisco Meraki</em> 是業界最知名的雲端管理無線平台，以極佳的使用者介面、深度的流量可視性和零觸碰部署能力著稱，被廣泛用於連鎖零售、多分點企業和教育機構。
+      </p>
+
+      <div class="platform-grid">
+        <div class="platform-card">
+          <div class="p-name">Meraki 的核心優勢</div>
+          <div class="p-vendor">Cisco Meraki</div>
+          <div class="p-row"><span class="pl">零觸碰部署</span>AP 插電連網後 1～2 分鐘自動上線，無需現場設定。序號預先綁定 Dashboard 帳號即可。</div>
+          <div class="p-row"><span class="pl">深度可視性</span>流量分類（影片 / 社群媒體 / 商業應用）、用戶流量歸因、應用程式可視性報表。</div>
+          <div class="p-row"><span class="pl">跨地點管理</span>從單一 Dashboard 管理全球所有分點 AP，設定模板一鍵推送。</div>
+        </div>
+        <div class="platform-card">
+          <div class="p-name">Meraki 的限制</div>
+          <div class="p-vendor">注意事項</div>
+          <div class="p-row"><span class="pl">訂閱授權</span>需要每年續約 Dashboard 授權（License），授權到期後 AP 停止運作。</div>
+          <div class="p-row"><span class="pl">深度客製受限</span>部分進階設定（如自訂 RADIUS 屬性、複雜 QoS 策略）在 Dashboard 中無法完成，靈活性不如 WLC 架構。</div>
+          <div class="p-row"><span class="pl">資料主權</span>設定資料儲存於 Cisco 雲端，部分高安全合規場景需評估。</div>
+        </div>
+      </div>
+
+      <h3>Meraki Dashboard 基本設定流程</h3>
+
+      <pre><span class="comment"># Meraki 設定路徑（Dashboard 介面）</span>
+
+<span class="comment">1. 建立 SSID</span>
+   路徑 : Wireless → SSIDs → SSID 1 → Edit Settings
+   設定 :
+     Name              : <span class="val">CorpWiFi</span>
+     Security          : <span class="val">WPA2 Enterprise with my RADIUS server</span>
+     Band selection    : <span class="val">Dual band operation（2.4 + 5 GHz）</span>
+     VLAN              : <span class="val">10</span>
+     Minimum bitrate   : <span class="val">12 Mbps</span>
+     Client isolation  : <span class="val">Disabled（企業 SSID 不隔離）</span>
+
+<span class="comment">2. 設定訪客網路</span>
+   路徑 : Wireless → SSIDs → SSID 2
+     Name              : <span class="val">Guest</span>
+     Security          : <span class="val">Open（搭配 Splash Page 認證）</span>
+     VLAN              : <span class="val">20</span>
+     Firewall rules    : <span class="val">Block RFC1918（封鎖內網存取）</span>
+     Client isolation  : <span class="val">Enabled</span>
+
+<span class="comment">3. 無線電設定</span>
+   路徑 : Wireless → Radio Settings
+     5 GHz channel     : <span class="val">Auto（Meraki 自動選擇最佳頻道）</span>
+     Channel width     : <span class="val">Auto（依環境自動選擇）</span>
+     Tx power          : <span class="val">Auto</span>
+
+<span class="comment">4. 新增 AP（Zero-Touch）</span>
+   路徑 : Network-wide → Inventory → Add Devices
+   輸入 AP 序號（Order 或 Claim）
+   AP 接上網路後自動下載設定，約 2 分鐘完成上線</pre>
+    </div>
+
+    <!-- 5.12 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s12"></span>
+      <h2><span class="h2-num">5.12</span>AP 監控指標</h2>
+
+      <p>有效的 AP 監控應持續追蹤以下關鍵指標，提早發現問題避免用戶投訴：</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>監控指標</th><th>正常範圍</th><th>警戒門檻</th><th>問題方向</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>AP 上線率</td>
+              <td>100%</td>
+              <td>&lt; 99%</td>
+              <td>AP 離線可能是 PoE 故障、網路線斷線、韌體當機</td>
+            </tr>
+            <tr>
+              <td>用戶連線 RSSI</td>
+              <td>-65 dBm 以上</td>
+              <td>&lt; -75 dBm</td>
+              <td>覆蓋死角或 AP 故障，需要現場勘查</td>
+            </tr>
+            <tr>
+              <td>SNR</td>
+              <td>&gt; 25 dB</td>
+              <td>&lt; 15 dB</td>
+              <td>干擾增加或雜訊提升，需頻道分析</td>
+            </tr>
+            <tr>
+              <td>重傳率（Retry Rate）</td>
+              <td>&lt; 10%</td>
+              <td>&gt; 20%</td>
+              <td>訊號差或干擾嚴重，裝置重複重傳封包</td>
+            </tr>
+            <tr>
+              <td>頻道使用率（Channel Utilization）</td>
+              <td>&lt; 50%</td>
+              <td>&gt; 75%</td>
+              <td>頻道過於擁擠，需調整頻道規劃或增加 AP</td>
+            </tr>
+            <tr>
+              <td>並發裝置數（每台 AP）</td>
+              <td>&lt; 50 台</td>
+              <td>&gt; 80 台</td>
+              <td>AP 過載，需要增加 AP 或調整 Band Steering</td>
+            </tr>
+            <tr>
+              <td>AP CPU 使用率</td>
+              <td>&lt; 70%</td>
+              <td>&gt; 90%</td>
+              <td>AP 資源不足，可能導致封包遺失和延遲增加</td>
+            </tr>
+            <tr class="highlight">
+              <td>漫遊事件頻率</td>
+              <td>低（正常漫遊）</td>
+              <td>過高頻率漫遊</td>
+              <td>頻繁漫遊（每分鐘多次）可能代表覆蓋邊界設計問題或 Ping-Pong 效應</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>設定監控告警</h3>
+
+      <pre><span class="comment"># 建議設定的自動告警（以 UniFi 為例）</span>
+
+Settings → Notifications → Configure Alerts
+
+AP 離線（AP Disconnected）         : <span class="val">立即告警</span>  ← 最優先
+AP 高 CPU / 記憶體警告             : <span class="val">告警</span>
+新裝置首次連線（可選）             : <span class="val">資安監控用</span>
+SSID 廣播中斷                      : <span class="val">告警</span>
+韌體更新可用                       : <span class="val">通知</span>
+
+<span class="comment"># 告警通知方式</span>
+Email : 寄送至 IT 管理員信箱
+Webhook : 整合至 Slack / Teams 通知頻道</pre>
+    </div>
+
+    <!-- 5.13 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s13"></span>
+      <h2><span class="h2-num">5.13</span>常見問題排除</h2>
+
+      <p>以下整理 AP 管理中最常遇到的問題和系統性排除方法：</p>
+
+      <div class="trouble-list">
+
+        <div class="trouble-item">
+          <div class="trouble-q">AP 開機後無法連接 WLC / 雲端管理平台</div>
+          <div class="trouble-body">
+            <div class="cause">排查方向</div>
+            <p><strong>步驟 1：確認 PoE 供電正常。</strong>觀察 AP LED，若無任何燈號表示未通電。確認 PoE 交換器埠已啟用且功率預算足夠。</p>
+            <p><strong>步驟 2：確認 AP 取得 IP。</strong>登入 DHCP 伺服器查看是否有 AP 的 MAC 位址取得 IP。若未取得，確認交換器埠的 Native VLAN（AP 管理 VLAN）設定正確。</p>
+            <p><strong>步驟 3：確認 AP 能連到 WLC / 網際網路。</strong>用電腦模擬 AP 所在 VLAN，測試能否 Ping 到 WLC IP（控制器式）或 <code>8.8.8.8</code>（雲端管理）。若無法 Ping，檢查路由和防火牆規則。</p>
+            <p><strong>步驟 4（控制器式）：確認 DHCP Option 43 設定。</strong>在 DHCP 伺服器確認 Option 43 已填入 WLC 的 IP 位址（格式依廠商不同）。</p>
+          </div>
+        </div>
+
+        <div class="trouble-item">
+          <div class="trouble-q">用戶連線後速率異常緩慢</div>
+          <div class="trouble-body">
+            <div class="cause">排查方向</div>
+            <p><strong>確認用戶的 RSSI 和 MCS。</strong>在 AP 管理介面或 WLC 中查看該用戶的 RSSI（應高於 -70 dBm）和當前 MCS 索引（越高越好）。若 RSSI 極低，問題是覆蓋不足；若 RSSI 正常但 MCS 低，可能是干擾問題。</p>
+            <p><strong>確認頻道使用率。</strong>若頻道使用率超過 75%，表示頻道過載，需調整頻道規劃或增加 AP。</p>
+            <p><strong>確認用戶使用的頻段。</strong>若雙頻裝置連接在 2.4 GHz，確認 Band Steering 是否正確運作。</p>
+            <p><strong>排除上行瓶頸。</strong>確認 AP 上行的網路線和交換器埠速率（1G or 2.5G），使用有線裝置直連交換器做速率測試，排除有線端問題。</p>
+          </div>
+        </div>
+
+        <div class="trouble-item">
+          <div class="trouble-q">裝置漫遊時出現明顯斷線</div>
+          <div class="trouble-body">
+            <div class="cause">排查方向</div>
+            <p><strong>確認 802.11r / k / v 是否已啟用。</strong>若未啟用漫遊三劍客，每次漫遊都需要完整的 WPA2 認證流程（可能需要 300～500ms），對 VoIP 影響明顯。</p>
+            <p><strong>確認相鄰 AP 的覆蓋重疊是否足夠。</strong>若重疊不足（&lt; 15%），裝置在訊號完全消失後才漫遊，必然出現斷線。需調整 AP 位置或功率。</p>
+            <p><strong>確認是否有 Sticky Client 問題。</strong>在 AP 管理介面中查看漫遊事件記錄，若裝置長時間連著遠端 AP 且 RSSI 低於 -75 dBm，確認 802.11v BSS Transition 是否啟用，並確認 AP 的 Client RSSI Threshold 設定（讓 AP 主動踢走訊號過弱的客戶端）。</p>
+          </div>
+        </div>
+
+        <div class="trouble-item">
+          <div class="trouble-q">特定區域訊號差或無訊號</div>
+          <div class="trouble-body">
+            <div class="cause">排查方向</div>
+            <p><strong>現場走訪確認 RSSI。</strong>用手機的 Wi-Fi 分析工具或 Ekahau 行走至問題區域，量測實際 RSSI 值。</p>
+            <p><strong>排查物理障礙。</strong>確認是否有新增的金屬隔板、設備機架等金屬物體，或玻璃更換為 Low-E 隔熱玻璃，這些都可能大幅降低訊號穿透。</p>
+            <p><strong>確認 AP 是否正常運作。</strong>登入管理介面確認附近 AP 的狀態（連線裝置數、上行流量）、確認 AP 的發射功率設定未被意外調低。</p>
+          </div>
+        </div>
+
+        <div class="trouble-item">
+          <div class="trouble-q">訪客 SSID 的用戶可以 Ping 到內網主機</div>
+          <div class="trouble-body">
+            <div class="cause">排查方向</div>
+            <p><strong>確認訪客 VLAN 的防火牆規則。</strong>這是最常見的設定錯誤。確認防火牆或 L3 交換器上有規則明確<strong>封鎖</strong> VLAN 20（訪客）存取 VLAN 10（企業內網）的流量，方向為雙向（deny vlan20 to vlan10 AND deny vlan10 to vlan20）。</p>
+            <p><strong>確認 AP 端的 VLAN 標記正確。</strong>若訪客 SSID 的流量未正確標記 VLAN 20，可能混入企業網路。使用封包擷取工具在交換器埠確認 VLAN 標記。</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 5.14 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s14"></span>
+      <h2><span class="h2-num">5.14</span>韌體管理</h2>
+
+      <p>
+        AP 的韌體更新是維護安全性和穩定性的重要例行工作。過舊的韌體可能包含已知的安全漏洞，也可能缺少對新型客戶端裝置的相容性修補。
+      </p>
+
+      <h3>韌體更新策略</h3>
+
+      <dl class="def-list">
+        <dt>更新前備份設定</dt>
+        <dd>在更新韌體前，務必備份 AP 或 WLC 的完整設定（通常可從管理介面匯出設定檔）。韌體更新偶爾會重置設定或導致相容性問題，有備份才能快速復原。</dd>
+        <dt>分批次更新</dt>
+        <dd>不要一次更新所有 AP，應先選取 <strong>1～2 台非關鍵 AP</strong> 進行測試，觀察更新後是否出現功能異常或客戶端連線問題，確認穩定後再全面推送。特別是主要出入口、會議室的 AP 應最後更新。</dd>
+        <dt>選擇更新時間窗口</dt>
+        <dd>AP 韌體更新過程中會<strong>短暫斷線重開機</strong>（通常 1～3 分鐘）。應選在用戶最少的時間窗口（如深夜 02:00～04:00）進行更新，避免影響業務。</dd>
+        <dt>Stable 版 vs Beta 版</dt>
+        <dd>生產環境應使用廠商標示為 <strong>Stable</strong> 或 <strong>GA（General Availability）</strong> 的韌體版本，避免使用 Beta 或 RC（Release Candidate）版本，後者可能包含尚未修復的錯誤。</dd>
+      </dl>
+
+      <h3>各平台的韌體更新方式</h3>
+
+      <pre><span class="comment"># UniFi：透過 Controller 統一更新</span>
+路徑 : Devices → 選擇 AP → Properties → Firmware
+      點選「Upgrade to X.X.X」
+      或 Settings → Auto Upgrade 啟用自動更新
+
+<span class="comment"># Cisco WLC：TFTP 上傳或直接下載</span>
+<span class="prompt">WLC(config)#</span> <span class="key">transfer upload mode</span> <span class="val">tftp</span>
+<span class="prompt">WLC(config)#</span> <span class="key">transfer upload serverip</span> <span class="val">192.168.1.100</span>
+<span class="prompt">WLC(config)#</span> <span class="key">transfer upload filename</span> <span class="val">AIR-CT5500-K9-8-10-150-0.aes</span>
+<span class="prompt">WLC(config)#</span> <span class="key">transfer upload start</span>
+<span class="comment"># 上傳完成後 WLC 提示重開機，重開機後 AP 自動下載新韌體</span>
+
+<span class="comment"># Meraki：Dashboard 自動管理（全自動或排程）</span>
+路徑 : Organization → Firmware Upgrades
+      設定 Upgrade Window（更新時間窗口）
+      Meraki 在窗口內自動分批更新所有 AP</pre>
+
+      <div class="callout">
+        <div class="callout-label">韌體降版注意事項</div>
+        <p>若韌體更新後出現嚴重問題需要降版（Downgrade），需注意：<strong>部分廠商的韌體降版會清除設定</strong>（Reset to Factory Default），且降版後需重新設定 AP。在雲端管理平台（如 Meraki）中，降版可能受到廠商限制，無法降至特定版本以下。永遠在更新前備份設定，以備不時之需。</p>
+      </div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="content-section">
+      <span class="section-anchor" id="summary"></span>
+      <h2><span class="h2-num">—</span>本章重點整理</h2>
+
+      <div class="summary-box">
+        <div class="sum-label">Chapter 05 Summary</div>
+        <ul>
+          <li>安裝前必須確認：交換器埠設為 Trunk 模式並允許正確 VLAN、DHCP Option 43 設定、防火牆允許 CAPWAP（UDP 5246/5247）和 HTTPS 流量、PoE 功率預算充足。</li>
+          <li>AP 實體安裝步驟：穿線測試 → 固定掛架 → 連接 PoE 線 → 鎖定 AP → 繫上安全纜線 → 確認 LED 狀態 → 貼標籤記錄。</li>
+          <li>SSID 關鍵設定：選擇正確的安全模式（WPA3 / WPA2-Enterprise）、設定最低速率門檻（12+ Mbps）、啟用 Band Steering、訪客 SSID 必須啟用 Client Isolation。</li>
+          <li>2.4 GHz 強制使用 20 MHz 頻道；5 GHz 依密度選擇 20/40/80 MHz；功率設定以相鄰 AP 重疊區 RSSI 在 -70 dBm 左右為目標。</li>
+          <li>多 SSID 架構中，每個 SSID 對應一個 VLAN；AP 上行交換器埠必須設為 Trunk 模式，允許所有相關 VLAN 通過。</li>
+          <li>802.11r（快速漫遊）、802.11k（鄰居報告）、802.11v（BSS 切換）三者應同時啟用，解決漫遊斷線和 Sticky Client 問題。</li>
+          <li>WLC 透過 AP Group 和設定模板統一管理多台 AP；Zero-Touch Provisioning 讓 AP 插電後自動完成設定，無需現場逐台操作。</li>
+          <li>監控 AP 的重傳率（&lt;10%）、頻道使用率（&lt;75%）、並發裝置數（&lt;50台）、AP 上線率（100%）是維護無線網路健康的關鍵指標。</li>
+          <li>韌體更新應分批次進行、選非用戶尖峰時段、更新前備份設定、使用 Stable 版本。</li>
+        </ul>
+      </div>
+
+      <div class="chapter-nav">
+        <a href="chapter4.html">← Chapter 04：拓撲與部署規劃</a>
+        <a href="chapter6.html" class="next">Chapter 06：無線網路安全 →</a>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer>
+  <div class="foot-left">AP & Wireless Network Application — Chapter 05</div>
+  <div class="foot-right">AP 安裝、設定與管理</div>
+</footer>
+
+<script>
+  const sections = document.querySelectorAll('.section-anchor');
+  const tocLinks = document.querySelectorAll('.toc-list a');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        tocLinks.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-64px 0px -60% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
