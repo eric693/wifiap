@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chapter 7：QoS 與無線網路優化｜AP 與無線網路應用</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--paper:#F5F0E8;--paper-dark:#EDE7D9;--paper-rule:#DDD5C4;--ink:#1A1610;--ink-mid:#4A4035;--ink-light:#8A7D6A;--red:#C0392B;--red-muted:#D9584A}
+    html{font-size:16px;scroll-behavior:smooth}
+    body{background:var(--paper);color:var(--ink);font-family:'Noto Serif TC',serif;line-height:1.85}
+    header{border-bottom:2px solid var(--ink);padding:0 4rem;position:sticky;top:0;background:var(--paper);z-index:100;display:flex;align-items:center;justify-content:space-between;height:64px}
+    .site-title{font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-mid);text-decoration:none}
+    .site-title span{color:var(--red)}
+    .header-nav{display:flex;gap:1.5rem;font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.08em}
+    .header-nav a{color:var(--ink-light);text-decoration:none;transition:color .2s}
+    .header-nav a:hover{color:var(--red)}
+    .chapter-banner{background:var(--ink);color:var(--paper);padding:4rem 4rem 3.5rem}
+    .chapter-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--red-muted);margin-bottom:1.2rem}
+    .chapter-banner h1{font-size:clamp(1.8rem,4vw,3rem);font-weight:700;line-height:1.2;letter-spacing:-.01em;margin-bottom:1.2rem}
+    .chapter-banner .subtitle{font-size:1rem;color:#B8AC9E;max-width:640px;line-height:1.8}
+    .chapter-meta-row{display:flex;gap:3rem;margin-top:2.5rem;padding-top:2rem;border-top:1px solid #3A342C;flex-wrap:wrap}
+    .chapter-meta-row .m-item .m-label{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:#6A5E52;margin-bottom:.3rem}
+    .chapter-meta-row .m-item .m-value{font-size:.9rem;color:#D4CCBF}
+    .page-layout{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 64px);align-items:start}
+    .sidebar{position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto;border-right:1px solid var(--paper-rule);padding:2.5rem 1.5rem}
+    .toc-label{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-light);margin-bottom:1.2rem}
+    .toc-list{list-style:none;display:flex;flex-direction:column;gap:.15rem}
+    .toc-list a{display:block;font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--ink-mid);text-decoration:none;padding:.35rem .6rem;border-left:2px solid transparent;transition:all .15s;line-height:1.5}
+    .toc-list a:hover,.toc-list a.active{color:var(--red);border-left-color:var(--red);background:var(--paper-dark)}
+    .toc-section{margin-top:1.2rem;margin-bottom:.3rem;font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--paper-rule)}
+    .sidebar-nav{margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--paper-rule);display:flex;flex-direction:column;gap:.5rem}
+    .sidebar-nav a{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--ink-light);text-decoration:none;transition:color .15s}
+    .sidebar-nav a:hover{color:var(--red)}
+    main{padding:3.5rem 4rem 6rem 3.5rem;max-width:860px}
+    .content-section{margin-bottom:4.5rem}
+    .section-anchor{display:block;height:64px;margin-top:-64px;visibility:hidden}
+    h2{font-size:1.5rem;font-weight:700;letter-spacing:.01em;margin-bottom:1.5rem;padding-bottom:.7rem;border-bottom:2px solid var(--ink);display:flex;align-items:baseline;gap:1rem}
+    h2 .h2-num{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:400;letter-spacing:.1em;color:var(--red)}
+    h3{font-size:1.1rem;font-weight:600;margin-top:2rem;margin-bottom:.8rem;color:var(--ink)}
+    p{font-size:.97rem;color:var(--ink-mid);margin-bottom:1rem;line-height:1.9}
+    strong{color:var(--ink);font-weight:600}
+    em.term{font-style:normal;color:var(--red);font-weight:500}
+    code{font-family:'IBM Plex Mono',monospace;font-size:.82em;background:var(--paper-dark);border:1px solid var(--paper-rule);padding:.1em .4em;color:var(--ink)}
+    pre{background:var(--ink);color:#D4CCBF;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.75;padding:1.5rem 2rem;margin:1.5rem 0;overflow-x:auto;border-left:3px solid var(--red)}
+    pre .cm{color:#5A5040}
+    pre .k{color:#E8A87C}
+    pre .v{color:#A8C6A0}
+    pre .hi{color:#E8D080}
+    .callout{border-left:3px solid var(--ink);background:var(--paper-dark);padding:1.2rem 1.5rem;margin:1.5rem 0}
+    .callout.imp{border-left-color:var(--red)}
+    .callout .cl{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;margin-bottom:.5rem;color:var(--ink-light)}
+    .callout.imp .cl{color:var(--red)}
+    .callout p{margin-bottom:.5rem;font-size:.9rem}
+    .callout p:last-child{margin-bottom:0}
+    .table-wrap{overflow-x:auto;margin:1.5rem 0}
+    table{width:100%;border-collapse:collapse;font-size:.87rem}
+    thead tr{background:var(--ink);color:var(--paper)}
+    thead th{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;padding:.75rem 1rem;text-align:left;font-weight:500}
+    tbody tr{border-bottom:1px solid var(--paper-rule)}
+    tbody tr:hover{background:var(--paper-dark)}
+    tbody td{padding:.7rem 1rem;color:var(--ink-mid);line-height:1.7;vertical-align:top}
+    tbody td:first-child{font-family:'IBM Plex Mono',monospace;font-size:.82rem;color:var(--ink);font-weight:500}
+    tbody tr.hl td{background:rgba(192,57,43,.05)}
+    tbody tr.hl td:first-child{color:var(--red)}
+    .def-list{display:grid;grid-template-columns:auto 1fr;gap:0;border-top:1px solid var(--paper-rule);margin:1.5rem 0}
+    .def-list dt{font-family:'IBM Plex Mono',monospace;font-size:.82rem;font-weight:500;padding:.75rem 1.5rem .75rem 0;border-bottom:1px solid var(--paper-rule);color:var(--ink);white-space:nowrap}
+    .def-list dd{font-size:.88rem;color:var(--ink-mid);padding:.75rem 0;border-bottom:1px solid var(--paper-rule);line-height:1.75}
+    .diagram{background:var(--paper-dark);border:1px solid var(--paper-rule);padding:2rem;margin:2rem 0}
+    .diagram-ascii{font-family:'IBM Plex Mono',monospace;font-size:.79rem;line-height:1.65;color:var(--ink);display:block;white-space:pre;overflow-x:auto}
+    .diagram-caption{font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--ink-light);margin-top:1rem;letter-spacing:.06em;text-transform:uppercase}
+    .wmm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--paper-rule);margin:1.5rem 0;overflow:hidden}
+    .wmm-col{border-right:1px solid var(--paper-rule)}
+    .wmm-col:last-child{border-right:none}
+    .wmm-head{padding:.8rem;text-align:center}
+    .wmm-head.vo{background:var(--ink)}.wmm-head.vi{background:var(--ink-mid)}
+    .wmm-head.be,.wmm-head.bk{background:var(--paper-dark);border-bottom:1px solid var(--paper-rule)}
+    .wmm-ac{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase}
+    .wmm-head.vo .wmm-ac,.wmm-head.vi .wmm-ac{color:var(--red-muted)}
+    .wmm-head.be .wmm-ac,.wmm-head.bk .wmm-ac{color:var(--ink-light)}
+    .wmm-name{font-size:.9rem;font-weight:700;margin-top:.2rem}
+    .wmm-head.vo .wmm-name,.wmm-head.vi .wmm-name{color:var(--paper)}
+    .wmm-head.be .wmm-name,.wmm-head.bk .wmm-name{color:var(--ink)}
+    .wmm-body{padding:.8rem;font-size:.78rem;color:var(--ink-mid);line-height:1.6}
+    .wmm-dscp{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--red);margin-top:.4rem;display:block}
+    .roam-pair{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin:1.5rem 0}
+    .roam-card{border:1px solid var(--paper-rule);padding:1.3rem}
+    .roam-card .rc-tag{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--red);margin-bottom:.3rem}
+    .roam-card .rc-title{font-size:.93rem;font-weight:700;margin-bottom:.8rem;padding-bottom:.5rem;border-bottom:1px solid var(--paper-rule)}
+    .roam-card .rc-row{display:flex;justify-content:space-between;align-items:baseline;padding:.28rem 0;border-bottom:1px solid var(--paper-rule);font-size:.82rem}
+    .roam-card .rc-row:last-child{border-bottom:none}
+    .roam-card .rc-row .rk{color:var(--ink-light)}
+    .roam-card .rc-row .rv{font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--ink);font-weight:500}
+    .dtree{border:1px solid var(--paper-rule);margin:1.5rem 0}
+    .dtree-item{display:grid;grid-template-columns:40px 1fr;border-bottom:1px solid var(--paper-rule)}
+    .dtree-item:last-child{border-bottom:none}
+    .dtree-num{background:var(--paper-dark);border-right:1px solid var(--paper-rule);display:flex;align-items:flex-start;justify-content:center;padding-top:.85rem;font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--red)}
+    .dtree-body{padding:.85rem 1.1rem}
+    .dtree-q{font-size:.9rem;font-weight:600;color:var(--ink);margin-bottom:.3rem}
+    .dtree-a{font-size:.84rem;color:var(--ink-mid);line-height:1.65}
+    .tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.5rem 0}
+    .tool-card{border:1px solid var(--paper-rule);padding:1.1rem 1.2rem}
+    .tool-card .tc-name{font-family:'IBM Plex Mono',monospace;font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.15rem}
+    .tool-card .tc-type{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--red);margin-bottom:.4rem}
+    .tool-card .tc-desc{font-size:.82rem;color:var(--ink-mid);line-height:1.6}
+    .kpi-grid{display:grid;grid-template-columns:160px 1fr 80px;gap:.6rem;align-items:center;margin:.35rem 0;font-family:'IBM Plex Mono',monospace;font-size:.74rem}
+    .kpi-label{color:var(--ink-mid)}.kpi-bar-bg{height:18px;background:var(--paper-rule)}
+    .kpi-bar-fill{height:100%}.kpi-val{color:var(--ink-light);text-align:right}
+    .summary-box{background:var(--ink);color:var(--paper);padding:2rem 2.5rem;margin:3rem 0 0}
+    .summary-box .sum-label{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--red-muted);margin-bottom:1rem}
+    .summary-box ul{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+    .summary-box ul li{font-size:.9rem;color:#D4CCBF;padding-left:1.2rem;position:relative;line-height:1.7}
+    .summary-box ul li::before{content:"—";position:absolute;left:0;color:var(--red-muted);font-family:'IBM Plex Mono',monospace}
+    .chapter-nav{display:flex;justify-content:space-between;align-items:center;margin-top:5rem;padding-top:2rem;border-top:2px solid var(--ink)}
+    .chapter-nav a{font-family:'IBM Plex Mono',monospace;font-size:.78rem;letter-spacing:.08em;color:var(--ink-mid);text-decoration:none;padding:.75rem 1.5rem;border:1px solid var(--paper-rule);transition:all .2s}
+    .chapter-nav a:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+    .chapter-nav .next{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+    .chapter-nav .next:hover{background:var(--red);border-color:var(--red)}
+    footer{padding:2rem 4rem;border-top:2px solid var(--ink);display:flex;justify-content:space-between;align-items:center}
+    footer .foot-left{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.08em;color:var(--ink-light)}
+    footer .foot-right{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--red)}
+    @media(max-width:900px){header{padding:0 1.5rem}.chapter-banner{padding:3rem 1.5rem 2.5rem}.page-layout{grid-template-columns:1fr}.sidebar{display:none}main{padding:2rem 1.5rem 4rem}.wmm-grid{grid-template-columns:1fr 1fr}.roam-pair,.tool-grid{grid-template-columns:1fr}footer{flex-direction:column;gap:.5rem;padding:1.5rem}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .chapter-banner{animation:fadeUp .5s ease both}main{animation:fadeUp .5s ease .1s both}
+  </style>
+</head>
+<body>
+<header>
+  <a class="site-title" href="index.html">AP &amp; Wireless &mdash; <span>初學者完整課程</span></a>
+  <nav class="header-nav">
+    <a href="chapter6.html">&larr; 上一章</a>
+    <a href="index.html">課程首頁</a>
+    <a href="chapter8.html">下一章 &rarr;</a>
+  </nav>
+</header>
+
+<div class="chapter-banner">
+  <div class="chapter-label">Chapter 07 / 08</div>
+  <h1>QoS 與無線網路優化</h1>
+  <p class="subtitle">深入理解 WMM / 802.11e QoS 佇列機制，掌握無線漫遊技術三劍客（802.11r / k / v），學習系統性的效能優化方法，並建立一套完整的故障排除框架。</p>
+  <div class="chapter-meta-row">
+    <div class="m-item"><div class="m-label">建議閱讀時間</div><div class="m-value">約 3～4 小時</div></div>
+    <div class="m-item"><div class="m-label">難度</div><div class="m-value">中階至進階</div></div>
+    <div class="m-item"><div class="m-label">先備章節</div><div class="m-value">Chapter 01、02、05</div></div>
+    <div class="m-item"><div class="m-label">本章重點</div><div class="m-value">WMM、漫遊三劍客、效能優化、故障排除</div></div>
+  </div>
+</div>
+
+<div class="page-layout">
+<aside class="sidebar">
+  <div class="toc-label">本章目錄</div>
+  <ul class="toc-list">
+    <li><div class="toc-section">QoS 機制</div></li>
+    <li><a href="#s1">7.1 無線 QoS 的必要性</a></li>
+    <li><a href="#s2">7.2 802.11e 與 WMM</a></li>
+    <li><a href="#s3">7.3 EDCA 競爭參數</a></li>
+    <li><a href="#s4">7.4 DSCP 對映與 QoS 標記</a></li>
+    <li><a href="#s5">7.5 頻寬限制與流量整形</a></li>
+    <li><div class="toc-section">漫遊技術</div></li>
+    <li><a href="#s6">7.6 無線漫遊基礎</a></li>
+    <li><a href="#s7">7.7 802.11r 快速 BSS 切換</a></li>
+    <li><a href="#s8">7.8 802.11k 無線資源量測</a></li>
+    <li><a href="#s9">7.9 802.11v BSS 切換管理</a></li>
+    <li><a href="#s10">7.10 漫遊三劍客整合效果</a></li>
+    <li><div class="toc-section">效能優化</div></li>
+    <li><a href="#s11">7.11 效能瓶頸識別</a></li>
+    <li><a href="#s12">7.12 空氣時間公平性</a></li>
+    <li><a href="#s13">7.13 Rate Adaptation 速率自適應</a></li>
+    <li><a href="#s14">7.14 無線效能優化清單</a></li>
+    <li><div class="toc-section">故障排除</div></li>
+    <li><a href="#s15">7.15 故障排除方法論</a></li>
+    <li><a href="#s16">7.16 VoIP 無線品質排障</a></li>
+    <li><a href="#s17">7.17 診斷工具與指令</a></li>
+    <li><div class="toc-section">本章總結</div></li>
+    <li><a href="#summary">重點整理</a></li>
+  </ul>
+  <div class="sidebar-nav">
+    <a href="chapter6.html">&larr; Chapter 06</a>
+    <a href="index.html">課程首頁</a>
+    <a href="chapter8.html">Chapter 08 &rarr;</a>
+  </div>
+</aside>
+
+<main>
+
+<div class="content-section">
+  <span class="section-anchor" id="s1"></span>
+  <h2><span class="h2-num">7.1</span>無線 QoS 的必要性</h2>
+  <p><em class="term">QoS（Quality of Service，服務品質）</em>是網路依各應用的時間敏感程度給予差異化服務保障的能力。沒有 QoS 的網路採用<em class="term">盡力而為（Best-Effort）</em>模式——所有封包一視同仁地排隊，先到先服務。這在網路空閒時問題不大，但多用戶競爭有限無線頻道時便產生嚴重影響。</p>
+  <div class="diagram">
+    <div class="diagram-ascii">【無 QoS】用戶 A: VoIP | 用戶 B: 大型下載 | 用戶 C: 4K 串流
+所有封包平等競爭 → 大流量佔多數傳輸機會
+→ VoIP 封包被延遲 → 通話斷斷續續、機器音、中斷
+
+【有 WMM QoS】
+VoIP 封包進入最高優先 AC_VO 佇列
+→ 語音優先取得傳輸機會（短 AIFSN + 小 CW）
+→ 大流量退讓 → 通話清晰穩定</div>
+    <div class="diagram-caption">Fig 7.1 — QoS 在多流量競爭場景的效果對比</div>
+  </div>
+  <p>無線介質是<strong>共享廣播介質</strong>，所有同頻道裝置共用同一無線通道，QoS 需在 MAC 層的競爭機制（CSMA/CA）中嵌入優先級邏輯，比有線 QoS 更為複雜。</p>
+</div>
+
+<div class="content-section">
+  <span class="section-anchor" id="s2"></span>
+  <h2><span class="h2-num">7.2</span>802.11e 與 WMM</h2>
+  <p><em class="term">IEEE 802.11e</em>（2005 年）定義了<em class="term">EDCA（Enhanced Distributed Channel Access）</em>機制，將單一 CSMA/CA 競爭佇列擴展為<strong>四個優先級佇列（Access Category，AC）</strong>。<em class="term">Wi-Fi Multimedia（WMM）</em>是 Wi-Fi Alliance 基於 802.11e 的認證計畫，確保不同廠商裝置間的 QoS 互通性，現代 Wi-Fi 設備幾乎全面支援且預設啟用。</p>
+  <div class="wmm-grid">
+    <div class="wmm-col"><div class="wmm-head vo"><div class="wmm-ac">AC_VO</div><div class="wmm-name">語音</div></div>
+    <div class="wmm-body"><strong>最高優先</strong>，最短等待時間。VoIP 通話、緊急廣播。<span class="wmm-dscp">DSCP EF（46）／ 802.1p 6–7</span></div></div>
+    <div class="wmm-col"><div class="wmm-head vi"><div class="wmm-ac">AC_VI</div><div class="wmm-name">視訊</div></div>
+    <div class="wmm-body"><strong>次高優先</strong>，低延遲低抖動。視訊會議、串流媒體。<span class="wmm-dscp">DSCP AF41（34）／ 802.1p 4–5</span></div></div>
+    <div class="wmm-col"><div class="wmm-head be"><div class="wmm-ac">AC_BE</div><div class="wmm-name">盡力而為</div></div>
+    <div class="wmm-body"><strong>預設優先</strong>，一般資料流量。網頁、電郵、檔案傳輸。<span class="wmm-dscp">DSCP BE（0）／ 802.1p 0、3</span></div></div>
+    <div class="wmm-col"><div class="wmm-head bk"><div class="wmm-ac">AC_BK</div><div class="wmm-name">背景</div></div>
+    <div class="wmm-body"><strong>最低優先</strong>，允許較高延遲。備份作業、P2P 下載。<span class="wmm-dscp">DSCP CS1（8）／ 802.1p 1–2</span></div></div>
+  </div>
+  <div class="callout"><div class="cl">WMM 的限制</div><p>WMM 只保證<strong>相對優先</strong>，不是絕對頻寬保障。WMM 只在<strong>同一台 AP</strong>範圍內有效；端到端 QoS 還需有線交換器配合 DSCP / 802.1p 標記。</p></div>
+</div>
+
+<div class="content-section">
+  <span class="section-anchor" id="s3"></span>
+  <h2><span class="h2-num">7.3</span>EDCA 競爭參數</h2>
+  <p>EDCA 透過三個核心參數控制每個 AC 佇列的競爭優先級，數值越小代表優先級越高：</p>
+  <dl class="def-list">
+    <dt>AIFSN</dt><dd><em class="term">Arbitration Interframe Space Number</em>：頻道空閒後需等待的最小時隙數。越小越快取得傳輸機會。AC_VO = 2（最短）；AC_BK = 7（最長）。</dd>
+    <dt>CWmin / CWmax</dt><dd><em class="term">Contention Window</em>（競爭視窗）：等待 AIFSN 後，在此範圍內隨機選退避時間（Backoff）。越小期望等待越短。失敗後 CW 加倍直到 CWmax。AC_VO：CWmin = 3；AC_BK：CWmin = 15。</dd>
+    <dt>TXOP</dt><dd><em class="term">Transmission Opportunity</em>：取得傳輸機會後允許連續傳輸的最大時間。AC_VO = 1.504 ms；AC_BE = 0（每次只能傳一個訊框）。</dd>
+  </dl>
+  <div class="table-wrap"><table>
+    <thead><tr><th>AC 佇列</th><th>AIFSN</th><th>CWmin</th><th>CWmax</th><th>TXOP</th><th>優先等級</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td>AC_VO（語音）</td><td>2</td><td>3</td><td>7</td><td>1.504 ms</td><td>最高</td></tr>
+      <tr><td>AC_VI（視訊）</td><td>2</td><td>7</td><td>15</td><td>3.008 ms</td><td>次高</td></tr>
+      <tr><td>AC_BE（盡力）</td><td>3</td><td>15</td><td>1023</td><td>0</td><td>預設</td></tr>
+      <tr><td>AC_BK（背景）</td><td>7</td><td>15</td><td>1023</td><td>0</td><td>最低</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div class="content-section">
+  <span class="section-anchor" id="s4"></span>
+  <h2><span class="h2-num">7.4</span>DSCP 對映與 QoS 標記</h2>
+  <p>AP 根據 IP 封包頭中的 <em class="term">DSCP</em> 值決定放入哪個 WMM AC 佇列，實現端到端服務品質保障。</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>流量類型</th><th>DSCP（十進制）</th><th>DSCP 名稱</th><th>802.1p</th><th>WMM AC</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td>VoIP RTP</td><td>46</td><td>EF（Expedited Forwarding）</td><td>6</td><td>AC_VO</td></tr>
+      <tr class="hl"><td>語音信令（SIP）</td><td>26</td><td>AF31</td><td>5</td><td>AC_VI</td></tr>
+      <tr><td>視訊會議</td><td>34</td><td>AF41</td><td>4</td><td>AC_VI</td></tr>
+      <tr><td>一般資料</td><td>0</td><td>BE（Best Effort）</td><td>0</td><td>AC_BE</td></tr>
+      <tr><td>備份 / P2P</td><td>8</td><td>CS1（Scavenger）</td><td>1</td><td>AC_BK</td></tr>
+    </tbody>
+  </table></div>
+  <pre><span class="cm"># AP 對上行封包 DSCP 標記的三種處理策略</span>
+<span class="hi">策略 1：Trust DSCP</span>  適用企業受管裝置（MDM 控管）
+<span class="hi">策略 2：Override（重設為 0）</span>  適用訪客網路，防止濫用語音佇列
+<span class="hi">策略 3：Application-based</span>  識別應用類型後強制套用正確 DSCP</pre>
+  <div class="callout imp"><div class="cl">訪客 SSID 絕對不應設定 Trust DSCP</div><p>訪客若能自行標記 DSCP EF（46），即可讓所有流量享有語音優先級，搶佔企業 VoIP 頻道資源。<strong>信任邊界應設定在企業管控的設備上</strong>，訪客流量一律重標記為 AC_BE。</p></div>
+</div>
+
+<div class="content-section">
+  <span class="section-anchor" id="s5"></span>
+  <h2><span class="h2-num">7.5</span>頻寬限制與流量整形</h2>
+  <p>AP 提供<em class="term">頻寬限制（Rate Limiting）</em>功能，防止單一裝置或訪客網路佔用過多資源。</p>
+  <dl class="def-list">
+    <dt>Per-SSID 限制</dt><dd>對整個 SSID 流量設上限。例如訪客 SSID 總頻寬 50 Mbps，有效控制訪客對企業網際網路出口的佔用。</dd>
+    <dt>Per-Client 限制</dt><dd>對每台裝置個別設定上下行上限，如訪客下行 20 Mbps / 上行 5 Mbps，防止單一用戶大量下載影響其他人。</dd>
+    <dt>應用層流量整形</dt><dd>進階平台（Meraki、Aruba）可識別應用類型（YouTube、P2P BitTorrent），針對特定應用限速或封鎖，Teams 視訊不受限而 P2P 限速至 1 Mbps。</dd>
+  </dl>
+  <pre><span class="cm"># UniFi：Per-Client 頻寬限制</span>
+<span class="cm"># Settings &rarr; WiFi &rarr; [SSID] &rarr; Advanced &rarr; Rate Limiting</span>
+Download rate limit : <span class="v">20 Mbps</span>
+Upload rate limit   : <span class="v">5 Mbps</span>
+
+<span class="cm"># Cisco WLC：Per-SSID 頻寬合約</span>
+<span class="cm"># WLANs &rarr; [WLAN] &rarr; Advanced &rarr; Bandwidth Contracts</span>
+Average Data Rate Down : <span class="v">20000</span>  <span class="cm"># kbps</span>
+Burst Data Rate Down   : <span class="v">30000</span>  <span class="cm"># kbps（短暫突發允許值）</span></pre>
+</div>
+
+<div class="content-section">
+  <span class="section-anchor" id="s6"></span>
+  <h2><span class="h2-num">7.6</span>無線漫遊基礎</h2>
+  <p>在 ESS 環境中，裝置從一台 AP 移動到另一台 AP 的過程稱為<em class="term">漫遊（Roaming）</em>。802.11 標準將漫遊決策完全交給<strong>客戶端裝置</strong>，AP 無法強制切換（除非使用 802.11v）。客戶端通常在 RSSI 低於 -70 到 -75 dBm、封包遺失率超過門檻，或收到 802.11v BSS Transition Request 時觸發漫遊。</p>
+  <div class="diagram">
+    <div class="diagram-ascii">WPA2 標準漫遊時間分解（無 802.11r）：
+┌─────────────────────────────────────────────────────┐
+│ 步驟                         │ 典型時間              │
+├─────────────────────────────────────────────────────┤
+│ 1. 掃描頻道找到目標 AP        │  50–200 ms            │
+│ 2. Probe / Auth / Assoc       │  ~20 ms               │
+│ 3. WPA2 認證（PSK 或 802.1X） │  50–300 ms  ★瓶頸    │
+│ 4. 四向握手（PTK 協商）       │  ~20 ms               │
+├─────────────────────────────────────────────────────┤
+│ 總計（PSK）                   │  ~150–550 ms          │
+│ 總計（802.1X）                │  ~300–600 ms          │
+└─────────────────────────────────────────────────────┘
+★ 802.1X 需與 RADIUS 完成完整 EAP 交換，是最大延遲來源
+  VoIP 可接受的漫遊延遲上限：&lt; 50 ms</div>
+    <div class="diagram-caption">Fig 7.2 — 標準 WPA2 漫遊各階段時間分解</div>
+  </div>
+</div>
+
+<div class="content-section">
+  <span class="section-anchor" id="s7"></span>
+  <h2><span class="h2-num">7.7</span>802.11r 快速 BSS 切換</h2>
+  <p><em class="term">IEEE 802.11r（FT, Fast BSS Transition）</em>透過預先在目標 AP 快取金鑰材料，讓裝置漫遊時<strong>跳過耗時的完整認證流程</strong>，直接進行四向握手，將漫遊時間壓縮至 50 ms 以下。</p>
+  <pre><span class="cm"># 802.11r FT 金鑰階層</span>
+PMK-R0（頂層金鑰）
+  └── 由 PSK 或 802.1X 認證產生，儲存於 WLC（R0KH）
+
+PMK-R1（中間金鑰）
+  └── 由 PMK-R0 + 目標 AP 的 R1KH-ID 衍生
+  └── 漫遊時由 WLC 下推至目標 AP
+
+PTK（成對暫時金鑰）
+  └── 由 PMK-R1 + 四向握手推導（每次連線獨立）
+
+<span class="hi">漫遊時：目標 AP 已有 PMK-R1 → 直接四向握手（~10 ms）
+→ 省去重新 RADIUS 認證（最耗時步驟）</span></pre>
+  <div class="roam-pair">
+    <div class="roam-card"><div class="rc-tag">模式一</div><div class="rc-title">Over-the-Air FT</div>
+    <div class="rc-row"><span class="rk">流程</span><span class="rv">直接與目標 AP 交換 FT Auth</span></div>
+    <div class="rc-row"><span class="rk">漫遊時間</span><span class="rv">&lt; 20 ms</span></div>
+    <div class="rc-row"><span class="rk">特點</span><span class="rv">訊框數最少，延遲最低</span></div></div>
+    <div class="roam-card"><div class="rc-tag">模式二</div><div class="rc-title">Over-the-DS FT</div>
+    <div class="rc-row"><span class="rk">流程</span><span class="rv">FT Auth 透過有線 DS（WLC）轉發</span></div>
+    <div class="rc-row"><span class="rk">漫遊時間</span><span class="rv">&lt; 50 ms</span></div>
+    <div class="rc-row"><span class="rk">特點</span><span class="rv">裝置無需先掃描到目標 AP</span></div></div>
+  </div>
+  <div class="callout imp"><div class="cl">802.11r 相容性問題</div><p>極少數舊型 Android 和部分 IoT 裝置在啟用 802.11r 後會無法連線。現代 AP 通常提供 <strong>Adaptive FT（自適應）模式</strong>：支援 FT 的裝置使用快速漫遊，不支援的退回標準漫遊，兩者共存。</p></div>
+</div>
+
+<div class="content-section">
+  <span class="section-anchor" id="s8"></span>
+  <h2><span class="h2-num">7.8</span>802.11k 無線資源量測</h2>
+  <p><em class="term">IEEE 802.11k（Radio Resource Management）</em>讓 AP 主動向客戶端提供<strong>鄰居 AP 清單（Neighbor Report）</strong>，幫助客戶端在漫遊時快速找到候選 AP，省略耗時的全頻道掃描。</p>
+  <div class="diagram">
+    <div class="diagram-ascii">【沒有 802.11k】
+裝置決定漫遊 → 掃描全部頻道（2.4G 13個 + 5G 20+個）
+             → 找到鄰居 AP → 漫遊
+掃描時間：50～200 ms（期間停止資料傳輸）
+
+【有 802.11k】
+裝置連線期間向 AP1 請求 Neighbor Report：
+AP1 回應：[AP2: CH36, RSSI -60] [AP3: CH40, RSSI -68]
+
+裝置需要漫遊時 → 只掃描報告中指定的頻道
+             → 立即找到目標 AP → 漫遊
+掃描時間：~10 ms（縮短 80% 以上）</div>
+    <div class="diagram-caption">Fig 7.3 — 802.11k 縮短漫遊掃描時間的效益</div>
+  </div>
+  <dl class="def-list">
+    <dt>Beacon Report</dt><dd>客戶端回報附近其他 AP 的 BSSID、RSSI 和頻道資訊，讓 WLC 掌握即時無線拓撲，輔助 RRM 決策。</dd>
+    <dt>Neighbor Report</dt><dd>AP 回應客戶端的鄰居清單請求，提供可漫遊目標 AP 的詳細資訊（BSSID、頻道、AP 能力）。</dd>
+    <dt>Channel Load Report</dt><dd>量測特定頻道的使用率（Busy Time / Total Time），輔助頻道規劃和干擾分析。</dd>
+  </dl>
+</div>
+
+<div class="content-section">
+  <span class="section-anchor" id="s9"></span>
+  <h2><span class="h2-num">7.9</span>802.11v BSS 切換管理</h2>
+  <p><em class="term">IEEE 802.11v（BSS Transition Management）</em>賦予 AP 主動向客戶端<strong>建議或要求</strong>切換到另一台 AP 的能力，是解決<em class="term">Sticky Client（黏性客戶端）</em>問題的主要工具。</p>
+  <dl class="def-list">
+    <dt>建議模式</dt><dd>AP 送出 BSS Transition Request，附上候選 AP 清單。客戶端可接受或拒絕，決策權仍在客戶端手中。</dd>
+    <dt>強制模式（Disassociation Imminent）</dt><dd>AP 設定 Disassociation Imminent 位元，告知客戶端 AP 將在指定時間後斷開連線，客戶端<strong>必須主動切換</strong>，否則被強制斷線。這是解決 Sticky Client 最有效的手段。</dd>
+  </dl>
+  <div class="table-wrap"><table>
+    <thead><tr><th>應用場景</th><th>AP 的動作</th><th>目的</th></tr></thead>
+    <tbody>
+      <tr><td>Sticky Client</td><td>裝置 RSSI &lt; -75 dBm，送出 Disassociation Imminent + 候選清單</td><td>強制訊號差的裝置切換至更近的 AP</td></tr>
+      <tr><td>AP 負載均衡</td><td>AP 連線數超過門檻，向部分裝置送出遷移建議</td><td>引導至負載較低的相鄰 AP</td></tr>
+      <tr><td>Band Steering 輔助</td><td>雙頻裝置連在 2.4 GHz，送出 BSS Transition 指向 5 GHz BSSID</td><td>引導裝置至更高效能的 5 GHz</td></tr>
+      <tr><td>AP 計劃維護</td><td>維護前送出 BSS Transition Request，讓裝置提前切換</td><td>最小化維護時的用戶中斷時間</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div class="content-section">
+  <span class="section-anchor" id="s10"></span>
+  <h2><span class="h2-num">7.10</span>漫遊三劍客整合效果</h2>
+  <p>802.11k、802.11r、802.11v 各自解決漫遊問題的不同面向，三者同時啟用才能發揮最大效果：</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>標準</th><th>解決的核心問題</th><th>主要機制</th><th>效果</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td>802.11k</td><td>漫遊前「找哪裡」</td><td>鄰居報告（Neighbor Report）</td><td>掃描時間縮短 60～80%</td></tr>
+      <tr class="hl"><td>802.11r</td><td>漫遊中「認證耗時」</td><td>預快取金鑰（FT Key Hierarchy）</td><td>漫遊時間 &lt;50 ms（802.1X 從 500 ms 降至 30 ms）</td></tr>
+      <tr class="hl"><td>802.11v</td><td>漫遊時機「黏著不動」</td><td>BSS Transition Request</td><td>主動引導 Sticky Client 及時切換</td></tr>
+    </tbody>
+  </table></div>
+  <div class="diagram">
+    <div class="diagram-ascii">三劍客協同作業的完整漫遊時序：
+
+t=0 ms：裝置 RSSI 下降至 -72 dBm（802.11k 已取得鄰居清單）
+t=5 ms：AP 啟動 802.11v → 送出 BSS Transition Request + 候選清單（AP2: CH36）
+t=8 ms：裝置決定漫遊至 AP2
+t=10 ms：只掃描 CH36（802.11k 指定）→ 立即找到 AP2
+t=12 ms：802.11r FT Authentication → AP2 從 WLC 取得 PMK-R1
+t=25 ms：四向握手完成，PTK 建立
+t=28 ms：裝置關聯至 AP2，資料傳輸恢復
+
+總漫遊時間：~28 ms（VoIP 通話不受影響）
+無三劍客標準漫遊：150～600 ms → 通話斷音、機器音、中斷</div>
+    <div class="diagram-caption">Fig 7.4 — 漫遊三劍客協同作業的完整時序</div>
+  </div>
+</div>
+
+<div class="content-section">
+  <span class="section-anchor" id="s11"></span>
+  <h2><span class="h2-num">7.11</span>效能瓶頸識別</h2>
+  <p>無線網路效能問題可能來自多個層面，系統性地識別瓶頸所在是優化的第一步：</p>
+  <div class="dtree">
+    <div class="dtree-item"><div class="dtree-num">1</div><div class="dtree-body">
+      <div class="dtree-q">有線端還是無線端？</div>
+      <div class="dtree-a">用有線裝置直連交換器做速率測試（iPerf3）。有線正常 → 問題在無線端；有線也慢 → 問題在上行網路（ISP 或骨幹）。確認此步驟可排除約 30% 的「Wi-Fi 問題」實際上是有線端問題。</div>
+    </div></div>
+    <div class="dtree-item"><div class="dtree-num">2</div><div class="dtree-body">
+      <div class="dtree-q">確認 RSSI 和 MCS 索引</div>
+      <div class="dtree-a">在 AP 管理介面查看問題裝置的 RSSI（應 &gt;-70 dBm）和 MCS 索引（越高越好）。RSSI &lt;-75 dBm → 覆蓋不足；RSSI 正常但 MCS 低 → 干擾或低 SNR 問題。</div>
+    </div></div>
+    <div class="dtree-item"><div class="dtree-num">3</div><div class="dtree-body">
+      <div class="dtree-q">確認頻道使用率和重傳率</div>
+      <div class="dtree-a">頻道使用率超過 75% → 頻道過載，調整頻道規劃或增加 AP；重傳率超過 20% → 訊號品質差或干擾，需頻譜分析找出干擾源。</div>
+    </div></div>
+    <div class="dtree-item"><div class="dtree-num">4</div><div class="dtree-body">
+      <div class="dtree-q">確認 AP 並發裝置數與 CPU</div>
+      <div class="dtree-a">連線裝置超過 50 台或 CPU 持續 &gt;80% → AP 過載，需增加 AP、調整 Band Steering，或更換高階 AP。</div>
+    </div></div>
+    <div class="dtree-item"><div class="dtree-num">5</div><div class="dtree-body">
+      <div class="dtree-q">是否有低速裝置拖累整體速率？</div>
+      <div class="dtree-a">802.11b/g 舊裝置接入時，AP 必須降低整體速率以相容（Protection Mechanism）。考慮停用低速率（見 7.14 節）或隔離至專用 SSID。</div>
+    </div></div>
+  </div>
+  <h3>企業 Wi-Fi 6 環境效能基準</h3>
+  <div style="margin:1.5rem 0;display:flex;flex-direction:column;gap:.45rem">
+    <div class="kpi-grid"><span class="kpi-label">單客戶端下行速率</span><div class="kpi-bar-bg"><div class="kpi-bar-fill" style="width:80%;background:var(--ink)"></div></div><span class="kpi-val">&gt;300 Mbps</span></div>
+    <div class="kpi-grid"><span class="kpi-label">RSSI</span><div class="kpi-bar-bg"><div class="kpi-bar-fill" style="width:70%;background:var(--ink)"></div></div><span class="kpi-val">&gt;-65 dBm</span></div>
+    <div class="kpi-grid"><span class="kpi-label">SNR</span><div class="kpi-bar-bg"><div class="kpi-bar-fill" style="width:60%;background:var(--ink-mid)"></div></div><span class="kpi-val">&gt;25 dB</span></div>
+    <div class="kpi-grid"><span class="kpi-label">重傳率（越低越好）</span><div class="kpi-bar-bg"><div class="kpi-bar-fill" style="width:20%;background:var(--red)"></div></div><span class="kpi-val">&lt;10%</span></div>
+    <div class="kpi-grid"><span class="kpi-label">頻道使用率</span><div class="kpi-bar-bg"><div class="kpi-bar-fill" style="width:50%;background:var(--ink-mid)"></div></div><span class="kpi-val">&lt;50%</span></div>
+    <div class="kpi-grid"><span class="kpi-label">漫遊時間（三劍客）</span><div class="kpi-bar-bg"><div class="kpi-bar-fill" style="width:10%;background:var(--ink)"></div></div><span class="kpi-val">&lt;50 ms</span></div>
+  </div>
+</div>
+
+<div class="content-section">
+  <span class="section-anchor" id="s12"></span>
+  <h2><span class="h2-num">7.12</span>空氣時間公平性</h2>
+  <p>傳統的<em class="term">封包公平（Packet Fairness）</em>在混合速率環境中會造成嚴重效能不公平：Wi-Fi 6 裝置傳一個封包只需 0.01 ms，而 Wi-Fi 4 裝置需要 0.15 ms——舊裝置佔用了 15 倍空氣時間卻只傳了同樣數量的封包，嚴重拖累整體效率。</p>
+  <div class="diagram">
+    <div class="diagram-ascii">【封包公平（傳統）】
+Wi-Fi 6 裝置 A（600 Mbps）：1 封包 → 0.01 ms 空氣時間
+Wi-Fi 4 裝置 B（54 Mbps） ：1 封包 → 0.15 ms 空氣時間
+結果：裝置 B 佔用 15 倍空氣時間，舊裝置嚴重拖累整體效率。
+
+【空氣時間公平（Airtime Fairness）】
+Wi-Fi 6 裝置 A：10 ms → 傳送約 750 KB 資料
+Wi-Fi 4 裝置 B：10 ms → 傳送約 67 KB 資料
+結果：快速裝置充分發揮效能，舊裝置不再拖累整體網路。</div>
+    <div class="diagram-caption">Fig 7.5 — 封包公平 vs 空氣時間公平的差異</div>
+  </div>
+  <p><em class="term">Airtime Fairness</em> 在混合速率環境（辦公室新舊裝置共存）中效益顯著。UniFi 稱為「Airtime Fairness」；Cisco WLC 稱為「802.11e Airtime Fairness」。在無線電設定中啟用即可。</p>
+</div>
+
+<div class="content-section">
+  <span class="section-anchor" id="s13"></span>
+  <h2><span class="h2-num">7.13</span>Rate Adaptation 速率自適應</h2>
+  <p><em class="term">Rate Adaptation（速率自適應）</em>是 AP 和客戶端根據當前無線鏈路品質，<strong>動態調整 MCS 索引</strong>的機制，在訊號品質和速率之間取得最佳平衡。</p>
+  <pre><span class="cm"># 速率自適應決策邏輯（簡化）</span>
+SNR &gt; 30 dB  → 高 MCS（MCS 11, 1024-QAM）→ 最高速率
+SNR 20–30 dB → 中 MCS（MCS 7, 64-QAM）   → 中等速率
+SNR 10–20 dB → 低 MCS（MCS 3, QPSK）     → 保守速率
+SNR &lt; 10 dB  → 最低 MCS（MCS 0, BPSK）   → 最低速率
+
+動態調整：
+  ↑ 連續成功傳輸後嘗試提升 MCS
+  ↓ 重傳率超過門檻後立即降低 MCS</pre>
+  <dl class="def-list">
+    <dt>Minstrel</dt><dd>Linux mac80211 驅動常用。隨機探測不同 MCS 的成功率，統計找出最佳速率。能快速適應環境，但在高干擾環境有額外開銷。</dd>
+    <dt>CARA</dt><dd><em class="term">Collision-Aware Rate Adaptation</em>：區分傳輸失敗是碰撞（Collision）還是訊號差，避免因碰撞誤判而過度降速，在高密度環境表現更穩定。</dd>
+    <dt>廠商專有演算法</dt><dd>Cisco、Qualcomm 等廠商實作各自優化的速率自適應演算法，通常整合功率控制和空間串流選擇，整體效果優於通用開源實作。</dd>
+  </dl>
+</div>
+
+<div class="content-section">
+  <span class="section-anchor" id="s14"></span>
+  <h2><span class="h2-num">7.14</span>無線效能優化清單</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>優化項目</th><th>設定方式</th><th>預期效益</th><th>影響</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td>停用低速率</td><td>2.4 GHz 最低 12 Mbps；5 GHz 最低 24 Mbps</td><td>排除遠距低速裝置，提升整體頻道效率</td><td>高</td></tr>
+      <tr class="hl"><td>啟用 802.11r / k / v</td><td>在 SSID 或 AP 設定中同時啟用三個漫遊標準</td><td>漫遊時間從 500 ms 降至 &lt;50 ms，消除 VoIP 斷線</td><td>高</td></tr>
+      <tr class="hl"><td>正確頻道規劃</td><td>手動指定不重疊頻道；2.4 GHz 只用 1/6/11；5 GHz 依密度使用 20/40 MHz</td><td>消除同頻干擾，重傳率從 30%+ 降至 &lt;10%</td><td>高</td></tr>
+      <tr><td>啟用 Band Steering</td><td>AP 設定中啟用 5 GHz 優先</td><td>雙頻裝置優先連 5 GHz，降低 2.4 GHz 負載</td><td>中高</td></tr>
+      <tr><td>啟用 Airtime Fairness</td><td>AP 無線電設定中啟用 Airtime Fairness</td><td>混合速率環境中新裝置不再被舊裝置拖累</td><td>中高</td></tr>
+      <tr><td>啟用 WMM QoS</td><td>確認 WMM 啟用，配置正確的 DSCP 信任策略</td><td>VoIP / 視訊流量優先，通話品質提升</td><td>中（VoIP 環境為高）</td></tr>
+      <tr><td>優化 AP 發射功率</td><td>依部署密度調整功率，避免過高造成同頻干擾</td><td>減少相鄰 AP 干擾，整體效能提升</td><td>中</td></tr>
+      <tr><td>設定 Minimum RSSI</td><td>AP 拒絕 RSSI 低於 -80 dBm 的裝置連線</td><td>排除訊號極差的遠端裝置，保護整體頻道品質</td><td>中</td></tr>
+      <tr><td>啟用 BSS Coloring</td><td>確認 Wi-Fi 6 AP 的 BSS Color 功能啟用（通常預設啟用）</td><td>空間重用效率提升，減少不必要的頻道退讓</td><td>低至中（Wi-Fi 6 環境）</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div class="content-section">
+  <span class="section-anchor" id="s15"></span>
+  <h2><span class="h2-num">7.15</span>故障排除方法論</h2>
+  <p>無線故障排除的核心是<strong>系統性地縮小問題範圍</strong>，而非憑直覺猜測。OSI 模型由下而上是最可靠的框架：</p>
+  <pre><span class="hi">Layer 1（實體層）</span>
+  ✓ AP 是否有 PoE 供電（LED 狀態確認）
+  ✓ 網路線是否連接正常（交換器埠 Link 燈）
+  ✓ 無線訊號是否可被偵測（RSSI 合理值）
+  ✓ 頻道是否有干擾（頻譜分析儀）
+
+<span class="hi">Layer 2（資料鏈結層）</span>
+  ✓ AP 是否成功連接 WLC / 雲端控制器
+  ✓ 客戶端是否成功關聯到 AP
+  ✓ WPA2/3 認證是否成功（無認證失敗日誌）
+  ✓ VLAN 標記是否正確（交換器 Trunk 設定）
+
+<span class="hi">Layer 3（網路層）</span>
+  ✓ AP 和客戶端是否取得 IP（DHCP 成功）
+  ✓ 客戶端能否 Ping 閘道器
+  ✓ 防火牆規則是否阻擋特定流量
+
+<span class="hi">Layer 4–7（傳輸到應用層）</span>
+  ✓ DNS 解析是否正常（nslookup 測試）
+  ✓ 特定應用埠是否被封鎖
+  ✓ QoS 標記是否正確（Wireshark 抓包確認）</pre>
+  <dl class="def-list">
+    <dt>問題範圍</dt><dd>單一用戶 → 裝置端；某 AP 附近用戶 → AP 問題；全部用戶 → WLC 或上行網路問題。</dd>
+    <dt>問題時間</dt><dd>問題何時開始？是否有系統變更剛好在問題出現前？間歇性問題多與負載或干擾有關。</dd>
+    <dt>具體現象</dt><dd>「連線不上」（認證）、「速率慢」（效能）、「頻繁斷線」（漫遊或穩定性）——不同現象指向不同排查方向。</dd>
+    <dt>頻段測試</dt><dd>強制裝置分別連接 2.4 GHz 和 5 GHz 測試。只有 2.4 GHz 差 → 2.4 GHz 干擾；兩個頻段都差 → AP 上行或認證問題。</dd>
+  </dl>
+</div>
+
+<div class="content-section">
+  <span class="section-anchor" id="s16"></span>
+  <h2><span class="h2-num">7.16</span>VoIP 無線品質排障</h2>
+  <p>VoIP 是對無線品質最敏感的應用，常作為無線網路品質的「金絲雀指標」——VoIP 通話品質好，代表無線整體狀況良好。</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>MOS 分數</th><th>通話品質感知</th><th>對應網路條件</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td>4.0 – 5.0</td><td>優秀，接近面對面</td><td>延遲 &lt;50 ms，抖動 &lt;10 ms，封包遺失 &lt;0.1%</td></tr>
+      <tr><td>3.5 – 4.0</td><td>良好，可接受</td><td>延遲 &lt;100 ms，抖動 &lt;20 ms，封包遺失 &lt;1%</td></tr>
+      <tr><td>3.0 – 3.5</td><td>普通，稍有不清晰</td><td>延遲 &lt;150 ms，抖動 &lt;30 ms，封包遺失 &lt;3%</td></tr>
+      <tr><td>2.0 – 3.0</td><td>差，明顯干擾通話</td><td>高延遲或抖動，頻繁封包遺失</td></tr>
+      <tr><td>&lt; 2.0</td><td>無法接受</td><td>嚴重網路問題</td></tr>
+    </tbody>
+  </table></div>
+  <div class="dtree">
+    <div class="dtree-item"><div class="dtree-num">Q</div><div class="dtree-body">
+      <div class="dtree-q">通話有斷音 / 靜音片段</div>
+      <div class="dtree-a"><strong>最常見原因：漫遊切換。</strong>確認 802.11r/k/v 是否啟用，用 AP 日誌確認漫遊時間是否超過 50 ms。靜態用戶若有斷音，則排查封包遺失率和 WMM AC_VO 佇列是否正常運作。</div>
+    </div></div>
+    <div class="dtree-item"><div class="dtree-num">Q</div><div class="dtree-body">
+      <div class="dtree-q">通話有機器音 / 機械感</div>
+      <div class="dtree-a"><strong>最常見原因：抖動（Jitter）過高。</strong>VoIP 使用抖動緩衝器平滑延遲變化，抖動超過緩衝器容量時封包順序錯亂導致機器音。確認 WMM AC_VO 是否正確啟用，RTP 封包的 DSCP 是否標記為 EF（46）。</div>
+    </div></div>
+    <div class="dtree-item"><div class="dtree-num">Q</div><div class="dtree-body">
+      <div class="dtree-q">通話有回音 / 迴響</div>
+      <div class="dtree-a"><strong>通常不是無線問題。</strong>回音多數由電話設備的回音消除（AEC）失效、揚聲器設定或會議室聲學環境造成。確認電話機或軟體客戶端的 AEC 設定，排查環境噪音反射問題。</div>
+    </div></div>
+    <div class="dtree-item"><div class="dtree-num">Q</div><div class="dtree-body">
+      <div class="dtree-q">特定時段或位置品質差</div>
+      <div class="dtree-a"><strong>時段相關：</strong>確認尖峰時段頻道使用率（應 &lt;75%）和 WMM 是否優先語音流量；必要時增加 AP 或調整頻道規劃。<strong>位置相關：</strong>現場量測 RSSI（應 &gt;-70 dBm），確認是否在 AP 覆蓋邊緣或有干擾源。</div>
+    </div></div>
+  </div>
+</div>
+
+<div class="content-section">
+  <span class="section-anchor" id="s17"></span>
+  <h2><span class="h2-num">7.17</span>診斷工具與指令</h2>
+  <div class="tool-grid">
+    <div class="tool-card"><div class="tc-name">iPerf3</div><div class="tc-type">效能量測</div><div class="tc-desc">量測 TCP / UDP 吞吐量、延遲和抖動。客戶端和伺服器各執行，測量無線到有線的實際速率，是最基本的效能確認工具。</div></div>
+    <div class="tool-card"><div class="tc-name">Wireshark</div><div class="tc-type">封包分析</div><div class="tc-desc">擷取和分析 802.11 訊框，驗證 WMM DSCP 標記、四向握手、漫遊事件、重傳率。需支援 Monitor Mode 的 Wi-Fi 網卡。</div></div>
+    <div class="tool-card"><div class="tc-name">Ekahau AI Pro</div><div class="tc-type">無線勘查</div><div class="tc-desc">專業 Site Survey 工具，量測 RSSI 熱圖、頻道干擾、SNR 分布，生成視覺化報告。業界最廣泛使用的無線診斷工具之一。</div></div>
+    <div class="tool-card"><div class="tc-name">NetSpot（免費）</div><div class="tc-type">無線勘查</div><div class="tc-desc">免費版可做基本被動式 Survey，掃描鄰居 AP 並生成覆蓋熱圖。適合入門診斷或小型環境快速評估。</div></div>
+    <div class="tool-card"><div class="tc-name">WiFi Analyzer</div><div class="tc-type">手機工具（Android）</div><div class="tc-desc">即時顯示附近所有 AP 的 SSID、頻道、RSSI，視覺化頻道使用情況。適合快速現場評估，免費且易於使用。</div></div>
+    <div class="tool-card"><div class="tc-name">ping / traceroute</div><div class="tc-type">基本診斷</div><div class="tc-desc">確認基本連通性（ping 閘道器確認 Layer 3），識別延遲節點（traceroute），是所有排障的起始點。</div></div>
+  </div>
+  <pre><span class="cm"># Cisco WLC CLI 常用診斷指令</span>
+<span class="k">show ap summary</span>                        <span class="cm"># 所有 AP 狀態</span>
+<span class="k">show ap config general</span> <span class="v">AP-Floor3-01</span>   <span class="cm"># 特定 AP 詳細設定</span>
+<span class="k">show client summary</span>                    <span class="cm"># 所有連線客戶端</span>
+<span class="k">show client detail</span> <span class="v">aa:bb:cc:dd:ee:ff</span>  <span class="cm"># 特定客戶端詳細資訊</span>
+<span class="k">debug client</span> <span class="v">aa:bb:cc:dd:ee:ff</span>        <span class="cm"># 即時 debug（完成後 no debug all）</span>
+
+<span class="cm"># UniFi：SSH 進入 AP 後的診斷指令</span>
+<span class="k">iwconfig</span>                               <span class="cm"># 無線介面狀態</span>
+<span class="k">iwinfo ath0 assoclist</span>                  <span class="cm"># 2.4 GHz 連線裝置（含 RSSI、MCS）</span>
+<span class="k">iwinfo ath1 assoclist</span>                  <span class="cm"># 5 GHz 連線裝置</span>
+<span class="k">cat /proc/net/dev</span>                      <span class="cm"># 介面封包統計（收發封包數、錯誤數）</span></pre>
+</div>
+
+<div class="content-section">
+  <span class="section-anchor" id="summary"></span>
+  <h2><span class="h2-num">&mdash;</span>本章重點整理</h2>
+  <div class="summary-box">
+    <div class="sum-label">Chapter 07 Summary</div>
+    <ul>
+      <li>WMM（802.11e）將無線頻道分為四個優先佇列：AC_VO（語音，最高）、AC_VI（視訊）、AC_BE（一般，預設）、AC_BK（背景，最低）。EDCA 透過 AIFSN、CWmin/CWmax、TXOP 三個參數控制各佇列的競爭優先級，數值越小優先級越高。</li>
+      <li>DSCP EF（46）對映 AC_VO；AF41（34）對映 AC_VI；BE（0）對映 AC_BE；CS1（8）對映 AC_BK。訪客 SSID 必須設定不信任客戶端 DSCP，強制重標記為 AC_BE，防止濫用語音佇列。</li>
+      <li>標準 WPA2 漫遊需 150～600 ms，遠超 VoIP 可接受的 50 ms 上限；802.1X 模式因需重新 RADIUS 認證延遲尤為嚴重。</li>
+      <li>802.11k（鄰居報告）縮短掃描時間 60～80%；802.11r（FT 金鑰快取）將漫遊時間壓縮至 &lt;50 ms；802.11v（BSS Transition）解決 Sticky Client 問題。三者合稱「漫遊三劍客」，應同時啟用。</li>
+      <li>802.11r 有 Over-the-Air（&lt;20 ms）和 Over-the-DS（&lt;50 ms）兩種模式；少數舊裝置不相容，建議使用 Adaptive FT 模式。</li>
+      <li>Airtime Fairness 確保各裝置獲得相同空氣時間，防止低速舊裝置佔據大量頻道時間拖累高速裝置。在混合速率環境中效益顯著。</li>
+      <li>Rate Adaptation 根據 SNR 動態選擇最佳 MCS 索引；SNR &gt;30 dB 可用最高 MCS，SNR &lt;10 dB 僅能使用 MCS 0（BPSK）。</li>
+      <li>效能排查順序：有線端確認 → RSSI/MCS → 頻道使用率/重傳率 → AP 負載 → 低速裝置干擾。</li>
+      <li>VoIP 品質以 MOS Score 衡量；延遲 &lt;100 ms、抖動 &lt;20 ms、遺失 &lt;1% 可達 MOS ≥ 3.5。斷音多為漫遊問題，機器音多為抖動過高問題。</li>
+      <li>故障排除應從 OSI Layer 1 開始逐層排查，不應跳層猜測。常用工具：iPerf3（速率量測）、Wireshark（封包分析）、Ekahau（Site Survey）。</li>
+    </ul>
+  </div>
+  <div class="chapter-nav">
+    <a href="chapter6.html">&larr; Chapter 06：無線網路安全</a>
+    <a href="chapter8.html" class="next">Chapter 08：進階無線應用 &rarr;</a>
+  </div>
+</div>
+
+</main>
+</div>
+
+<footer>
+  <div class="foot-left">AP &amp; Wireless Network Application &mdash; Chapter 07</div>
+  <div class="foot-right">QoS 與無線網路優化</div>
+</footer>
+
+<script>
+  const sections = document.querySelectorAll('.section-anchor');
+  const tocLinks = document.querySelectorAll('.toc-list a');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        tocLinks.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-64px 0px -60% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
