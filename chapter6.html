@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chapter 6：無線網路安全｜AP 與無線網路應用</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --paper: #F5F0E8;
+      --paper-dark: #EDE7D9;
+      --paper-rule: #DDD5C4;
+      --ink: #1A1610;
+      --ink-mid: #4A4035;
+      --ink-light: #8A7D6A;
+      --red: #C0392B;
+      --red-muted: #D9584A;
+    }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body { background: var(--paper); color: var(--ink); font-family: 'Noto Serif TC', serif; line-height: 1.85; }
+
+    header { border-bottom: 2px solid var(--ink); padding: 0 4rem; position: sticky; top: 0; background: var(--paper); z-index: 100; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .site-title { font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-mid); text-decoration: none; }
+    .site-title span { color: var(--red); }
+    .header-nav { display: flex; gap: 1.5rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; letter-spacing: 0.08em; }
+    .header-nav a { color: var(--ink-light); text-decoration: none; transition: color 0.2s; }
+    .header-nav a:hover { color: var(--red); }
+
+    .chapter-banner { background: var(--ink); color: var(--paper); padding: 4rem 4rem 3.5rem; }
+    .chapter-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--red-muted); margin-bottom: 1.2rem; }
+    .chapter-banner h1 { font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; margin-bottom: 1.2rem; }
+    .chapter-banner .subtitle { font-size: 1rem; color: #B8AC9E; max-width: 640px; line-height: 1.8; }
+    .chapter-meta-row { display: flex; gap: 3rem; margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid #3A342C; flex-wrap: wrap; }
+    .chapter-meta-row .m-item .m-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: #6A5E52; margin-bottom: 0.3rem; }
+    .chapter-meta-row .m-item .m-value { font-size: 0.9rem; color: #D4CCBF; }
+
+    .page-layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 64px); align-items: start; }
+
+    .sidebar { position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto; border-right: 1px solid var(--paper-rule); padding: 2.5rem 1.5rem; }
+    .toc-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 1.2rem; }
+    .toc-list { list-style: none; display: flex; flex-direction: column; gap: 0.15rem; }
+    .toc-list a { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; color: var(--ink-mid); text-decoration: none; padding: 0.35rem 0.6rem; border-left: 2px solid transparent; transition: all 0.15s; line-height: 1.5; }
+    .toc-list a:hover, .toc-list a.active { color: var(--red); border-left-color: var(--red); background: var(--paper-dark); }
+    .toc-section { margin-top: 1.2rem; margin-bottom: 0.3rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--paper-rule); }
+    .sidebar-nav { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--paper-rule); display: flex; flex-direction: column; gap: 0.5rem; }
+    .sidebar-nav a { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--ink-light); text-decoration: none; transition: color 0.15s; }
+    .sidebar-nav a:hover { color: var(--red); }
+
+    main { padding: 3.5rem 4rem 6rem 3.5rem; max-width: 860px; }
+    .content-section { margin-bottom: 4.5rem; }
+    .section-anchor { display: block; height: 64px; margin-top: -64px; visibility: hidden; }
+
+    h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.01em; margin-bottom: 1.5rem; padding-bottom: 0.7rem; border-bottom: 2px solid var(--ink); display: flex; align-items: baseline; gap: 1rem; }
+    h2 .h2-num { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; font-weight: 400; letter-spacing: 0.1em; color: var(--red); }
+    h3 { font-size: 1.1rem; font-weight: 600; margin-top: 2rem; margin-bottom: 0.8rem; color: var(--ink); }
+    h4 { font-size: 0.95rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--ink-mid); font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.03em; }
+    p { font-size: 0.97rem; color: var(--ink-mid); margin-bottom: 1rem; line-height: 1.9; }
+    strong { color: var(--ink); font-weight: 600; }
+    em.term { font-style: normal; color: var(--red); font-weight: 500; }
+
+    code { font-family: 'IBM Plex Mono', monospace; font-size: 0.82em; background: var(--paper-dark); border: 1px solid var(--paper-rule); padding: 0.1em 0.4em; color: var(--ink); }
+    pre { background: var(--ink); color: #D4CCBF; font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; line-height: 1.75; padding: 1.5rem 2rem; margin: 1.5rem 0; overflow-x: auto; border-left: 3px solid var(--red); }
+    pre .comment { color: #5A5040; }
+    pre .key { color: #E8A87C; }
+    pre .val { color: #A8C6A0; }
+    pre .prompt { color: var(--red-muted); user-select: none; }
+    pre .bad { color: #C06060; }
+    pre .good { color: #80B880; }
+
+    .callout { border-left: 3px solid var(--ink); background: var(--paper-dark); padding: 1.2rem 1.5rem; margin: 1.5rem 0; }
+    .callout.important { border-left-color: var(--red); }
+    .callout .callout-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 0.5rem; color: var(--ink-light); }
+    .callout.important .callout-label { color: var(--red); }
+    .callout p { margin-bottom: 0.5rem; font-size: 0.9rem; }
+    .callout p:last-child { margin-bottom: 0; }
+
+    .table-wrap { overflow-x: auto; margin: 1.5rem 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+    thead tr { background: var(--ink); color: var(--paper); }
+    thead th { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.75rem 1rem; text-align: left; font-weight: 500; }
+    tbody tr { border-bottom: 1px solid var(--paper-rule); }
+    tbody tr:hover { background: var(--paper-dark); }
+    tbody td { padding: 0.7rem 1rem; color: var(--ink-mid); line-height: 1.7; vertical-align: top; }
+    tbody td:first-child { font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; color: var(--ink); font-weight: 500; }
+    tbody tr.bad-row td { background: rgba(192,57,43,0.06); }
+    tbody tr.bad-row td:first-child { color: var(--red); }
+    tbody tr.good-row td { background: rgba(80,120,80,0.05); }
+
+    .def-list { display: grid; grid-template-columns: auto 1fr; gap: 0; border-top: 1px solid var(--paper-rule); margin: 1.5rem 0; }
+    .def-list dt { font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; font-weight: 500; padding: 0.75rem 1.5rem 0.75rem 0; border-bottom: 1px solid var(--paper-rule); color: var(--ink); white-space: nowrap; }
+    .def-list dd { font-size: 0.88rem; color: var(--ink-mid); padding: 0.75rem 0; border-bottom: 1px solid var(--paper-rule); line-height: 1.75; }
+
+    .diagram { background: var(--paper-dark); border: 1px solid var(--paper-rule); padding: 2rem; margin: 2rem 0; }
+    .diagram-ascii { font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; line-height: 1.65; color: var(--ink); display: block; white-space: pre; overflow-x: auto; }
+    .diagram-caption { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: var(--ink-light); margin-top: 1rem; letter-spacing: 0.06em; text-transform: uppercase; }
+
+    /* Protocol evolution timeline */
+    .proto-timeline { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--paper-rule); margin: 1.5rem 0; overflow: hidden; }
+    .proto-row { display: grid; grid-template-columns: 110px 90px 1fr; border-bottom: 1px solid var(--paper-rule); }
+    .proto-row:last-child { border-bottom: none; }
+    .proto-row.deprecated { opacity: 0.65; }
+    .proto-year { padding: 0.9rem 1rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; color: var(--ink-light); display: flex; align-items: center; border-right: 1px solid var(--paper-rule); background: var(--paper-dark); }
+    .proto-name { padding: 0.9rem 1rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; font-weight: 500; color: var(--ink); display: flex; align-items: center; border-right: 1px solid var(--paper-rule); }
+    .proto-name.bad { color: var(--red); }
+    .proto-name.ok { color: var(--ink-mid); }
+    .proto-name.good { color: var(--ink); }
+    .proto-detail { padding: 0.9rem 1rem; font-size: 0.85rem; color: var(--ink-mid); line-height: 1.65; display: flex; align-items: center; }
+    .proto-tag { display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; padding: 0.1em 0.5em; margin-left: 0.5rem; letter-spacing: 0.06em; }
+    .proto-tag.broken { background: var(--red); color: var(--paper); }
+    .proto-tag.weak { background: var(--ink-mid); color: var(--paper); }
+    .proto-tag.current { background: var(--ink); color: var(--paper); }
+    .proto-tag.best { background: var(--red); color: var(--paper); }
+
+    /* 802.1X flow */
+    .flow-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; border: 1px solid var(--paper-rule); margin: 1.5rem 0; }
+    .flow-col { padding: 1rem; border-right: 1px solid var(--paper-rule); }
+    .flow-col:last-child { border-right: none; }
+    .flow-col .fc-header { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--red); margin-bottom: 0.8rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--paper-rule); text-align: center; }
+    .flow-col .fc-role { font-size: 0.85rem; font-weight: 600; text-align: center; margin-bottom: 0.5rem; }
+    .flow-col .fc-desc { font-size: 0.78rem; color: var(--ink-light); text-align: center; line-height: 1.5; }
+
+    /* Attack cards */
+    .attack-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin: 1.5rem 0; }
+    .attack-card { border: 1px solid var(--paper-rule); padding: 1.4rem; }
+    .attack-card .ac-type { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--red); margin-bottom: 0.4rem; }
+    .attack-card .ac-name { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.7rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--paper-rule); }
+    .attack-card .ac-how { font-size: 0.83rem; color: var(--ink-mid); margin-bottom: 0.6rem; line-height: 1.65; }
+    .attack-card .ac-defend { font-size: 0.83rem; color: var(--ink); font-weight: 500; line-height: 1.65; }
+    .attack-card .ac-defend::before { content: '防禦：'; color: var(--red); font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; letter-spacing: 0.06em; display: block; margin-bottom: 0.2rem; text-transform: uppercase; }
+
+    /* Security hardening checklist */
+    .harden-list { border: 1px solid var(--paper-rule); margin: 1.5rem 0; }
+    .harden-group { border-bottom: 1px solid var(--paper-rule); }
+    .harden-group:last-child { border-bottom: none; }
+    .harden-header { background: var(--ink); color: var(--paper); padding: 0.65rem 1.2rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; }
+    .harden-items { padding: 0.8rem 1.2rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .harden-item { display: grid; grid-template-columns: 20px 1fr auto; gap: 0.6rem; align-items: start; }
+    .h-box { width: 14px; height: 14px; border: 1.5px solid var(--paper-rule); margin-top: 3px; flex-shrink: 0; }
+    .h-text { font-size: 0.87rem; color: var(--ink-mid); line-height: 1.55; }
+    .h-prio { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; padding: 0.1em 0.45em; white-space: nowrap; margin-top: 2px; }
+    .h-prio.p1 { background: var(--red); color: var(--paper); }
+    .h-prio.p2 { background: var(--ink-mid); color: var(--paper); }
+    .h-prio.p3 { background: var(--paper-rule); color: var(--ink-light); }
+
+    /* RADIUS topology */
+    .radius-flow { display: grid; grid-template-columns: 1fr 60px 1fr 60px 1fr; gap: 0; margin: 1.5rem 0; align-items: center; }
+    .radius-node { border: 1px solid var(--paper-rule); padding: 1rem; text-align: center; }
+    .radius-node.dark { background: var(--ink); }
+    .radius-node .rn-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--red); margin-bottom: 0.3rem; }
+    .radius-node.dark .rn-label { color: var(--red-muted); }
+    .radius-node .rn-name { font-size: 0.9rem; font-weight: 700; }
+    .radius-node.dark .rn-name { color: var(--paper); }
+    .radius-node .rn-desc { font-size: 0.75rem; color: var(--ink-light); margin-top: 0.3rem; line-height: 1.4; }
+    .radius-node.dark .rn-desc { color: #7A6E62; }
+    .radius-arrow { text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; color: var(--ink-light); }
+
+    .summary-box { background: var(--ink); color: var(--paper); padding: 2rem 2.5rem; margin: 3rem 0 0; }
+    .summary-box .sum-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--red-muted); margin-bottom: 1rem; }
+    .summary-box ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+    .summary-box ul li { font-size: 0.9rem; color: #D4CCBF; padding-left: 1.2rem; position: relative; line-height: 1.7; }
+    .summary-box ul li::before { content: '—'; position: absolute; left: 0; color: var(--red-muted); font-family: 'IBM Plex Mono', monospace; }
+
+    .chapter-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 5rem; padding-top: 2rem; border-top: 2px solid var(--ink); }
+    .chapter-nav a { font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; letter-spacing: 0.08em; color: var(--ink-mid); text-decoration: none; padding: 0.75rem 1.5rem; border: 1px solid var(--paper-rule); transition: all 0.2s; }
+    .chapter-nav a:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .chapter-nav .next { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .chapter-nav .next:hover { background: var(--red); border-color: var(--red); }
+
+    footer { padding: 2rem 4rem; border-top: 2px solid var(--ink); display: flex; justify-content: space-between; align-items: center; }
+    footer .foot-left { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; letter-spacing: 0.08em; color: var(--ink-light); }
+    footer .foot-right { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--red); }
+
+    @media (max-width: 900px) {
+      header { padding: 0 1.5rem; }
+      .chapter-banner { padding: 3rem 1.5rem 2.5rem; }
+      .page-layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      main { padding: 2rem 1.5rem 4rem; }
+      .proto-row { grid-template-columns: 80px 70px 1fr; }
+      .attack-grid { grid-template-columns: 1fr; }
+      .flow-grid { grid-template-columns: 1fr; }
+      .radius-flow { grid-template-columns: 1fr; }
+      .radius-arrow { transform: rotate(90deg); }
+      footer { flex-direction: column; gap: 0.5rem; padding: 1.5rem; }
+    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .chapter-banner { animation: fadeUp 0.5s ease both; }
+    main { animation: fadeUp 0.5s ease 0.1s both; }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="site-title" href="index.html">AP & Wireless — <span>初學者完整課程</span></a>
+  <nav class="header-nav">
+    <a href="chapter5.html">← 上一章</a>
+    <a href="index.html">課程首頁</a>
+    <a href="chapter7.html">下一章 →</a>
+  </nav>
+</header>
+
+<div class="chapter-banner">
+  <div class="chapter-label">Chapter 06 / 08</div>
+  <h1>無線網路安全</h1>
+  <p class="subtitle">完整剖析 WEP、WPA、WPA2、WPA3 的演進歷程與各自的弱點，深入說明 802.1X 企業認證與 RADIUS 架構，辨識無線網路常見攻擊手法，並建立一份實用的無線安全強化清單。</p>
+  <div class="chapter-meta-row">
+    <div class="m-item"><div class="m-label">建議閱讀時間</div><div class="m-value">約 3～4 小時</div></div>
+    <div class="m-item"><div class="m-label">難度</div><div class="m-value">中階至進階</div></div>
+    <div class="m-item"><div class="m-label">先備章節</div><div class="m-value">Chapter 01、05</div></div>
+    <div class="m-item"><div class="m-label">本章重點</div><div class="m-value">WPA/WPA2/WPA3、802.1X、RADIUS、攻擊防禦</div></div>
+  </div>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <div class="toc-label">本章目錄</div>
+    <ul class="toc-list">
+      <li><div class="toc-section">加密協定演進</div></li>
+      <li><a href="#s1">6.1 無線安全威脅概觀</a></li>
+      <li><a href="#s2">6.2 WEP：已破解的先驅</a></li>
+      <li><a href="#s3">6.3 WPA：過渡方案</a></li>
+      <li><a href="#s4">6.4 WPA2：長期主流標準</a></li>
+      <li><a href="#s5">6.5 WPA3：現代安全基石</a></li>
+      <li><a href="#s6">6.6 加密協定全面比較</a></li>
+      <li><div class="toc-section">企業認證</div></li>
+      <li><a href="#s7">6.7 Personal vs Enterprise 模式</a></li>
+      <li><a href="#s8">6.8 802.1X 認證框架</a></li>
+      <li><a href="#s9">6.9 EAP 類型詳解</a></li>
+      <li><a href="#s10">6.10 RADIUS 伺服器部署</a></li>
+      <li><a href="#s11">6.11 動態 VLAN 分配</a></li>
+      <li><div class="toc-section">攻擊與防禦</div></li>
+      <li><a href="#s12">6.12 常見無線攻擊手法</a></li>
+      <li><a href="#s13">6.13 無線入侵偵測（WIDS）</a></li>
+      <li><a href="#s14">6.14 管理幀保護（802.11w）</a></li>
+      <li><div class="toc-section">強化實務</div></li>
+      <li><a href="#s15">6.15 無線安全強化清單</a></li>
+      <li><div class="toc-section">本章總結</div></li>
+      <li><a href="#summary">重點整理</a></li>
+    </ul>
+    <div class="sidebar-nav">
+      <a href="chapter5.html">← Chapter 05</a>
+      <a href="index.html">課程首頁</a>
+      <a href="chapter7.html">Chapter 07 →</a>
+    </div>
+  </aside>
+
+  <main>
+
+    <!-- 6.1 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s1"></span>
+      <h2><span class="h2-num">6.1</span>無線安全威脅概觀</h2>
+
+      <p>
+        無線網路相較於有線網路，在安全性上面臨一個根本性的挑戰：<strong>訊號在空中傳播，任何人只要在覆蓋範圍內都能接收到訊號</strong>，不需要實體接觸到線路。這使得無線網路天生暴露在竊聽、偽裝和注入攻擊之下。
+      </p>
+
+      <p>無線網路的安全威脅可以從三個層面理解：</p>
+
+      <dl class="def-list">
+        <dt>機密性威脅</dt>
+        <dd>攻擊者被動地<strong>竊聽（Eavesdropping）</strong>空中傳輸的資料。若資料未加密或加密強度不足，攻擊者可以重建明文內容，取得帳號密碼、通訊內容、敏感文件。</dd>
+        <dt>完整性威脅</dt>
+        <dd>攻擊者<strong>篡改（Tampering）</strong>傳輸中的資料訊框，或注入偽造的管理訊框（如偽造 Deauthentication 封包）強迫裝置斷線或連接惡意 AP。</dd>
+        <dt>可用性威脅</dt>
+        <dd><strong>阻斷服務（DoS）攻擊</strong>，包含持續發送 Deauthentication 訊框（De-auth Flood）讓所有裝置斷線，或以持續無線電訊號干擾整個頻段（RF Jamming）。無線 DoS 幾乎無法完全防禦，只能減輕影響。</dd>
+      </dl>
+
+      <h3>無線安全的核心三要素</h3>
+
+      <div class="diagram">
+        <div class="diagram-ascii">無線安全三要素（CIA for Wireless）：
+
+  ┌─────────────────────────────────────────────────────────┐
+  │                                                         │
+  │   認證（Authentication）                                │
+  │   → 確認「你是誰」：防止未授權裝置連接網路              │
+  │   → WPA-Personal（密碼）/ WPA-Enterprise（憑證/帳號）   │
+  │                                                         │
+  │   加密（Encryption）                                    │
+  │   → 確保「資料機密性」：防止空中訊號被竊聽解讀          │
+  │   → WEP（RC4，已破）→ TKIP → CCMP（AES）→ GCMP（AES）  │
+  │                                                         │
+  │   完整性（Integrity）                                   │
+  │   → 確認「資料未被篡改」：防止訊框被中途修改            │
+  │   → MIC（Message Integrity Code）保護資料正確性         │
+  │   → 802.11w（PMF）保護管理訊框不被偽造                  │
+  │                                                         │
+  └─────────────────────────────────────────────────────────┘</div>
+        <div class="diagram-caption">Fig 6.1 — 無線安全三要素與對應機制</div>
+      </div>
+    </div>
+
+    <!-- 6.2 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s2"></span>
+      <h2><span class="h2-num">6.2</span>WEP：已破解的先驅</h2>
+
+      <p>
+        <em class="term">WEP（Wired Equivalent Privacy，有線等效保密）</em>是 1997 年 IEEE 802.11 標準最初定義的無線加密機制，設計目標是讓無線網路達到「與有線網路相當」的安全等級。這個目標從未被達到，WEP 已於 2004 年被 IEEE 正式棄用，<strong>但至今仍有老舊裝置在使用，是極大的安全隱患。</strong>
+      </p>
+
+      <h3>WEP 的技術設計</h3>
+      <p>
+        WEP 使用 <em class="term">RC4 串流加密演算法</em>，以靜態預共享金鑰（40 位元或 104 位元）加上 24 位元的<em class="term">初始化向量（IV, Initialization Vector）</em>組成金鑰串流，對資料進行加密。完整性驗證使用 CRC-32 校驗碼。
+      </p>
+
+      <h3>WEP 的致命弱點</h3>
+      <dl class="def-list">
+        <dt>IV 重複使用問題</dt>
+        <dd>24 位元的 IV 只有 16,777,216 種可能值。在繁忙的網路上，IV 在數小時內就會重複出現。攻擊者收集到足夠多使用相同 IV 的加密封包後，可以進行統計分析破解金鑰。</dd>
+        <dt>靜態金鑰設計</dt>
+        <dd>WEP 金鑰由全體用戶手動設定且長期不變。任何一個知道密碼的人離職後，密碼仍然有效（除非所有裝置都更換密碼），無法實現個人身分認證。</dd>
+        <dt>CRC-32 完整性可操縱</dt>
+        <dd>CRC-32 是設計用於偵測傳輸錯誤的校驗碼，不是加密雜湊函數，無法防止主動攻擊。攻擊者可以修改加密封包中的部分位元並重新計算有效的 CRC-32，繞過完整性驗證。</dd>
+        <dt>實際破解時間</dt>
+        <dd>使用 Aircrack-ng 等公開工具，在有足夠封包（約 40,000～85,000 個含 IV 的封包）的前提下，可在<strong>數分鐘內破解 WEP 64 位元金鑰</strong>，104 位元同樣在數十分鐘內可破。</dd>
+      </dl>
+
+      <div class="callout important">
+        <div class="callout-label">WEP 已於 2004 年正式廢止</div>
+        <p>任何仍在使用 WEP 的網路應立即升級。若設備只支援 WEP，唯一安全的選擇是更換設備。使用 WEP 加密等同於完全沒有加密保護。</p>
+      </div>
+    </div>
+
+    <!-- 6.3 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s3"></span>
+      <h2><span class="h2-num">6.3</span>WPA：過渡方案</h2>
+
+      <p>
+        面對 WEP 的嚴重弱點，Wi-Fi Alliance 在 2003 年推出 <em class="term">WPA（Wi-Fi Protected Access）</em>作為過渡方案，在等待 IEEE 802.11i 標準完成的期間提供更強的安全保護。WPA 的設計刻意相容現有 WEP 硬體，可透過韌體更新升級，而無需更換設備。
+      </p>
+
+      <h3>WPA 的核心改進：TKIP</h3>
+      <p>
+        WPA 引入 <em class="term">TKIP（Temporal Key Integrity Protocol，暫時金鑰完整性協定）</em>取代 WEP 的靜態 IV 機制：
+      </p>
+      <dl class="def-list">
+        <dt>Per-Packet Key Mixing</dt>
+        <dd>TKIP 為<strong>每個封包</strong>動態產生不同的加密金鑰，根本解決了 WEP 的 IV 重複問題。即使攻擊者擷取大量封包，也無法用統計方式破解。</dd>
+        <dt>MIC（Michael）</dt>
+        <dd>引入 <em class="term">MIC（Message Integrity Check）</em>訊框完整性驗證，取代 CRC-32，防止攻擊者篡改加密封包。TKIP 的 MIC 演算法稱為「Michael」。</dd>
+        <dt>IV 序號計數器</dt>
+        <dd>TKIP 使用 48 位元的 IV 序號（TSC），並要求接收端拒絕序號重放的封包，防止<em class="term">重放攻擊（Replay Attack）</em>。</dd>
+      </dl>
+
+      <h3>WPA-TKIP 的後續弱點</h3>
+      <p>
+        儘管 TKIP 修補了 WEP 的主要弱點，其底層仍使用 RC4 加密演算法，且 MIC（Michael）演算法被發現存在設計弱點。2008 年研究人員展示了針對 TKIP 的部分破解攻擊（Beck-Tews 攻擊），2009 年更被進一步擴展（Ohigashi-Morii 攻擊）。<strong>TKIP 已於 2012 年被 IEEE 廢棄</strong>，不應繼續使用。
+      </p>
+    </div>
+
+    <!-- 6.4 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s4"></span>
+      <h2><span class="h2-num">6.4</span>WPA2：長期主流標準</h2>
+
+      <p>
+        <em class="term">WPA2</em> 於 2004 年發布，完整實作 IEEE 802.11i 標準，以 <em class="term">CCMP（Counter Mode with CBC-MAC Protocol）</em>取代 TKIP，採用 <strong>AES（Advanced Encryption Standard）</strong>區塊加密，提供遠比 RC4 強大的安全保護。WPA2 成為此後近 15 年的主流無線安全標準。
+      </p>
+
+      <h3>CCMP / AES 的技術優勢</h3>
+      <dl class="def-list">
+        <dt>AES-128 加密強度</dt>
+        <dd>AES 使用 128 位元金鑰，目前無已知可行的實際破解方法。即使以現有最快的電腦進行暴力破解，也需要比宇宙年齡還長的時間。</dd>
+        <dt>CCMP 完整性保護</dt>
+        <dd>CCMP 使用 CBC-MAC（Cipher Block Chaining Message Authentication Code）同時提供加密和完整性驗證，兩者綁定，攻擊者無法在不被偵測的前提下修改加密資料。</dd>
+        <dt>重放保護</dt>
+        <dd>CCMP 標頭包含 48 位元的封包序號，AP 和客戶端會拒絕重複序號的封包，防止重放攻擊。</dd>
+      </dl>
+
+      <h3>WPA2 的四向握手（4-Way Handshake）</h3>
+      <p>
+        WPA2 的身分認證完成後（PSK 模式或 802.1X），AP 和客戶端透過<em class="term">四向握手</em>協商用於本次連線的<em class="term">PTK（Pairwise Transient Key，成對暫時金鑰）</em>，每次連線都會產生全新的 PTK，確保每次連線的加密金鑰不同。
+      </p>
+
+      <div class="diagram">
+        <div class="diagram-ascii">WPA2 四向握手（4-Way Handshake）：
+
+  AP（Authenticator）              Client（Supplicant）
+       |                                    |
+       |──── 訊息 1：ANonce ──────────────→|  AP 傳送隨機數 ANonce
+       |                                    |  Client 產生 PTK = PRF(PMK, ANonce, SNonce, MACs)
+       |←─── 訊息 2：SNonce + MIC ─────────|  Client 傳送 SNonce，用 PTK 計算 MIC 驗證
+       |  AP 用相同材料重建 PTK，驗證 MIC  |
+       |──── 訊息 3：GTK + MIC ───────────→|  AP 傳送群組金鑰（GTK），MIC 驗證
+       |←─── 訊息 4：ACK ─────────────────|  Client 確認收到 GTK
+       |                                    |
+  [PTK 安裝完成，開始加密資料傳輸]
+
+  PTK = Pairwise Transient Key（本次連線的單播加密金鑰）
+  GTK = Group Temporal Key（廣播 / 多播流量的加密金鑰）
+  PMK = Pairwise Master Key（由 PSK 或 802.1X 認證推導出）</div>
+        <div class="diagram-caption">Fig 6.2 — WPA2 四向握手密鑰協商流程</div>
+      </div>
+
+      <h3>WPA2 的已知弱點</h3>
+      <dl class="def-list">
+        <dt>KRACK（Key Reinstallation Attack）</dt>
+        <dd>2017 年揭露的 KRACK 攻擊針對四向握手的訊息 3，利用重放訊息 3 讓客戶端重新安裝已使用的金鑰，導致 CCMP 計數器歸零，進而解密資料。大多數廠商已於 2017 年底發布補丁修復。</dd>
+        <dt>PSK 離線字典攻擊</dt>
+        <dd>攻擊者擷取四向握手封包（公開工具即可做到），接著對 PMK 進行<strong>離線暴力破解</strong>（字典攻擊）——無需連接到目標網路。若 PSK 密碼夠短或包含在字典中，可能在數分鐘至數小時內被破解。<strong>這是 WPA2-Personal 最大的安全弱點。</strong></dd>
+        <dt>PMKID 攻擊（2018）</dt>
+        <dd>研究人員發現不需擷取完整四向握手，只需從 AP 廣播的 EAPOL 訊框中提取 PMKID 值，同樣可以進行離線字典攻擊，且比 KRACK 更容易執行。</dd>
+      </dl>
+
+      <div class="callout important">
+        <div class="callout-label">WPA2-Personal 密碼長度的重要性</div>
+        <p>針對 WPA2-Personal（PSK）的字典攻擊效率完全取決於密碼強度。一個 <strong>8 字元的常見單詞密碼</strong>可能在數分鐘內被 GPU 破解；而一個<strong>隨機 20 字元的密碼</strong>（包含大小寫、數字、符號）在目前的計算能力下幾乎不可能被暴力破解。請務必使用足夠長且隨機的 PSK。</p>
+      </div>
+    </div>
+
+    <!-- 6.5 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s5"></span>
+      <h2><span class="h2-num">6.5</span>WPA3：現代安全基石</h2>
+
+      <p>
+        <em class="term">WPA3</em> 於 2018 年由 Wi-Fi Alliance 發布，正面回應 WPA2 的所有已知弱點，帶來多項根本性的安全改進。Wi-Fi 6 認證設備必須強制支援 WPA3。
+      </p>
+
+      <h3>WPA3 的四大核心改進</h3>
+
+      <dl class="def-list">
+        <dt>SAE（Simultaneous Authentication of Equals）取代 PSK</dt>
+        <dd>
+          <em class="term">SAE</em>（俗稱 Dragonfly 握手）是 WPA3-Personal 的認證機制，根本解決了 WPA2 的離線字典攻擊問題：
+          <br><strong>（1）前向保密（Forward Secrecy）：</strong>即使攻擊者未來破解了 PSK，也無法解密過去截獲的連線資料，因為每次連線的 PMK 都是獨立產生的。
+          <br><strong>（2）線上限速防護：</strong>SAE 要求每次認證嘗試都必須與 AP 進行即時互動，無法進行離線暴力破解，攻擊者每次嘗試都需要實際連接 AP，速率受到大幅限制。
+        </dd>
+        <dt>OWE（Opportunistic Wireless Encryption）</dt>
+        <dd>
+          針對<strong>開放式無線網路</strong>（咖啡廳、機場 Wi-Fi），<em class="term">OWE</em> 讓裝置在無需密碼的情況下，透過 Diffie-Hellman 金鑰交換建立加密通道。用戶無需輸入密碼，但資料已被加密，防止被動竊聽。OWE 不提供認證（任何人仍可連接），但解決了開放網路的最大安全問題——明文傳輸。
+        </dd>
+        <dt>強化企業模式（WPA3-Enterprise 192-bit）</dt>
+        <dd>
+          為高安全需求場景（政府、金融）提供 192 位元安全套件：使用 GCMP-256 加密（取代 CCMP-128）、SHA-384 完整性驗證、ECDSA-384 伺服器憑證，提供比 WPA2-Enterprise 更高的安全強度。
+        </dd>
+        <dt>管理幀保護強制（802.11w PMF）</dt>
+        <dd>
+          WPA3 強制要求啟用 <em class="term">PMF（Protected Management Frames，802.11w）</em>，保護 Deauthentication 和 Disassociation 管理訊框不被偽造。WPA2 環境中 PMF 是可選的，WPA3 將其設為必要條件。
+        </dd>
+      </dl>
+
+      <h3>WPA3 的已知弱點</h3>
+      <p>
+        WPA3 發布後不久，研究人員（Mathy Vanhoef）即發現 SAE 握手中存在<em class="term">Dragonblood</em> 系列漏洞（計時旁道攻擊和快取旁道攻擊），可降低攻擊成本。Wi-Fi Alliance 已於 2019 年修訂 SAE 規範並要求廠商更新，現代 WPA3 實作已修補這些問題。
+      </p>
+
+      <div class="callout">
+        <div class="callout-label">WPA2 / WPA3 混合模式（Transition Mode）</div>
+        <p>在 WPA3 普及初期，許多環境需要同時支援 WPA2 和 WPA3 裝置。AP 可設定為<strong>WPA2/WPA3 混合模式（Transition Mode）</strong>，支援 WPA3 的裝置自動使用 SAE，舊裝置繼續使用 WPA2-PSK。混合模式下的安全強度介於兩者之間，建議隨著舊裝置汰換，逐步移轉至純 WPA3 模式。</p>
+      </div>
+    </div>
+
+    <!-- 6.6 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s6"></span>
+      <h2><span class="h2-num">6.6</span>加密協定全面比較</h2>
+
+      <div class="proto-timeline">
+        <div class="proto-row deprecated">
+          <div class="proto-year">1997</div>
+          <div class="proto-name bad">WEP<span class="proto-tag broken">已破解</span></div>
+          <div class="proto-detail">RC4 + 靜態 IV（24-bit）+ CRC-32。IV 空間過小，數小時內可統計破解。立即停用。</div>
+        </div>
+        <div class="proto-row deprecated">
+          <div class="proto-year">2003</div>
+          <div class="proto-name ok">WPA-TKIP<span class="proto-tag weak">已廢棄</span></div>
+          <div class="proto-detail">RC4 + 動態 Per-Packet Key + Michael MIC。比 WEP 強但仍基於 RC4，2012 年 IEEE 廢棄。避免使用。</div>
+        </div>
+        <div class="proto-row">
+          <div class="proto-year">2004</div>
+          <div class="proto-name good">WPA2-CCMP<span class="proto-tag current">主流</span></div>
+          <div class="proto-detail">AES-128 + CCMP + 四向握手。目前最廣泛使用；PSK 模式存在離線字典攻擊風險，需使用強密碼。</div>
+        </div>
+        <div class="proto-row">
+          <div class="proto-year">2018</div>
+          <div class="proto-name good">WPA3-SAE<span class="proto-tag best">建議</span></div>
+          <div class="proto-detail">AES-128 + CCMP/GCMP + SAE（Dragonfly）握手。前向保密，無法離線字典攻擊。Wi-Fi 6 設備必須支援。</div>
+        </div>
+        <div class="proto-row">
+          <div class="proto-year">2018</div>
+          <div class="proto-name good">WPA3-Enterprise 192<span class="proto-tag best">高安全</span></div>
+          <div class="proto-detail">AES-256 GCMP + SHA-384 + 802.1X。針對政府、金融等高安全需求場景，超越標準 WPA3 的保護強度。</div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>協定</th><th>加密演算法</th><th>金鑰長度</th><th>完整性保護</th><th>前向保密</th><th>狀態</th></tr>
+          </thead>
+          <tbody>
+            <tr class="bad-row">
+              <td>WEP</td><td>RC4</td><td>40 or 104 bit</td><td>CRC-32（無效）</td><td>否</td><td>已破解，禁用</td>
+            </tr>
+            <tr class="bad-row">
+              <td>WPA-TKIP</td><td>RC4</td><td>128 bit（動態）</td><td>Michael MIC</td><td>否</td><td>已廢棄，避免</td>
+            </tr>
+            <tr>
+              <td>WPA2-CCMP</td><td>AES</td><td>128 bit</td><td>CBC-MAC</td><td>否</td><td>可用，需強密碼</td>
+            </tr>
+            <tr class="good-row">
+              <td>WPA3-SAE</td><td>AES</td><td>128 bit</td><td>CBC-MAC</td><td><strong>是</strong></td><td>建議使用</td>
+            </tr>
+            <tr class="good-row">
+              <td>WPA3-Enterprise 192</td><td>AES-256 GCM</td><td>256 bit</td><td>GCMP-256</td><td><strong>是</strong></td><td>高安全場景</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 6.7 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s7"></span>
+      <h2><span class="h2-num">6.7</span>Personal vs Enterprise 模式</h2>
+
+      <p>
+        WPA2 和 WPA3 各自有兩種認證模式——<em class="term">Personal（個人模式）</em>和<em class="term">Enterprise（企業模式）</em>，兩者的差異不在於加密強度，而在於<strong>身分認證方式</strong>。
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>比較項目</th><th>Personal（PSK）</th><th>Enterprise（802.1X）</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>認證方式</td>
+              <td>共享預設金鑰（密碼）</td>
+              <td>個人憑證、帳號密碼或憑證（透過 RADIUS）</td>
+            </tr>
+            <tr>
+              <td>個別用戶識別</td>
+              <td>無（所有人共用同一密碼）</td>
+              <td>有（每人有獨立帳號，可稽核到個人）</td>
+            </tr>
+            <tr>
+              <td>離職撤銷</td>
+              <td>需更換全部裝置密碼</td>
+              <td>停用該用戶帳號即可，秒速撤銷</td>
+            </tr>
+            <tr>
+              <td>密碼洩漏風險</td>
+              <td>高（共用密碼一旦洩漏全員受影響）</td>
+              <td>低（個人憑證洩漏不影響他人）</td>
+            </tr>
+            <tr>
+              <td>動態 VLAN 分配</td>
+              <td>不支援</td>
+              <td>支援（RADIUS 屬性動態指定 VLAN）</td>
+            </tr>
+            <tr>
+              <td>部署複雜度</td>
+              <td>低（AP 設定一個密碼即可）</td>
+              <td>高（需要 RADIUS 伺服器、PKI 憑證架構）</td>
+            </tr>
+            <tr>
+              <td>適用場景</td>
+              <td>家庭、小型辦公室、訪客網路</td>
+              <td>中大型企業、學術機構、醫療機構</td>
+            </tr>
+            <tr class="good-row">
+              <td>安全等級</td>
+              <td>中（WPA3 下可接受）</td>
+              <td>高（每用戶獨立金鑰，最佳實務）</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout important">
+        <div class="callout-label">企業環境的最佳實踐</div>
+        <p>任何需要<strong>個人身分認證、存取稽核，或人員流動率較高的環境</strong>，都應使用 WPA2/WPA3-Enterprise 搭配 802.1X 認證。Personal 模式的共用密碼無法追溯到個人行為，且離職員工的存取無法精準撤銷（不更換密碼的話）。</p>
+      </div>
+    </div>
+
+    <!-- 6.8 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s8"></span>
+      <h2><span class="h2-num">6.8</span>802.1X 認證框架</h2>
+
+      <p>
+        <em class="term">IEEE 802.1X</em> 是一個<strong>基於埠的網路存取控制（Port-Based Network Access Control）</strong>標準，最初為有線乙太網路設計，後被 WPA2/WPA3-Enterprise 採用作為無線認證框架。它定義了三個參與角色和它們之間的通訊協定。
+      </p>
+
+      <div class="radius-flow">
+        <div class="radius-node">
+          <div class="rn-label">Supplicant</div>
+          <div class="rn-name">申請者</div>
+          <div class="rn-desc">要求連線的裝置<br>（手機、筆電）<br>執行 EAP 客戶端</div>
+        </div>
+        <div class="radius-arrow">←→<br><br>EAPoL<br>（802.11）</div>
+        <div class="radius-node dark">
+          <div class="rn-label">Authenticator</div>
+          <div class="rn-name">認證者</div>
+          <div class="rn-desc">AP / WLC<br>EAPoL ↔ RADIUS<br>轉發角色</div>
+        </div>
+        <div class="radius-arrow">←→<br><br>RADIUS<br>（UDP 1812）</div>
+        <div class="radius-node">
+          <div class="rn-label">Auth Server</div>
+          <div class="rn-name">認證伺服器</div>
+          <div class="rn-desc">RADIUS Server<br>驗證帳號 / 憑證<br>決定准入與否</div>
+        </div>
+      </div>
+
+      <h3>三個角色的職責</h3>
+      <dl class="def-list">
+        <dt>Supplicant（申請者）</dt>
+        <dd>要求存取網路的客戶端裝置。裝置上必須執行 <em class="term">EAP 客戶端軟體</em>，Windows / macOS / iOS / Android 均內建 802.1X 用戶端。Supplicant 負責提交認證憑據（帳號密碼或數位憑證）。</dd>
+        <dt>Authenticator（認證者）</dt>
+        <dd>控制網路存取的設備，無線環境中通常是 AP 或 WLC。Authenticator 本身<strong>不驗證身分</strong>，只是在 Supplicant（使用 EAPoL）和 Authentication Server（使用 RADIUS）之間充當<strong>轉發代理</strong>。在認證完成前，AP 只允許 EAPoL 認證流量通過；認證成功後才開放資料流量。</dd>
+        <dt>Authentication Server（認證伺服器）</dt>
+        <dd>實際執行身分驗證邏輯的伺服器，通常是 <em class="term">RADIUS（Remote Authentication Dial-In User Service）</em>伺服器。RADIUS 伺服器根據帳號資料庫（本機資料庫、Active Directory、LDAP）驗證 Supplicant 的憑據，並回傳 Access-Accept（允許）或 Access-Reject（拒絕）。</dd>
+      </dl>
+
+      <h3>802.1X 無線認證完整流程</h3>
+
+      <div class="diagram">
+        <div class="diagram-ascii">802.1X 無線認證流程（以 EAP-PEAP 為例）：
+
+  裝置（Supplicant）       AP / WLC（Authenticator）      RADIUS Server
+       |                           |                           |
+       |  關聯（Association）  →   |                           |
+       |                           |                           |
+       |← EAP-Request/Identity ─── |                           |
+       |── EAP-Response/Identity →  |── RADIUS Access-Request →|
+       |                           |                           | 查詢用戶帳號
+       |                           |← RADIUS Access-Challenge ─|（發送 TLS 挑戰）
+       |←─ EAP-Request（TLS）── ── |                           |
+       |── EAP-Response（TLS）──→  |── RADIUS Access-Request →|
+       |    （建立 TLS 通道）       |                           | 驗證憑證
+       |                           |← RADIUS Access-Challenge ─|
+       |←── EAP-Request（PEAP）─── |                           |
+       |─── 帳號 / 密碼 ──────────→|── RADIUS Access-Request →|
+       |    （TLS 通道內傳送）      |                           | 驗證帳號密碼
+       |                           |←── RADIUS Access-Accept ──| 包含 PMK 材料
+       |←── EAP-Success ───────── |                           |
+       |                           |                           |
+       |     [四向握手（4-Way Handshake）協商 PTK]             |
+       |                           |                           |
+       |          [資料加密傳輸開始]                           |</div>
+        <div class="diagram-caption">Fig 6.3 — 802.1X / EAP-PEAP 無線認證完整流程</div>
+      </div>
+    </div>
+
+    <!-- 6.9 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s9"></span>
+      <h2><span class="h2-num">6.9</span>EAP 類型詳解</h2>
+
+      <p>
+        <em class="term">EAP（Extensible Authentication Protocol，可延伸認證協定）</em>是 802.1X 使用的認證協定框架，支援多種不同的認證方法（稱為 EAP 類型），各有不同的安全強度和部署複雜度。
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>EAP 類型</th><th>認證方式</th><th>伺服器憑證</th><th>客戶端憑證</th><th>安全強度</th><th>常見用途</th></tr>
+          </thead>
+          <tbody>
+            <tr class="bad-row">
+              <td>EAP-MD5</td>
+              <td>帳號 + 密碼（MD5 雜湊）</td>
+              <td>否</td>
+              <td>否</td>
+              <td>極低（無法防 MITM）</td>
+              <td>僅有線環境，無線不應使用</td>
+            </tr>
+            <tr>
+              <td>LEAP（Cisco）</td>
+              <td>帳號 + 密碼</td>
+              <td>否</td>
+              <td>否</td>
+              <td>低（字典攻擊風險）</td>
+              <td>已廢棄，勿使用</td>
+            </tr>
+            <tr>
+              <td>EAP-PEAP</td>
+              <td>外層 TLS 通道 + 內層帳號密碼（MSCHAPv2）</td>
+              <td>需要</td>
+              <td>否</td>
+              <td>中高</td>
+              <td>企業 Windows 環境最常見，整合 AD</td>
+            </tr>
+            <tr>
+              <td>EAP-TTLS</td>
+              <td>外層 TLS 通道 + 內層多種方式（PAP/CHAP/MSCHAPv2）</td>
+              <td>需要</td>
+              <td>否</td>
+              <td>中高</td>
+              <td>跨平台環境，macOS / Linux 常用</td>
+            </tr>
+            <tr class="good-row">
+              <td>EAP-TLS</td>
+              <td>雙向 TLS 憑證（伺服器 + 客戶端各需憑證）</td>
+              <td>需要</td>
+              <td>需要</td>
+              <td>最高</td>
+              <td>高安全企業、搭配 PKI 憑證架構</td>
+            </tr>
+            <tr>
+              <td>EAP-FAST（Cisco）</td>
+              <td>PAC（Protected Access Credential）取代憑證</td>
+              <td>可選</td>
+              <td>否</td>
+              <td>中高</td>
+              <td>Cisco 設備環境，簡化憑證部署</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>最常用的兩種 EAP：PEAP vs EAP-TLS</h3>
+
+      <div class="def-list">
+        <dt>EAP-PEAP</dt>
+        <dd>
+          <strong>部署最廣泛的企業 EAP 方式</strong>，因為只需要 RADIUS 伺服器安裝 TLS 憑證，<strong>客戶端裝置不需要個人憑證</strong>，只需輸入帳號密碼（通常整合至 Active Directory）。Windows 裝置加入網域後可自動取得 Wi-Fi 連線設定，使用者無感知。
+          <br><br>安全注意事項：客戶端裝置必須設定<strong>驗證 RADIUS 伺服器的 TLS 憑證</strong>（CA 憑證），否則攻擊者可架設偽造 RADIUS 伺服器進行中間人攻擊（Evil Twin + Rogue RADIUS），截取帳號密碼。
+        </dd>
+        <dt>EAP-TLS</dt>
+        <dd>
+          <strong>安全強度最高的 EAP 方式</strong>，使用雙向憑證認證（伺服器和客戶端各有獨立的 X.509 憑證）。即使攻擊者取得用戶的密碼也無法連線，因為連線需要私鑰（儲存在裝置的 TPM 晶片或智慧卡中）。
+          <br><br>部署挑戰：需要完整的 <strong>PKI（公開金鑰基礎設施）</strong>架構，為每台裝置簽發客戶端憑證，並有憑證到期和撤銷（CRL / OCSP）的管理需求，部署複雜度較高。
+        </dd>
+      </div>
+    </div>
+
+    <!-- 6.10 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s10"></span>
+      <h2><span class="h2-num">6.10</span>RADIUS 伺服器部署</h2>
+
+      <p>
+        <em class="term">RADIUS（Remote Authentication Dial-In User Service）</em>伺服器是 802.1X 認證架構的核心，負責實際驗證用戶身分並回應 AP/WLC 的認證請求。
+      </p>
+
+      <h3>常見 RADIUS 伺服器選擇</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>RADIUS 軟體</th><th>類型</th><th>後端整合</th><th>授權</th><th>適用場景</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Microsoft NPS</td>
+              <td>Windows Server 內建</td>
+              <td>Active Directory（原生整合）</td>
+              <td>Windows Server 授權</td>
+              <td>已有 AD 環境的 Windows 企業</td>
+            </tr>
+            <tr>
+              <td>FreeRADIUS</td>
+              <td>開源</td>
+              <td>LDAP、AD、資料庫、PAM</td>
+              <td>免費（GPL）</td>
+              <td>技術能力強的組織，最靈活</td>
+            </tr>
+            <tr>
+              <td>Cisco ISE</td>
+              <td>商業（全功能 NAC）</td>
+              <td>AD、LDAP、MDM</td>
+              <td>商業授權</td>
+              <td>大型企業，需要裝置合規（Posture）</td>
+            </tr>
+            <tr>
+              <td>Aruba ClearPass</td>
+              <td>商業（全功能 NAC）</td>
+              <td>AD、LDAP、MDM、社群帳號</td>
+              <td>商業授權</td>
+              <td>多廠商混合環境，進階政策管理</td>
+            </tr>
+            <tr class="good-row">
+              <td>雲端 RADIUS（JumpCloud、Foxpass）</td>
+              <td>SaaS</td>
+              <td>LDAP、AD、Google Workspace</td>
+              <td>訂閱制</td>
+              <td>無 IT 人力維護伺服器的中小企業</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>RADIUS 基本設定（FreeRADIUS + EAP-PEAP 範例）</h3>
+
+      <pre><span class="comment"># /etc/freeradius/3.0/clients.conf — 定義信任的 AP / WLC</span>
+client AP-WLC {
+    <span class="key">ipaddr</span>  = <span class="val">192.168.99.10</span>    <span class="comment"># AP 或 WLC 的 IP</span>
+    <span class="key">secret</span>  = <span class="val">SharedSecret123!</span> <span class="comment"># AP 與 RADIUS 間的共享金鑰（需夠長）</span>
+    <span class="key">nastype</span> = <span class="val">cisco</span>
+}
+
+<span class="comment"># /etc/freeradius/3.0/users — 本機帳號（生產環境建議改用 AD/LDAP）</span>
+alice   Cleartext-Password := "<span class="val">P@ssw0rd123!</span>"
+        Reply-Message = "Welcome, Alice",
+        Tunnel-Type = VLAN,
+        Tunnel-Medium-Type = IEEE-802,
+        Tunnel-Private-Group-Id = <span class="val">10</span>   <span class="comment"># 指定 VLAN 10</span>
+
+<span class="comment"># /etc/freeradius/3.0/mods-enabled/eap — EAP 設定</span>
+eap {
+    default_eap_type = <span class="val">peap</span>
+    peap {
+        default_eap_type = <span class="val">mschapv2</span>
+        tls-config tls-common  <span class="comment"># 使用 TLS 設定區段</span>
+    }
+    tls-config tls-common {
+        certificate_file = <span class="val">/etc/ssl/certs/radius.crt</span>
+        private_key_file = <span class="val">/etc/ssl/private/radius.key</span>
+        ca_file          = <span class="val">/etc/ssl/certs/ca.crt</span>
+    }
+}</pre>
+
+      <h3>RADIUS 高可用性設計</h3>
+      <p>
+        RADIUS 伺服器是無線認證的<strong>單點故障</strong>：若 RADIUS 無法回應，所有需要 802.1X 認證的裝置都無法連線。生產環境必須部署：
+      </p>
+      <ul style="margin: 0.5rem 0 1.2rem 1.2rem; display:flex; flex-direction:column; gap:0.4rem;">
+        <li style="font-size:0.9rem; color:var(--ink-mid);"><strong>主備雙 RADIUS 伺服器：</strong>AP/WLC 設定 Primary 和 Secondary RADIUS，主伺服器無回應時自動切換</li>
+        <li style="font-size:0.9rem; color:var(--ink-mid);"><strong>不同實體位置：</strong>兩台 RADIUS 伺服器放在不同機房或不同子網，避免單一網路故障同時影響兩台</li>
+        <li style="font-size:0.9rem; color:var(--ink-mid);"><strong>定期測試容錯：</strong>定期測試切換到 Secondary RADIUS 的行為是否正常，不要等到緊急時才發現問題</li>
+      </ul>
+    </div>
+
+    <!-- 6.11 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s11"></span>
+      <h2><span class="h2-num">6.11</span>動態 VLAN 分配</h2>
+
+      <p>
+        <em class="term">動態 VLAN 分配（Dynamic VLAN Assignment）</em>是 802.1X 最強大的功能之一：RADIUS 伺服器在認證成功後，透過 RADIUS 屬性告知 AP，讓此用戶連接到特定 VLAN，<strong>無需為每個群組建立獨立的 SSID</strong>。
+      </p>
+
+      <h3>動態 VLAN 的工作原理</h3>
+
+      <div class="diagram">
+        <div class="diagram-ascii">動態 VLAN 分配流程：
+
+  用戶 Alice（員工）連接 "CorpWiFi" SSID
+    → 802.1X 認證 → RADIUS 查詢 Alice 的帳號屬性
+    → RADIUS 回傳 Access-Accept：
+        Tunnel-Type = VLAN
+        Tunnel-Medium-Type = 802
+        Tunnel-Private-Group-Id = 10   ← 員工 VLAN
+    → AP 將 Alice 的流量放入 VLAN 10
+
+  用戶 Bob（承包商）連接同一個 "CorpWiFi" SSID
+    → 802.1X 認證 → RADIUS 查詢 Bob 的帳號屬性
+    → RADIUS 回傳 Access-Accept：
+        Tunnel-Private-Group-Id = 50   ← 承包商 VLAN（受限存取）
+    → AP 將 Bob 的流量放入 VLAN 50
+
+  結果：相同 SSID，不同用戶 → 不同 VLAN → 不同存取權限
+  無需為員工和承包商建立兩個不同的 SSID</div>
+        <div class="diagram-caption">Fig 6.4 — 動態 VLAN 分配：單一 SSID 多 VLAN 隔離</div>
+      </div>
+
+      <h3>RADIUS 動態 VLAN 屬性</h3>
+      <pre><span class="comment"># RADIUS Access-Accept 回應中包含的三個必要屬性</span>
+
+Tunnel-Type           = VLAN      <span class="comment"># RFC 2868 屬性，值 = 13</span>
+Tunnel-Medium-Type    = 802       <span class="comment"># RFC 2868 屬性，值 = 6（IEEE 802）</span>
+Tunnel-Private-Group-Id = "<span class="val">10</span>" <span class="comment"># VLAN ID，字串或整數皆可</span>
+
+<span class="comment"># 在 FreeRADIUS users 檔案中，用戶屬性設定範例：</span>
+
+alice   Cleartext-Password := "<span class="val">P@ss!</span>"
+        Tunnel-Type = VLAN,
+        Tunnel-Medium-Type = IEEE-802,
+        Tunnel-Private-Group-Id = <span class="val">10</span>
+
+contractor_bob  Cleartext-Password := "<span class="val">B0bPass</span>"
+                Tunnel-Type = VLAN,
+                Tunnel-Medium-Type = IEEE-802,
+                Tunnel-Private-Group-Id = <span class="val">50</span></pre>
+
+      <div class="callout">
+        <div class="callout-label">與 AD 群組整合</div>
+        <p>在企業環境中，動態 VLAN 通常與 <strong>Active Directory 群組</strong>整合：RADIUS 伺服器（如 Microsoft NPS 或 Cisco ISE）根據用戶所在的 AD 群組自動決定分配的 VLAN。例如「Sales 群組 → VLAN 20」、「IT 群組 → VLAN 10」，管理員只需維護 AD 群組成員，VLAN 分配自動更新。</p>
+      </div>
+    </div>
+
+    <!-- 6.12 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s12"></span>
+      <h2><span class="h2-num">6.12</span>常見無線攻擊手法</h2>
+
+      <p>了解攻擊手法是制定防禦策略的前提。以下是無線網路環境中最常見的攻擊類型：</p>
+
+      <div class="attack-grid">
+        <div class="attack-card">
+          <div class="ac-type">偽裝攻擊</div>
+          <div class="ac-name">Evil Twin（惡意雙胞胎）</div>
+          <div class="ac-how">攻擊者架設與合法 AP 相同 SSID 的惡意 AP，並以更強的訊號吸引裝置連接。裝置連接後，攻擊者成為中間人，可竊聽所有未加密流量或呈現釣魚頁面。</div>
+          <div class="ac-defend">使用 802.1X 認證（裝置必須驗證 RADIUS 伺服器憑證），惡意 AP 無法提供有效憑證；部署 WIDS 偵測重複 SSID；802.11w 防止管理訊框偽造。</div>
+        </div>
+        <div class="attack-card">
+          <div class="ac-type">阻斷服務</div>
+          <div class="ac-name">Deauth Flood（反認證洪水）</div>
+          <div class="ac-how">802.11 的 Deauthentication 管理訊框在 WPA2 中未加密且無需認證，攻擊者可持續偽造傳送，強迫所有客戶端斷線，造成持續的無線服務中斷。</div>
+          <div class="ac-defend">強制啟用 <strong>802.11w（PMF，Protected Management Frames）</strong>——WPA3 強制要求，WPA2 需手動啟用。PMF 加密管理訊框，使偽造的 Deauth 封包被裝置忽略。</div>
+        </div>
+        <div class="attack-card">
+          <div class="ac-type">密碼攻擊</div>
+          <div class="ac-name">WPA2 握手擷取 + 字典攻擊</div>
+          <div class="ac-how">攻擊者使用 aircrack-ng 等工具擷取 WPA2 四向握手封包（可透過傳送 Deauth 封包強制裝置重新連線），再用 hashcat + GPU 對 PMK 進行離線暴力 / 字典攻擊。</div>
+          <div class="ac-defend">使用 WPA3-SAE（根本解決離線攻擊問題）；WPA2 環境中使用<strong>隨機長密碼（20+ 字元）</strong>；定期輪換 PSK；企業環境改用 802.1X。</div>
+        </div>
+        <div class="attack-card">
+          <div class="ac-type">竊聽攻擊</div>
+          <div class="ac-name">被動竊聽（Passive Eavesdropping）</div>
+          <div class="ac-how">在開放 Wi-Fi（無密碼）或使用弱加密的網路中，攻擊者被動收集空中所有封包，還原 HTTP、DNS、SMTP 等未加密協定的明文內容。</div>
+          <div class="ac-defend">開放網路使用 <strong>WPA3-OWE</strong> 提供機會性加密；應用層使用 HTTPS / TLS；推廣 VPN 使用（特別是在公共 Wi-Fi）；鼓勵 DNS-over-HTTPS。</div>
+        </div>
+        <div class="attack-card">
+          <div class="ac-type">未授權接入</div>
+          <div class="ac-name">Rogue AP（惡意存取點）</div>
+          <div class="ac-how">內部人員（或入侵者）在企業內網插入未授權的 AP（或將筆電設為 Wi-Fi 熱點），繞過防火牆和 NAC 政策，建立未受管控的網路入口。</div>
+          <div class="ac-defend">部署 WIDS 持續掃描未授權 AP；有線網路啟用 802.1X 埠認證防止未授權裝置插入；定期無線稽核；在敏感區域停用交換器埠。</div>
+        </div>
+        <div class="attack-card">
+          <div class="ac-type">重放攻擊</div>
+          <div class="ac-name">PMKID / KRACK 攻擊</div>
+          <div class="ac-how">PMKID 攻擊無需完整握手，只需從 AP 的 Beacon 或 Probe Response 中提取 PMKID 值，再對其進行離線字典攻擊。KRACK 則重放四向握手訊息 3 使金鑰歸零。</div>
+          <div class="ac-defend">確認 AP 和客戶端韌體已更新（KRACK 補丁）；升級至 WPA3（SAE 根本防止 PMKID 攻擊）；使用複雜 PSK 減少字典攻擊成功率。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6.13 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s13"></span>
+      <h2><span class="h2-num">6.13</span>無線入侵偵測（WIDS）</h2>
+
+      <p>
+        <em class="term">WIDS（Wireless Intrusion Detection System，無線入侵偵測系統）</em>持續掃描無線環境，偵測並告警各種安全威脅和政策違規事件，是企業無線安全架構的重要組成。
+      </p>
+
+      <h3>WIDS 可偵測的威脅類型</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>威脅類型</th><th>偵測方式</th><th>回應動作</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Rogue AP（未授權 AP）</td>
+              <td>掃描到 BSSID 不在白名單內的 AP，或廣播與合法 SSID 相同的 AP</td>
+              <td>告警 + 定位 + 自動有線側封鎖（Wired Containment）</td>
+            </tr>
+            <tr>
+              <td>Evil Twin</td>
+              <td>偵測到與合法 AP 相同 SSID 但不同 BSSID 的 AP 廣播</td>
+              <td>立即告警，記錄位置，通知管理員</td>
+            </tr>
+            <tr>
+              <td>Deauth / Disassoc Flood</td>
+              <td>短時間內大量 Deauthentication 訊框，超過門檻值</td>
+              <td>告警 + 記錄來源 MAC，啟用 PMF 防護</td>
+            </tr>
+            <tr>
+              <td>IBSS（Ad-hoc）裝置</td>
+              <td>偵測到裝置發出 IBSS Beacon（非 AP 基礎架構模式）</td>
+              <td>告警，可自動傳送 Deauth 阻止連線</td>
+            </tr>
+            <tr>
+              <td>WPA2 握手擷取嘗試</td>
+              <td>偵測大量針對特定裝置的 Deauth 封包（主動觸發握手）</td>
+              <td>告警，記錄攻擊者 MAC</td>
+            </tr>
+            <tr>
+              <td>弱加密使用</td>
+              <td>掃描到使用 WEP 或 TKIP 的 AP 或客戶端</td>
+              <td>告警，要求升級安全設定</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>WIDS 的兩種工作模式</h3>
+      <dl class="def-list">
+        <dt>Monitor AP（專用監控 AP）</dt>
+        <dd>部分 AP 設定為純監控模式，不提供用戶服務，全時段掃描所有頻道。覆蓋最全面，但需要額外 AP 成本。適合高安全需求環境（醫院、金融機構）。</dd>
+        <dt>Hybrid WIDS（服務 + 監控）</dt>
+        <dd>普通服務 AP 在服務用戶的同時，利用空閒時間輪流切換至其他頻道掃描。不需要額外硬體，但掃描覆蓋率和即時性不如專用監控 AP。現代 AP 通常可設定掃描週期。</dd>
+      </dl>
+    </div>
+
+    <!-- 6.14 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s14"></span>
+      <h2><span class="h2-num">6.14</span>管理幀保護（802.11w / PMF）</h2>
+
+      <p>
+        標準 802.11 的管理訊框（Deauthentication、Disassociation、Action 等）長期以來都是未加密、未認證的，任何人都可以偽造發送。<em class="term">IEEE 802.11w（PMF，Protected Management Frames，管理幀保護）</em>於 2009 年正式成為標準，為這些關鍵管理訊框提供加密和完整性保護。
+      </p>
+
+      <h3>PMF 的保護範圍</h3>
+      <dl class="def-list">
+        <dt>受 PMF 保護的訊框</dt>
+        <dd>Deauthentication、Disassociation、Action（包含 QoS、Spectrum Management、SA Query）。這些訊框加上 MIC 後，接收端可驗證訊框真實性，偽造的 Deauth 封包會被忽略。</dd>
+        <dt>不受 PMF 保護的訊框</dt>
+        <dd>Beacon、Probe Request / Response、Authentication（認證前的訊框）。這些訊框在認證建立前就需要傳輸，PMF 的金鑰尚未協商完成，故無法保護。</dd>
+      </dl>
+
+      <h3>PMF 的三種模式</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>模式</th><th>AP 行為</th><th>客戶端支援要求</th><th>適用場景</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Disabled（停用）</td>
+              <td>不提供 PMF，管理訊框未受保護</td>
+              <td>無要求</td>
+              <td>不建議，相容舊裝置用</td>
+            </tr>
+            <tr>
+              <td>Optional（可選）</td>
+              <td>AP 支援 PMF，但不強制客戶端使用</td>
+              <td>支援 PMF 的裝置自動使用，不支援的也可連線</td>
+              <td>過渡期，逐步啟用</td>
+            </tr>
+            <tr class="good-row">
+              <td>Required（必要）</td>
+              <td>AP 強制要求所有客戶端必須支援 PMF 才能連線</td>
+              <td>必須支援 PMF</td>
+              <td>WPA3 環境、高安全需求（建議）</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout important">
+        <div class="callout-label">WPA3 強制要求 PMF</div>
+        <p>WPA3 認證設備必須以 Required 模式啟用 PMF，從根本防止 Deauth Flood 攻擊。若在 WPA2/WPA3 混合模式下，建議至少設定 PMF 為 Optional，讓支援 PMF 的 WPA3 裝置獲得保護，同時維持 WPA2 裝置的相容性。</p>
+      </div>
+    </div>
+
+    <!-- 6.15 -->
+    <div class="content-section">
+      <span class="section-anchor" id="s15"></span>
+      <h2><span class="h2-num">6.15</span>無線安全強化清單</h2>
+
+      <p>以下清單整合本章所有安全建議，依優先等級排列，可作為無線網路安全稽核的檢查依據：</p>
+
+      <div class="harden-list">
+        <div class="harden-group">
+          <div class="harden-header">加密與認證</div>
+          <div class="harden-items">
+            <div class="harden-item">
+              <div class="h-box"></div>
+              <div class="h-text">停用所有 WEP 和 WPA-TKIP，不允許任何使用這些協定的裝置連線</div>
+              <div class="h-prio p1">P1</div>
+            </div>
+            <div class="harden-item">
+              <div class="h-box"></div>
+              <div class="h-text">企業 SSID 使用 WPA3-SAE 或 WPA2/WPA3 混合模式（Personal）；強密碼 20 字元以上</div>
+              <div class="h-prio p1">P1</div>
+            </div>
+            <div class="harden-item">
+              <div class="h-box"></div>
+              <div class="h-text">人員 10 人以上的環境改用 WPA2/WPA3-Enterprise（802.1X + RADIUS），實現個人身分認證</div>
+              <div class="h-prio p1">P1</div>
+            </div>
+            <div class="harden-item">
+              <div class="h-box"></div>
+              <div class="h-text">EAP-PEAP 環境必須設定客戶端驗證 RADIUS 伺服器 TLS 憑證，防止偽造 RADIUS 攻擊</div>
+              <div class="h-prio p1">P1</div>
+            </div>
+            <div class="harden-item">
+              <div class="h-box"></div>
+              <div class="h-text">RADIUS 伺服器的 TLS 憑證使用受信任 CA 簽發，並定期更新（到期前 30 天更換）</div>
+              <div class="h-prio p2">P2</div>
+            </div>
+          </div>
+        </div>
+        <div class="harden-group">
+          <div class="harden-header">管理幀與 DoS 防護</div>
+          <div class="harden-items">
+            <div class="harden-item">
+              <div class="h-box"></div>
+              <div class="h-text">啟用 802.11w PMF（WPA3 SSID 設為 Required，WPA2 SSID 至少設為 Optional）</div>
+              <div class="h-prio p1">P1</div>
+            </div>
+            <div class="harden-item">
+              <div class="h-box"></div>
+              <div class="h-text">啟用 WIDS 並設定 Rogue AP、Deauth Flood、Evil Twin 的即時告警通知</div>
+              <div class="h-prio p2">P2</div>
+            </div>
+          </div>
+        </div>
+        <div class="harden-group">
+          <div class="harden-header">SSID 與網路隔離</div>
+          <div class="harden-items">
+            <div class="harden-item">
+              <div class="h-box"></div>
+              <div class="h-text">訪客 SSID 使用獨立 VLAN，防火牆規則封鎖訪客存取企業內網（RFC1918 位址）</div>
+              <div class="h-prio p1">P1</div>
+            </div>
+            <div class="harden-item">
+              <div class="h-box"></div>
+              <div class="h-text">訪客 SSID 啟用 Client Isolation，防止訪客裝置互攻</div>
+              <div class="h-prio p1">P1</div>
+            </div>
+            <div class="harden-item">
+              <div class="h-box"></div>
+              <div class="h-text">IoT 設備使用獨立 SSID 和 VLAN，嚴格限制 IoT VLAN 的出入站流量</div>
+              <div class="h-prio p2">P2</div>
+            </div>
+            <div class="harden-item">
+              <div class="h-box"></div>
+              <div class="h-text">每個頻段的 SSID 數量控制在 3 個以內，減少管理幀開銷</div>
+              <div class="h-prio p3">P3</div>
+            </div>
+          </div>
+        </div>
+        <div class="harden-group">
+          <div class="harden-header">AP 管理安全</div>
+          <div class="harden-items">
+            <div class="harden-item">
+              <div class="h-box"></div>
+              <div class="h-text">立即更改所有 AP 的預設管理員帳號和密碼</div>
+              <div class="h-prio p1">P1</div>
+            </div>
+            <div class="harden-item">
+              <div class="h-box"></div>
+              <div class="h-text">停用 Telnet 和 HTTP 管理，只允許 SSH 和 HTTPS 管理協定</div>
+              <div class="h-prio p1">P1</div>
+            </div>
+            <div class="harden-item">
+              <div class="h-box"></div>
+              <div class="h-text">AP 管理 IP 放在獨立的管理 VLAN，不允許使用者 VLAN 存取管理介面</div>
+              <div class="h-prio p2">P2</div>
+            </div>
+            <div class="harden-item">
+              <div class="h-box"></div>
+              <div class="h-text">定期更新 AP 韌體，確認 KRACK、Dragonblood 等已知漏洞補丁已安裝</div>
+              <div class="h-prio p2">P2</div>
+            </div>
+            <div class="harden-item">
+              <div class="h-box"></div>
+              <div class="h-text">啟用 AP Syslog 並集中儲存，保留至少 90 天的日誌供安全稽核</div>
+              <div class="h-prio p2">P2</div>
+            </div>
+          </div>
+        </div>
+        <div class="harden-group">
+          <div class="harden-header">有線側防護</div>
+          <div class="harden-items">
+            <div class="harden-item">
+              <div class="h-box"></div>
+              <div class="h-text">交換器埠啟用 DHCP Snooping 和 Dynamic ARP Inspection，防止 ARP 欺騙</div>
+              <div class="h-prio p2">P2</div>
+            </div>
+            <div class="harden-item">
+              <div class="h-box"></div>
+              <div class="h-text">未使用的交換器埠關閉或放入黑洞 VLAN，防止未授權裝置接入</div>
+              <div class="h-prio p2">P2</div>
+            </div>
+            <div class="harden-item">
+              <div class="h-box"></div>
+              <div class="h-text">有線接入埠啟用 802.1X（NAC）防止員工私插 Rogue AP 繞過無線安全政策</div>
+              <div class="h-prio p3">P3</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--ink-light); font-family: 'IBM Plex Mono', monospace;">P1 = 高優先（立即執行）　P2 = 中優先（計劃內執行）　P3 = 低優先（條件允許時執行）</p>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="content-section">
+      <span class="section-anchor" id="summary"></span>
+      <h2><span class="h2-num">—</span>本章重點整理</h2>
+
+      <div class="summary-box">
+        <div class="sum-label">Chapter 06 Summary</div>
+        <ul>
+          <li>無線安全三要素：認證（誰可以連）、加密（資料不被竊聽）、完整性（資料不被篡改）。</li>
+          <li>WEP 使用 RC4 + 24-bit 靜態 IV，數小時內可破解，2004 年廢棄，嚴禁使用。WPA-TKIP 同樣已廢棄，避免使用。</li>
+          <li>WPA2 使用 AES-128 + CCMP，安全性大幅提升；但 WPA2-Personal（PSK）的四向握手可被擷取後進行離線字典攻擊，密碼必須夠強（20 字元以上隨機）。</li>
+          <li>WPA3 引入 SAE（Dragonfly）握手，提供前向保密並防止離線字典攻擊；OWE 為開放網路提供機會性加密；PMF 成為強制要求。</li>
+          <li>Personal 模式使用共用 PSK，無法追溯個人；Enterprise 模式透過 802.1X + RADIUS 實現個人認證、動態 VLAN 和即時撤銷。</li>
+          <li>802.1X 三角色：Supplicant（裝置）、Authenticator（AP/WLC，轉發）、Authentication Server（RADIUS，驗證）。</li>
+          <li>EAP-TLS（雙向憑證）安全性最高；EAP-PEAP（帳號密碼 + 伺服器憑證）部署最廣泛；PEAP 環境必須驗證 RADIUS 伺服器憑證防 MITM。</li>
+          <li>動態 VLAN 讓 RADIUS 根據用戶身分決定分配的 VLAN，同一 SSID 可服務不同權限等級的用戶群體。</li>
+          <li>常見攻擊：Evil Twin（偽造 AP）、Deauth Flood（DoS）、WPA2 握手字典攻擊、PMKID 攻擊、Rogue AP（內部插入）。</li>
+          <li>802.11w PMF 加密管理訊框，防止 Deauth Flood；WIDS 持續掃描偵測惡意 AP 和攻擊行為；WPA3 強制啟用 PMF。</li>
+        </ul>
+      </div>
+
+      <div class="chapter-nav">
+        <a href="chapter5.html">← Chapter 05：AP 安裝、設定與管理</a>
+        <a href="chapter7.html" class="next">Chapter 07：QoS 與無線網路優化 →</a>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer>
+  <div class="foot-left">AP & Wireless Network Application — Chapter 06</div>
+  <div class="foot-right">無線網路安全</div>
+</footer>
+
+<script>
+  const sections = document.querySelectorAll('.section-anchor');
+  const tocLinks = document.querySelectorAll('.toc-list a');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        tocLinks.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-64px 0px -60% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
